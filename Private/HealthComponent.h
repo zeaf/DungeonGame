@@ -10,7 +10,7 @@
 class UEffectAbsorbDamage;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), hidecategories = Object, config = Engine, editinlinenew, meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -24,6 +24,12 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = Health)
+		float MaxHealth;
+
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = Health)
+		float CurrentHealth;
+	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
 		FHealthDelegate OnDamageReceived;
 

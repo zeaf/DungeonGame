@@ -2,6 +2,7 @@
 
 
 #include "C_Character.h"
+#include "HealthComponent.h"
 
 // Sets default values
 AC_Character::AC_Character()
@@ -9,6 +10,10 @@ AC_Character::AC_Character()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	bReplicates = true;
+	
+	Health = CreateDefaultSubobject<UHealthComponent>("Health");
+	
 }
 
 // Called when the game starts or when spawned

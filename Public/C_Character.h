@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "C_Character.generated.h"
 
+class UStatusComponent;
 class UHealthComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDeathDelegate, AC_Character*, Actor);
@@ -23,7 +24,9 @@ public:
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UHealthComponent* Health;
-
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UStatusComponent* Status;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 		bool Dead;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Affiliation")
@@ -138,5 +141,9 @@ public:
 	void AddStatus_Implementation(UStatusBase* Status) override;
 
 	void IRemoveStatus_Implementation(UStatusBase* Status) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void OnDeath();
+	void OnDeath_Implementation();
 
 };

@@ -2,9 +2,15 @@
 
 
 #include "HealthComponent.h"
+
+#include "AIController.h"
 #include "Net/UnrealNetwork.h"
 #include "C_Character.h"
 #include "EffectAbsorbDamage.h"
+
+
+#define VARIANCE_LOW 0.98
+#define VARIANCE_HIGH 1.02
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -42,10 +48,10 @@ float UHealthComponent::GetDamageFactorForType(TEnumAsByte<DamageType> Type)
 }
 
 float UHealthComponent::DamageAfterCritCalculation(AC_Character* DamageDealer, 
-	const float IncomingDamage, const float IncreasedCriticalChance, const float IncreasedCriticalDamage)
+	const float IncomingDamage, const float IncreasedCriticalChance, const float IncreasedCriticalDamage, bool& IsCrit)
 {
-	return CheckCriticalHit(DamageDealer, IncreasedCriticalChance) ?
-		DamageDealer->CriticalHitDamage.GetFinalValue() + IncreasedCriticalDamage * IncomingDamage
+	IsCrit = CheckCriticalHit(DamageDealer, IncreasedCriticalChance);
+	return  IsCrit ? DamageDealer->CriticalHitDamage.GetFinalValue() + IncreasedCriticalDamage * IncomingDamage
 		: IncomingDamage;
 }
 
@@ -78,9 +84,52 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 	NotAbsorbedDamage = Damage;
 }
 
-
-void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+void UHealthComponent::OnHit(FCharacterDamageEvent* DamageEvent, float& FinalDamageTaken, bool& IsCrit, bool& IsKillingBlow)
 {
+	if (Pawn->Dead)
+		return;
+
+	FinalDamageTaken = 0;
+
+	// Amount increase based on damage type, and variance
+	FinalDamageTaken = GetDamageFactorForType(DamageEvent->Type)
+		* DamageEvent->Amount
+		* DamageEvent->ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1;
+
+	// Critical hit calculation
+	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent->Instigator, FinalDamageTaken,
+		DamageEvent->AdditionalCriticalChance, DamageEvent->AdditionalCriticalDamage, IsCrit);
+
+	float AbsorbedDamage, NotAbsorbedDamage;
+	CheckForAbsorbs(FinalDamageTaken, AbsorbedDamage, NotAbsorbedDamage);
+	
+}
+
+
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const 
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UHealthComponent, MaxHealth);
 	DOREPLIFETIME(UHealthComponent, CurrentHealth);
+}
+
+void UHealthComponent::ReduceHealth_Implementation(float IncomingDamage)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, 0.f, MaxHealth);
+	
+}
+
+bool UHealthComponent::ServerDamageCharacter_Implementation(float IncomingDamage)
+{
+	ReduceHealth(IncomingDamage);
+
+	if (CurrentHealth == 0)
+	{
+		Pawn->OnDeath();
+		
+		AAIController* AI = Cast<AAIController>(Pawn->GetController());
+		
+		if (AI) AI->Destroy();
+	}
+	return CurrentHealth == 0;
 }

@@ -3,6 +3,9 @@
 
 #include "C_Character.h"
 #include "HealthComponent.h"
+#include "StatusComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 
 // Sets default values
 AC_Character::AC_Character()
@@ -14,6 +17,9 @@ AC_Character::AC_Character()
 	
 	Health = CreateDefaultSubobject<UHealthComponent>("Health");
 	Health->Pawn = this;
+
+	Status = CreateDefaultSubobject<UStatusComponent>("Status");
+	Status->Pawn = this;
 	
 }
 
@@ -52,6 +58,22 @@ void AC_Character::AddStatus_Implementation(UStatusBase* Status)
 
 void AC_Character::IRemoveStatus_Implementation(UStatusBase* Status)
 {
+}
+
+void AC_Character::OnDeath_Implementation()
+{
+	Dead = true;
+
+	if (HasAuthority())
+	{
+		for (UStatusBase* Aura : Status->Buffs)
+			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
+		for (UStatusBase* Aura : Status->Debuffs)
+			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
+	}
+
+	GetCharacterMovement()->DisableMovement();
+	OnCharacterDeath.Broadcast(this);
 }
 
 

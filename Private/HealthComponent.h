@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "C_Character.h"
 #include "Components/ActorComponent.h"
-#include "HealthComponent.generated.h"
 #include "CharacterDamageEvent.h"
+#include "HealthComponent.generated.h"
 
 class UEffectAbsorbDamage;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
@@ -41,7 +41,7 @@ public:
 		TArray<UEffectAbsorbDamage*> Absorbs;
 
 	UFUNCTION(BlueprintCallable)
-		float GetDamageFactorForType(TEnumAsByte<DamageType> Type);
+		float GetDamageFactorForType(DamageType Type);
 
 	UFUNCTION(BlueprintCallable)
 	float DamageAfterCritCalculation(AC_Character* DamageDealer, const float IncomingDamage, const float IncreasedCriticalChance,
@@ -51,22 +51,27 @@ public:
 	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
 
 	UFUNCTION(BlueprintCallable)
-	float CalculateDamageReduction(TEnumAsByte<DamageType> Type, float IncomingDamage);
+	float CalculateDamageReduction(DamageType Type, float IncomingDamage);
 	
 	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 
-	void OnHit(FCharacterDamageEvent* DamageEvent, float& FinalDamageTaken, bool& IsCrit, bool& IsKillingBlow);
+	UFUNCTION(BlueprintCallable)
+	void OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 
+	//void OnHit_Implementation(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, 
+	//	float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
+
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(Server, Reliable)
-		void ReduceHealth(float IncomingDamage);
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastReduceHealth(float IncomingDamage);
 
-	void ReduceHealth_Implementation(float IncomingDamage);
+	virtual void MulticastReduceHealth_Implementation(float IncomingDamage);
 
-	UFUNCTION(Server, Reliable)
-		bool ServerDamageCharacter(float IncomingDamage);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		bool DamageCharacter(float IncomingDamage);
 
-	bool ServerDamageCharacter_Implementation(float IncomingDamage);
+	virtual bool DamageCharacter_Implementation(float IncomingDamage);
 	
 };

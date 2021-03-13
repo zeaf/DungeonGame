@@ -18,8 +18,8 @@ AC_Character::AC_Character()
 	Health = CreateDefaultSubobject<UHealthComponent>("Health");
 	Health->Pawn = this;
 
-	Status = CreateDefaultSubobject<UStatusComponent>("Status");
-	Status->Pawn = this;
+	StatusComponent = CreateDefaultSubobject<UStatusComponent>("Status");
+	StatusComponent->Pawn = this;
 	
 }
 
@@ -66,9 +66,9 @@ void AC_Character::OnDeath_Implementation()
 
 	if (HasAuthority())
 	{
-		for (UStatusBase* Aura : Status->Buffs)
+		for (UStatusBase* Aura : StatusComponent->Buffs)
 			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
-		for (UStatusBase* Aura : Status->Debuffs)
+		for (UStatusBase* Aura : StatusComponent->Debuffs)
 			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
 	}
 

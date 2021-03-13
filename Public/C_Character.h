@@ -25,7 +25,7 @@ public:
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UStatusComponent* Status;
+		UStatusComponent* StatusComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 		bool Dead;

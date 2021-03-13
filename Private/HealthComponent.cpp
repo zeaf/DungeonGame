@@ -42,7 +42,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-float UHealthComponent::GetDamageFactorForType(TEnumAsByte<DamageType> Type)
+float UHealthComponent::GetDamageFactorForType(DamageType Type)
 {
 	return Pawn->DamageFactors[DamageType::All].GetFinalValue() * Pawn->DamageFactors[Type].GetFinalValue();
 }
@@ -60,7 +60,7 @@ bool UHealthComponent::CheckCriticalHit(AC_Character* DamageDealer, const float 
 	return FMath::FRandRange(0, 100) <= (DamageDealer->CriticalHitChance.GetFinalValue() + IncreasedCriticalChance);
 }
 
-float UHealthComponent::CalculateDamageReduction(TEnumAsByte<DamageType> Type, const float IncomingDamage)
+float UHealthComponent::CalculateDamageReduction(DamageType Type, const float IncomingDamage)
 {
 	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[DamageType::All].GetFinalValue() * IncomingDamage;
 }
@@ -84,7 +84,8 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 	NotAbsorbedDamage = Damage;
 }
 
-void UHealthComponent::OnHit(FCharacterDamageEvent* DamageEvent, float& FinalDamageTaken, bool& IsCrit, bool& IsKillingBlow)
+void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken,
+	float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow)
 {
 	if (Pawn->Dead)
 		return;
@@ -92,17 +93,20 @@ void UHealthComponent::OnHit(FCharacterDamageEvent* DamageEvent, float& FinalDam
 	FinalDamageTaken = 0;
 
 	// Amount increase based on damage type, and variance
-	FinalDamageTaken = GetDamageFactorForType(DamageEvent->Type)
-		* DamageEvent->Amount
-		* DamageEvent->ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1;
+	FinalDamageTaken = GetDamageFactorForType(DamageEvent.Type)
+		* DamageEvent.Amount
+		* DamageEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1;
 
 	// Critical hit calculation
-	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent->Instigator, FinalDamageTaken,
-		DamageEvent->AdditionalCriticalChance, DamageEvent->AdditionalCriticalDamage, IsCrit);
+	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent.Instigator, FinalDamageTaken,
+		DamageEvent.AdditionalCriticalChance, DamageEvent.AdditionalCriticalDamage, IsCrit);
 
 	float AbsorbedDamage, NotAbsorbedDamage;
 	CheckForAbsorbs(FinalDamageTaken, AbsorbedDamage, NotAbsorbedDamage);
-	
+
+	// Damage the target based on the calculated damage value
+	if (FinalDamageTaken > 0)
+		IsKillingBlow = DamageCharacter(FinalDamageTaken);
 }
 
 
@@ -113,15 +117,15 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & Ou
 	DOREPLIFETIME(UHealthComponent, CurrentHealth);
 }
 
-void UHealthComponent::ReduceHealth_Implementation(float IncomingDamage)
+void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, 0.f, MaxHealth);
 	
 }
 
-bool UHealthComponent::ServerDamageCharacter_Implementation(float IncomingDamage)
+bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
 {
-	ReduceHealth(IncomingDamage);
+	MulticastReduceHealth(IncomingDamage);
 
 	if (CurrentHealth == 0)
 	{

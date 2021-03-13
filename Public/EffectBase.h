@@ -15,7 +15,9 @@ class HELENAPLAYGROUND_API UEffectBase : public UObject
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
 	virtual void Initialize() {};
 
+	UFUNCTION(BlueprintCallable)
 	virtual void OnRemoved() {};
 };

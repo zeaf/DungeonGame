@@ -27,7 +27,7 @@ public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
 		FHealthDelegate OnDamageReceived;
 
-	//UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
-		//TArray<UEffectAbsorbDamage*> Absorbs;
+	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
+		TArray<UEffectAbsorbDamage*> Absorbs;
 		
 };

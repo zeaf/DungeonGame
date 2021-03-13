@@ -13,4 +13,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Absorb")
 		float AbsorbAmount;
 
+
+	void Initialize() override;
+
+	void OnRemoved() override;
 };

@@ -13,7 +13,7 @@ class HELENAPLAYGROUND_API UEffectDamageFactorModifier : public UEffectBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
-		DamageType DamageFactorToModify = DamageType::None;
+		DamageType DamageFactorToModify = DamageType::All;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		StatModifier Modifier = StatModifier::Multiplicative;
@@ -21,11 +21,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		float Amount = 0;
 
-	void Initialize() override;
+	void Initialize(UStatusBase* ParentStatus) override;
 };
 
-inline void UEffectDamageFactorModifier::Initialize()
+inline void UEffectDamageFactorModifier::Initialize(UStatusBase* ParentStatus)
 {
+	Super::Initialize(ParentStatus);
 	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
 	if (Pawn)
 	{

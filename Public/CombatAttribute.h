@@ -16,7 +16,7 @@ enum class CombatAttributeName : uint8
 UENUM(BlueprintType)
 enum class DamageType : uint8
 {
-	None				UMETA(DisplayName = "None"),
+	All				UMETA(DisplayName = "All"),
 	Physical			UMETA(Displayname = "Physical"),
 	Fire				UMETA(Displayname = "Fire"),
 	Frost				UMETA(Displayname = "Frost"),

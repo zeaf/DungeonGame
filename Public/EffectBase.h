@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "EffectBase.generated.h"
 
+class UStatusBase;
 /**
  * 
  */
@@ -15,8 +16,12 @@ class HELENAPLAYGROUND_API UEffectBase : public UObject
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY()
+		UStatusBase* Status;
+	
 	UFUNCTION(BlueprintCallable)
-	virtual void Initialize() {};
+		virtual void Initialize(UStatusBase* ParentStatus) { Status = ParentStatus; };
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnRemoved() {};

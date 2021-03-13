@@ -13,6 +13,7 @@ AC_Character::AC_Character()
 	bReplicates = true;
 	
 	Health = CreateDefaultSubobject<UHealthComponent>("Health");
+	Health->Pawn = this;
 	
 }
 

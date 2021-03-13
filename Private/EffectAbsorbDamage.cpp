@@ -2,8 +2,9 @@
 #include "C_Character.h"
 #include "HealthComponent.h"
 
-inline void UEffectAbsorbDamage::Initialize()
+inline void UEffectAbsorbDamage::Initialize(UStatusBase* ParentStatus)
 {
+	Super::Initialize(ParentStatus);
 	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
 
 	if (Pawn)

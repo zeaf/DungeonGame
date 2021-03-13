@@ -104,9 +104,12 @@ public:
 		FCombatAttribute AstralDamageFactor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
 		FCombatAttribute HolyDamageFactor;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
+		FCombatAttribute AllDamageFactor;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
 		TMap<DamageType, FCombatAttribute> DamageFactors = {
+		TPairInitializer<const DamageType&, const FCombatAttribute&>(DamageType::All, AllDamageFactor),
 		TPairInitializer<const DamageType&, const FCombatAttribute&>(DamageType::Physical, PhysicalDamageFactor),
 		TPairInitializer<const DamageType&, const FCombatAttribute&>(DamageType::Fire, FireDamageFactor),
 		TPairInitializer<const DamageType&, const FCombatAttribute&>(DamageType::Frost, FrostDamageFactor),

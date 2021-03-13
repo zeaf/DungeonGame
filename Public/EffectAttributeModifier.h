@@ -21,13 +21,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		float Amount = 0;
 
-	void Initialize() override;
+	void Initialize(UStatusBase* ParentStatus) override;
 
 	void OnRemoved() override;
 };
 
-inline void UEffectAttributeModifier::Initialize()
+inline void UEffectAttributeModifier::Initialize(UStatusBase* ParentStatus)
 {
+	Super::Initialize(ParentStatus);
 	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
 	if (Pawn)
 	{

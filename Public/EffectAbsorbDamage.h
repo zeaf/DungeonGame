@@ -14,7 +14,7 @@ public:
 		float AbsorbAmount;
 
 
-	void Initialize() override;
+	void Initialize(UStatusBase* ParentStatus) override;
 
 	void OnRemoved() override;
 };

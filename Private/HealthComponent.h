@@ -24,6 +24,9 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY()
+	AC_Character* Pawn;
+	
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = Health)
 		float MaxHealth;
 
@@ -35,5 +38,18 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
 		TArray<UEffectAbsorbDamage*> Absorbs;
-		
+
+	UFUNCTION(BlueprintCallable)
+		float GetDamageFactorForType(TEnumAsByte<DamageType> Type);
+
+	UFUNCTION(BlueprintCallable)
+	float DamageAfterCritCalculation(AC_Character* DamageDealer, const float IncomingDamage, const float IncreasedCriticalChance,
+	                                 const float IncreasedCriticalDamage);
+
+	UFUNCTION(BlueprintCallable)
+	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
+
+	UFUNCTION(BlueprintCallable)
+	float CalculateDamageReduction(TEnumAsByte<DamageType> Type, float IncomingDamage);
+	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 };

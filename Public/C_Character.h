@@ -28,7 +28,7 @@ public:
 		UStatusComponent* StatusComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
-		bool Dead;
+		bool Dead = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Affiliation")
 	int Team = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Threat")
@@ -138,12 +138,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckHostility(AActor* ActorToCheck);
 
-	void AddStatus_Implementation(UStatusBase* Status) override;
+	UStatusBase* AddStatus_Implementation(UStatusBase* Status) override;
 
 	void IRemoveStatus_Implementation(UStatusBase* Status) override;
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
 		void OnDeath();
-	void OnDeath_Implementation();
+	virtual void OnDeath_Implementation();
+
+	
 
 };

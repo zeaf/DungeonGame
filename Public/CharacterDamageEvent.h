@@ -28,7 +28,7 @@ public:
 	float AdditionalCriticalDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
-	TEnumAsByte<DamageType> Type;
+	DamageType Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
 	bool IsPeriodic;

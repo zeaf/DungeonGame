@@ -11,6 +11,8 @@
 class UEffectAbsorbDamage;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateHealthDelegate);
+
 UCLASS( ClassGroup=(Custom), hidecategories = Object, config = Engine, editinlinenew, meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
@@ -25,18 +27,26 @@ protected:
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
+		FUpdateHealthDelegate UpdateHealth;
+
+	UFUNCTION()
+	void OnRepCurrentHealth() const { UpdateHealth.Broadcast();}
+	UFUNCTION()
+	void OnRepMaxHealth() const { UpdateHealth.Broadcast(); }
+	
 	UPROPERTY()
 	AC_Character* Pawn;
 	
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = Health)
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepMaxHealth, EditAnywhere, Category = "Health")
 		float MaxHealth;
 
-	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = Health)
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepCurrentHealth, EditAnywhere, Category = "Health")
 		float CurrentHealth;
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
 		FHealthDelegate OnDamageReceived;
-
+	
 	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
 		TArray<UEffectAbsorbDamage*> Absorbs;
 
@@ -73,5 +83,7 @@ public:
 		bool DamageCharacter(float IncomingDamage);
 
 	virtual bool DamageCharacter_Implementation(float IncomingDamage);
+
+
 	
 };

@@ -16,10 +16,10 @@ AC_Character::AC_Character()
 	bReplicates = true;
 	
 	Health = CreateDefaultSubobject<UHealthComponent>("Health");
-	Health->Pawn = this;
+	//Health->Pawn = this;
 
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>("Status");
-	StatusComponent->Pawn = this;
+	//StatusComponent->Pawn = this;
 	
 }
 
@@ -27,6 +27,7 @@ AC_Character::AC_Character()
 void AC_Character::BeginPlay()
 {
 	Super::BeginPlay();
+	Dead = false;
 	
 }
 
@@ -52,12 +53,14 @@ bool AC_Character::CheckHostility(AActor* ActorToCheck)
 	return false;
 }
 
-void AC_Character::AddStatus_Implementation(UStatusBase* Status)
+UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status)
 {
+	return StatusComponent->AddStatus(Status);
 }
 
 void AC_Character::IRemoveStatus_Implementation(UStatusBase* Status)
 {
+	StatusComponent->RemoveStatus(Status);
 }
 
 void AC_Character::OnDeath_Implementation()
@@ -67,9 +70,9 @@ void AC_Character::OnDeath_Implementation()
 	if (HasAuthority())
 	{
 		for (UStatusBase* Aura : StatusComponent->Buffs)
-			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
+			Cast<IStatusInterface>(this)->Execute_IRemoveStatus(this,Aura);
 		for (UStatusBase* Aura : StatusComponent->Debuffs)
-			Cast<IStatusInterface>(this)->IRemoveStatus(Aura);
+			Cast<IStatusInterface>(this)->Execute_IRemoveStatus(this,Aura);
 	}
 
 	GetCharacterMovement()->DisableMovement();

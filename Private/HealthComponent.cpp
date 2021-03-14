@@ -19,7 +19,7 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	SetIsReplicated(true);
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -28,8 +28,8 @@ UHealthComponent::UHealthComponent()
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	Pawn = Cast<AC_Character>(GetOuter());
+	CurrentHealth = MaxHealth;
 	
 }
 
@@ -92,10 +92,10 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 
 	FinalDamageTaken = 0;
 
+	const float Variance = DamageEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f"),Variance));
 	// Amount increase based on damage type, and variance
-	FinalDamageTaken = GetDamageFactorForType(DamageEvent.Type)
-		* DamageEvent.Amount
-		* DamageEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1;
+	FinalDamageTaken = GetDamageFactorForType(DamageEvent.Type) * DamageEvent.Amount * Variance;
 
 	// Critical hit calculation
 	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent.Instigator, FinalDamageTaken,
@@ -106,7 +106,7 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 
 	// Damage the target based on the calculated damage value
 	if (FinalDamageTaken > 0)
-		IsKillingBlow = DamageCharacter(FinalDamageTaken);
+		IsKillingBlow = DamageCharacter(NotAbsorbedDamage);
 }
 
 
@@ -120,13 +120,15 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & Ou
 void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, 0.f, MaxHealth);
-	
+	UpdateHealth.Broadcast();
 }
 
 bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
 {
 	MulticastReduceHealth(IncomingDamage);
 
+	OnDamageReceived.Broadcast(Pawn, IncomingDamage);
+	
 	if (CurrentHealth == 0)
 	{
 		Pawn->OnDeath();

@@ -68,3 +68,13 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor)
 	return nullptr;
 }
 
+void UStatusComponent::RemoveStatus(UStatusBase* StatusToRemove)
+{
+	if (Pawn)
+		if (!Pawn->Dead)
+		{
+			TArray<UStatusBase*> StatusArray = StatusToRemove->IsDebuff ? Debuffs : Buffs;
+			StatusArray.Remove(StatusToRemove);
+		}
+}
+

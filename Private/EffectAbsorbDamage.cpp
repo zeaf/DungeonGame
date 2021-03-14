@@ -5,16 +5,12 @@
 inline void UEffectAbsorbDamage::Initialize(UStatusBase* ParentStatus)
 {
 	Super::Initialize(ParentStatus);
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
-
-	if (Pawn)
-		Pawn->Health->Absorbs.Add(this);
+	if (Status->TargetActor)
+		Status->TargetActor->Health->Absorbs.Add(this);
 }
 
 inline void UEffectAbsorbDamage::OnRemoved()
 {
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
-
-	if (Pawn)
-		Pawn->Health->Absorbs.Remove(this);
+	if (Status->TargetActor)
+		Status->TargetActor->Health->Absorbs.Remove(this);
 }

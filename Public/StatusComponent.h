@@ -29,10 +29,10 @@ public:
 	UPROPERTY()
 		AC_Character* Pawn;
 	
-	UPROPERTY(BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		TArray<UStatusBase*> Buffs;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
 		TArray<UStatusBase*> Debuffs;
 
 	UFUNCTION(BlueprintCallable)
@@ -40,4 +40,7 @@ public:
 
 	UFUNCTION()
 		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor);
+
+	UFUNCTION()
+		void RemoveStatus(UStatusBase* StatusToRemove);
 };

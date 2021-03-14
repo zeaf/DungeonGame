@@ -65,10 +65,10 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 
 	GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, 0.f);
 
-	IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
+	//IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 
-	if (StatusInterface)
-		StatusInterface->AddStatus(this);
+	//if (StatusInterface)
+	//	StatusInterface->Execute_AddStatus(TargetActor,this);
 
 	OnApplied.Broadcast(TargetActor, this);
 }
@@ -81,7 +81,7 @@ void UStatusBase::Expired_Implementation()
 	IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 
 	if (StatusInterface)
-		StatusInterface->IRemoveStatus(this);
+		StatusInterface->Execute_IRemoveStatus(TargetActor,this);
 
 	OnRemoved.Broadcast(TargetActor, this);
 }

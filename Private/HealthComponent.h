@@ -9,7 +9,10 @@
 #include "HealthComponent.generated.h"
 
 class UEffectAbsorbDamage;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDamageEventDelegate, AC_Character*, DamageDealer, AC_Character*, Target, float, IncomingDamage);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FHealingEventDelegate, AC_Character*, Healer, AC_Character*, Target, float, IncomingDamage);
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateHealthDelegate);
 
@@ -70,7 +73,7 @@ public:
 
 #pragma region Damage
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
-		FHealthDelegate OnDamageReceived;
+		FDamageEventDelegate OnDamageReceived;
 
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastReduceHealth(float IncomingDamage);
@@ -92,6 +95,9 @@ public:
 	
 #pragma endregion
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
+		FHealingEventDelegate OnHealingReceived;
+	
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastRestoreHealth(float IncomingHealing);
 

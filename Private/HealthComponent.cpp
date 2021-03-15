@@ -115,7 +115,11 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 
 	// Damage the target based on the calculated damage value
 	if (FinalDamageTaken > 0)
+	{
 		IsKillingBlow = DamageCharacter(FinalDamageTaken);
+
+		OnDamageReceived.Broadcast(DamageEvent.Instigator, Pawn, FinalDamageTaken);
+	}
 }
 
 
@@ -135,8 +139,6 @@ void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage
 bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
 {
 	MulticastReduceHealth(IncomingDamage);
-
-	OnDamageReceived.Broadcast(Pawn, IncomingDamage);
 	
 	if (CurrentHealth == 0)
 	{
@@ -163,7 +165,17 @@ void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float&
 	FinalHealingTaken = 0;
 
 	const float Variance = HealingEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
-	
+
+	FinalHealingTaken = GetHealingMultiplier(HealingEvent.Instigator) * Variance;
+
+	FinalHealingTaken = DamageAfterCritCalculation(HealingEvent.Instigator, FinalHealingTaken, 
+		HealingEvent.AdditionalCriticalChance, HealingEvent.AdditionalCriticalDamage, IsCrit);
+
+	if (FinalHealingTaken > 0)
+	{
+		MulticastRestoreHealth(FinalHealingTaken);
+		OnHealingReceived.Broadcast(HealingEvent.Instigator, Pawn, FinalHealingTaken);
+	}
 }
 
 float UHealthComponent::GetHealingMultiplier(AC_Character* Healer)

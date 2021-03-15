@@ -40,6 +40,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
 		float MinHealth;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
+		float MaxHealableHealth;
 	
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepMaxHealth, EditAnywhere, Category = "Health")
 		float MaxHealth;
@@ -47,14 +49,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepCurrentHealth, EditAnywhere, Category = "Health")
 		float CurrentHealth;
 	
-	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
-		FHealthDelegate OnDamageReceived;
 	
 	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
 		TArray<UEffectAbsorbDamage*> Absorbs;
 
-	UFUNCTION(BlueprintCallable)
-		float GetDamageFactorForType(GameDamageType Type);
 
 	UFUNCTION(BlueprintCallable)
 	float DamageAfterCritCalculation(AC_Character* DamageDealer, const float IncomingDamage, const float IncreasedCriticalChance,
@@ -63,19 +61,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
 
-	UFUNCTION(BlueprintCallable)
-	float CalculateDamageReduction(GameDamageType Type, float IncomingDamage);
 	
-	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 
 	UFUNCTION(BlueprintCallable)
 	void OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 
-	//void OnHit_Implementation(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, 
-	//	float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
-
-	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+#pragma region Damage
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
+		FHealthDelegate OnDamageReceived;
 
 	UFUNCTION(NetMulticast, Reliable)
 		void MulticastReduceHealth(float IncomingDamage);
@@ -87,6 +82,24 @@ public:
 
 	virtual bool DamageCharacter_Implementation(float IncomingDamage);
 
+	UFUNCTION(BlueprintCallable)
+		float GetDamageFactorForType(AC_Character* DamageDealer, GameDamageType Type);
+	
+	UFUNCTION(BlueprintCallable)
+	float CalculateDamageReduction(GameDamageType Type, float IncomingDamage);
 
+	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
+	
+#pragma endregion
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastRestoreHealth(float IncomingHealing);
+
+	virtual void MulticastRestoreHealth_Implementation(float IncomingHealing);
+
+	UFUNCTION(BlueprintCallable)
+		void OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, bool& IsCrit);
+
+	float GetHealingMultiplier(AC_Character* Healer);
 	
 };

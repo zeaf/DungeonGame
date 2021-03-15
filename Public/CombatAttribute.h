@@ -6,11 +6,13 @@ UENUM(BlueprintType)
 enum class CombatAttributeName : uint8
 {
 	None				UMETA(DisplayName = "None"),
-	CriticalHitChance	UMETA(Displayname = "Critical Hit Chance"),
-	CriticalHitDamage	UMETA(Displayname = "Critical Hit Damage"),
-	CooldownRate		UMETA(Displayname = "Cooldown Rate"),
+	CriticalHitChance	UMETA(DisplayName = "Critical Hit Chance"),
+	CriticalHitDamage	UMETA(DisplayName = "Critical Hit Damage"),
+	CooldownRate		UMETA(DisplayName = "Cooldown Rate"),
 	MovementSpeed		UMETA(DisplayName = "Movement Speed"),
-	Haste				UMETA(Displayname = "Haste")
+	Haste				UMETA(DisplayName = "Haste"),
+	HealingDone			UMETA(DisplayName = "Healing Done"),
+	HealingTaken		UMETA(DisplayName = "Healing Taken")
 };
 
 UENUM(BlueprintType, meta = (ScriptName = "CDamageEvent"))

@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "CharacterDamageEvent.Generated.h"
 
-enum class DamageType : uint8;
+enum class GameDamageType : uint8;
 class UAbilityBase;
 class AC_Character;
 USTRUCT(BlueprintType)
@@ -28,7 +28,7 @@ public:
 	float AdditionalCriticalDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
-	DamageType Type;
+	GameDamageType Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
 	bool IsPeriodic;

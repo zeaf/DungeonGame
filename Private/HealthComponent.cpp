@@ -42,9 +42,9 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-float UHealthComponent::GetDamageFactorForType(DamageType Type)
+float UHealthComponent::GetDamageFactorForType(GameDamageType Type)
 {
-	return Pawn->DamageFactors[DamageType::All].GetFinalValue() * Pawn->DamageFactors[Type].GetFinalValue();
+	return Pawn->DamageFactors[GameDamageType::All].GetFinalValue() * Pawn->DamageFactors[Type].GetFinalValue();
 }
 
 float UHealthComponent::DamageAfterCritCalculation(AC_Character* DamageDealer, 
@@ -60,14 +60,17 @@ bool UHealthComponent::CheckCriticalHit(AC_Character* DamageDealer, const float 
 	return FMath::FRandRange(0, 100) <= (DamageDealer->CriticalHitChance.GetFinalValue() + IncreasedCriticalChance);
 }
 
-float UHealthComponent::CalculateDamageReduction(DamageType Type, const float IncomingDamage)
+float UHealthComponent::CalculateDamageReduction(GameDamageType Type, const float IncomingDamage)
 {
-	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[DamageType::All].GetFinalValue() * IncomingDamage;
+	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[GameDamageType::All].GetFinalValue() * IncomingDamage;
 }
 
 void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage)
 {
 	float Damage = IncomingDamage;
+
+	TArray<UEffectAbsorbDamage*> AbsorbsRemoved;
+	
 	for (UEffectAbsorbDamage* AbsorbBuff : Absorbs)
 	{
 		if (AbsorbBuff->AbsorbAmount > Damage)
@@ -77,8 +80,11 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 			break;
 		}
 		Damage -= AbsorbBuff->AbsorbAmount;
-		AbsorbBuff->Status->Expired();
+		AbsorbsRemoved.Add(AbsorbBuff);
 	}
+
+	for (UEffectAbsorbDamage* RemovedAbsorb : AbsorbsRemoved)
+		RemovedAbsorb->Status->Expired();
 
 	AbsorbedDamage = IncomingDamage - Damage;
 	NotAbsorbedDamage = Damage;
@@ -101,12 +107,11 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent.Instigator, FinalDamageTaken,
 		DamageEvent.AdditionalCriticalChance, DamageEvent.AdditionalCriticalDamage, IsCrit);
 
-	float AbsorbedDamage, NotAbsorbedDamage;
-	CheckForAbsorbs(FinalDamageTaken, AbsorbedDamage, NotAbsorbedDamage);
+	CheckForAbsorbs(FinalDamageTaken, DamageAbsorbed, FinalDamageTaken);
 
 	// Damage the target based on the calculated damage value
 	if (FinalDamageTaken > 0)
-		IsKillingBlow = DamageCharacter(NotAbsorbedDamage);
+		IsKillingBlow = DamageCharacter(FinalDamageTaken);
 }
 
 
@@ -119,7 +124,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & Ou
 
 void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage)
 {
-	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, 0.f, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, MinHealth, MaxHealth);
 	UpdateHealth.Broadcast();
 }
 

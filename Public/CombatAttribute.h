@@ -13,8 +13,8 @@ enum class CombatAttributeName : uint8
 	Haste				UMETA(Displayname = "Haste")
 };
 
-UENUM(BlueprintType)
-enum class DamageType : uint8
+UENUM(BlueprintType, meta = (ScriptName = "CDamageEvent"))
+enum class GameDamageType : uint8
 {
 	All				UMETA(DisplayName = "All"),
 	Physical			UMETA(Displayname = "Physical"),

@@ -37,6 +37,9 @@ public:
 	
 	UPROPERTY()
 	AC_Character* Pawn;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
+		float MinHealth;
 	
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepMaxHealth, EditAnywhere, Category = "Health")
 		float MaxHealth;
@@ -51,7 +54,7 @@ public:
 		TArray<UEffectAbsorbDamage*> Absorbs;
 
 	UFUNCTION(BlueprintCallable)
-		float GetDamageFactorForType(DamageType Type);
+		float GetDamageFactorForType(GameDamageType Type);
 
 	UFUNCTION(BlueprintCallable)
 	float DamageAfterCritCalculation(AC_Character* DamageDealer, const float IncomingDamage, const float IncreasedCriticalChance,
@@ -61,7 +64,7 @@ public:
 	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
 
 	UFUNCTION(BlueprintCallable)
-	float CalculateDamageReduction(DamageType Type, float IncomingDamage);
+	float CalculateDamageReduction(GameDamageType Type, float IncomingDamage);
 	
 	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 

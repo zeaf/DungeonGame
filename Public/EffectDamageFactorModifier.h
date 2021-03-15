@@ -13,7 +13,7 @@ class HELENAPLAYGROUND_API UEffectDamageFactorModifier : public UEffectBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
-		DamageType DamageFactorToModify = DamageType::All;
+		GameDamageType DamageFactorToModify = GameDamageType::All;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		StatModifier Modifier = StatModifier::Multiplicative;

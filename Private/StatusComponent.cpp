@@ -47,7 +47,7 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor)
 	if (!StatusToLookFor)
 		return nullptr;
 
-	TArray<UStatusBase*> StatusArray = StatusToLookFor->IsDebuff ? Debuffs : Buffs;
+	TArray<UStatusBase*> &StatusArray = StatusToLookFor->IsDebuff ? Debuffs : Buffs;
 	
 	for (UStatusBase* Status : StatusArray)
 	{
@@ -73,8 +73,9 @@ void UStatusComponent::RemoveStatus(UStatusBase* StatusToRemove)
 	if (Pawn)
 		if (!Pawn->Dead)
 		{
-			TArray<UStatusBase*> StatusArray = StatusToRemove->IsDebuff ? Debuffs : Buffs;
+			TArray<UStatusBase*> &StatusArray = StatusToRemove->IsDebuff ? Debuffs : Buffs;
 			StatusArray.Remove(StatusToRemove);
+			StatusToRemove->DestroyComponent();
 		}
 }
 

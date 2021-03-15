@@ -21,8 +21,11 @@ public:
 		UStatusBase* Status;
 	
 	UFUNCTION(BlueprintCallable)
-		virtual void Initialize(UStatusBase* ParentStatus) { Status = ParentStatus; };
+		virtual void Initialize(UStatusBase* ParentStatus) { Status = ParentStatus; }
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnRemoved() {};
+		virtual void OnRemoved() { OnExpired(); };
+
+	UFUNCTION(BlueprintCallable)
+		virtual void OnExpired() { };
 };

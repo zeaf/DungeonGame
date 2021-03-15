@@ -34,15 +34,15 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply)
+UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability)
 {
 	if (Pawn)
 		if (!Pawn->Dead)
-			return LookForStatus(StatusToApply);
+			return LookForStatus(StatusToApply, Caster, Ability);
 	return nullptr;
 }
 
-UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor)
+UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability)
 {
 	if (!StatusToLookFor)
 		return nullptr;
@@ -51,7 +51,7 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor)
 	
 	for (UStatusBase* Status : StatusArray)
 	{
-		if (Status->GetClass() == StatusToLookFor->GetClass() && Status->Instigator == StatusToLookFor->Instigator)
+		if (Status->GetClass() == StatusToLookFor->GetClass() && Status->Instigator == Caster)
 		{
 			Status->RefreshedStatus();
 			return Status;
@@ -62,7 +62,7 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor)
 	{
 		UStatusBase* NewStatus = DuplicateObject<UStatusBase>(StatusToLookFor, Pawn);
 		StatusArray.Add(NewStatus);
-		NewStatus->Initialize(Pawn, StatusToLookFor->Instigator, StatusToLookFor->Ability);
+		NewStatus->Initialize(Pawn, Caster, Ability);
 		return NewStatus;
 	}
 	return nullptr;

@@ -13,7 +13,7 @@ class HELENAPLAYGROUND_API UEffectDamageFactorModifier : public UEffectBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
-		GameDamageType DamageFactorToModify = GameDamageType::All;
+		EGameDamageType DamageFactorToModify = EGameDamageType::All;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		StatModifier Modifier = StatModifier::Multiplicative;
@@ -22,12 +22,23 @@ public:
 		float Amount = 0;
 
 	void Initialize(UStatusBase* ParentStatus) override;
+
+	void OnExpired() override;
 };
+
+inline void UEffectDamageFactorModifier::OnExpired()
+{
+	AC_Character* Pawn = Status->TargetActor;
+	if (Pawn)
+	{
+		Pawn->DamageFactors[DamageFactorToModify].RemoveEffect(GetUniqueID(), Modifier);
+	}
+}
 
 inline void UEffectDamageFactorModifier::Initialize(UStatusBase* ParentStatus)
 {
 	Super::Initialize(ParentStatus);
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
+	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
 		Pawn->DamageFactors[DamageFactorToModify].AddEffect(GetUniqueID(), Modifier, Amount);

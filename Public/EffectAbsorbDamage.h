@@ -16,5 +16,5 @@ public:
 
 	void Initialize(UStatusBase* ParentStatus) override;
 
-	void OnRemoved() override;
+	void OnExpired() override;
 };

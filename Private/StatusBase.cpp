@@ -38,7 +38,7 @@ void UStatusBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 void UStatusBase::RemoveStack_Implementation()
 {
 	if (--CurrentStacks < 1)
-		Expired();
+		Expired(true);
 }
 
 void UStatusBase::AddStack_Implementation()
@@ -54,7 +54,12 @@ void UStatusBase::RefreshedStatus_Implementation()
 	}
 
 	if (CanBeRefreshed)
-		GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, Duration);
+	{
+		FTimerDelegate ExpiredDelegate;
+		ExpiredDelegate.BindUFunction(this, FName("Expired"), false);
+
+		GetWorld()->GetTimerManager().SetTimer(DurationTimer, ExpiredDelegate, Duration, false);
+	}
 }
 
 void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility)
@@ -63,8 +68,14 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 	this->Instigator = Caster;
 	this->Ability = ParentAbility;
 
-	GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, Duration);
+	FTimerDelegate ExpiredDelegate;
+	ExpiredDelegate.BindUFunction(this, FName("Expired"), false);
+	
+	GetWorld()->GetTimerManager().SetTimer(DurationTimer, ExpiredDelegate, Duration, false);
 
+	for (UEffectBase* Effect : Effects)
+		Effect->Initialize(this);
+	
 	//IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 
 	//if (StatusInterface)
@@ -73,10 +84,16 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 	OnApplied.Broadcast(TargetActor, this);
 }
 
-void UStatusBase::Expired_Implementation()
+void UStatusBase::Expired_Implementation(bool WasRemoved)
 {
-	for (auto& Effect : Effects)
-		Effect->OnRemoved();
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	
+	if (WasRemoved)
+		for (auto& Effect : Effects)
+			Effect->OnRemoved();
+	else
+		for (auto& Effect : Effects)
+			Effect->OnExpired();
 
 	IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 

@@ -9,7 +9,7 @@ inline void UEffectAbsorbDamage::Initialize(UStatusBase* ParentStatus)
 		Status->TargetActor->Health->Absorbs.Add(this);
 }
 
-inline void UEffectAbsorbDamage::OnRemoved()
+inline void UEffectAbsorbDamage::OnExpired()
 {
 	if (Status->TargetActor)
 		Status->TargetActor->Health->Absorbs.Remove(this);

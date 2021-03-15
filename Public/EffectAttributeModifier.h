@@ -22,26 +22,27 @@ public:
 		float Amount = 0;
 
 	void Initialize(UStatusBase* ParentStatus) override;
-
-	void OnRemoved() override;
+	
+	void OnExpired() override;
 };
 
 inline void UEffectAttributeModifier::Initialize(UStatusBase* ParentStatus)
 {
 	Super::Initialize(ParentStatus);
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
+	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
 		Pawn->CombatAttributes[CombatAttributeToModify].AddEffect(GetUniqueID(), Modifier, Amount);
 	}
 }
 
-inline void UEffectAttributeModifier::OnRemoved()
+inline void UEffectAttributeModifier::OnExpired()
 {
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
+	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
 		Pawn->CombatAttributes[CombatAttributeToModify].RemoveEffect(GetUniqueID(), Modifier);
 	}
 }
+
 

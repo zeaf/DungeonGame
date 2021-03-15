@@ -13,7 +13,7 @@ class HELENAPLAYGROUND_API UEffectDamageResistanceModifier : public UEffectBase
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
-		GameDamageType ResistanceToModify = GameDamageType::All;
+		EGameDamageType ResistanceToModify = EGameDamageType::All;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		StatModifier Modifier = StatModifier::Multiplicative;
@@ -23,22 +23,22 @@ public:
 
 	void Initialize(UStatusBase* ParentStatus) override;
 
-	void OnRemoved() override;
+	void OnExpired() override;
 };
 
 inline void UEffectDamageResistanceModifier::Initialize(UStatusBase* ParentStatus)
 {
 	Super::Initialize(ParentStatus);
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
+	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
 		Pawn->DamageResistance[ResistanceToModify].AddEffect(GetUniqueID(), Modifier, Amount);
 	}
 }
 
-inline void UEffectDamageResistanceModifier::OnRemoved()
+inline void UEffectDamageResistanceModifier::OnExpired()
 {
-	AC_Character* Pawn = Cast<AC_Character>(GetOuter());
+	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
 		Pawn->DamageResistance[ResistanceToModify].RemoveEffect(GetUniqueID(), Modifier);

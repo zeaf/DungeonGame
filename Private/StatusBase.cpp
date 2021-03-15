@@ -54,7 +54,7 @@ void UStatusBase::RefreshedStatus_Implementation()
 	}
 
 	if (CanBeRefreshed)
-		GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, 0.f);
+		GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, Duration);
 }
 
 void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility)
@@ -63,7 +63,7 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 	this->Instigator = Caster;
 	this->Ability = ParentAbility;
 
-	GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, 0.f);
+	GetWorld()->GetTimerManager().SetTimer(DurationTimer, this, &UStatusBase::Expired, Duration, false, Duration);
 
 	//IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 

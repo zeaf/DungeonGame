@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "CharacterDamageEvent.h"
 #include "CombatAttribute.h"
 #include "StatusInterface.h"
 #include "GameFramework/Character.h"
@@ -10,8 +12,9 @@
 
 class UStatusComponent;
 class UHealthComponent;
-
+struct FCharacterDamageEvent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDeathDelegate, AC_Character*, Actor);
+
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class HELENAPLAYGROUND_API AC_Character : public ACharacter, public IStatusInterface
@@ -34,8 +37,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Threat")
 	float ThreatMultiplier = 1;
 
-	UPROPERTY(BlueprintAssignable, Category = "Health")
+	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category = "Health")
 		FDeathDelegate OnCharacterDeath;
+	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
+		void OnHealingReceived(FCharacterDamageEvent Event);
+
+	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event) {};
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
+		void OnDamageReceived(FCharacterDamageEvent Event);
+
+	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event) {};
 
 #pragma region CombatAttributes
 
@@ -54,32 +66,32 @@ public:
 #pragma region DamageResistances
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<GameDamageType, FCombatAttribute> DamageResistance = {
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::All, FCombatAttribute())};
+		TMap<EGameDamageType, FCombatAttribute> DamageResistance = {
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Physical, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Fire, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Frost, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Astral, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Void, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute())};
 
 #pragma endregion
 
 #pragma region DamageFactors
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<GameDamageType, FCombatAttribute> DamageFactors = {
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::All, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, FCombatAttribute()),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, FCombatAttribute()) };
+		TMap<EGameDamageType, FCombatAttribute> DamageFactors = {
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Physical, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Fire, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Frost, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Astral, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Void, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()) };
 
 #pragma endregion
 
@@ -97,7 +109,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckHostility(AActor* ActorToCheck);
 
-	UStatusBase* AddStatus_Implementation(UStatusBase* Status) override;
+	UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability) override;
 
 	void IRemoveStatus_Implementation(UStatusBase* Status) override;
 

@@ -53,9 +53,9 @@ bool AC_Character::CheckHostility(AActor* ActorToCheck)
 	return false;
 }
 
-UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status)
+UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability)
 {
-	return StatusComponent->AddStatus(Status);
+	return StatusComponent->AddStatus(Status, Caster, Ability);
 }
 
 void AC_Character::IRemoveStatus_Implementation(UStatusBase* Status)

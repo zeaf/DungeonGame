@@ -42,10 +42,10 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-float UHealthComponent::GetDamageFactorForType(AC_Character* DamageDealer, GameDamageType Type)
+float UHealthComponent::GetDamageFactorForType(AC_Character* DamageDealer, EGameDamageType Type)
 {
 	return DamageDealer ?
-		DamageDealer->DamageFactors[GameDamageType::All].GetFinalValue() * DamageDealer->DamageFactors[Type].GetFinalValue()
+		DamageDealer->DamageFactors[EGameDamageType::All].GetFinalValue() * DamageDealer->DamageFactors[Type].GetFinalValue()
 		: 1.f;
 }
 
@@ -63,9 +63,9 @@ bool UHealthComponent::CheckCriticalHit(AC_Character* DamageDealer, const float 
 	return FMath::FRandRange(0, 100) <= (DamageDealer->CombatAttributes[CombatAttributeName::CriticalHitChance].GetFinalValue() + IncreasedCriticalChance);
 }
 
-float UHealthComponent::CalculateDamageReduction(GameDamageType Type)
+float UHealthComponent::CalculateDamageReduction(EGameDamageType Type)
 {
-	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[GameDamageType::All].GetFinalValue();
+	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[EGameDamageType::All].GetFinalValue();
 }
 
 void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage)
@@ -87,7 +87,7 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 	}
 
 	for (UEffectAbsorbDamage* RemovedAbsorb : AbsorbsRemoved)
-		RemovedAbsorb->Status->Expired();
+		RemovedAbsorb->Status->Expired(true);
 
 	AbsorbedDamage = IncomingDamage - Damage;
 	NotAbsorbedDamage = Damage;

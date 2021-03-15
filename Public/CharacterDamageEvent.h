@@ -1,8 +1,10 @@
 #pragma once
+
 #include "CoreMinimal.h"
+#include "CombatAttribute.h"
 #include "CharacterDamageEvent.Generated.h"
 
-enum class GameDamageType : uint8;
+//enum class EGameDamageType : uint8;
 class UAbilityBase;
 class AC_Character;
 USTRUCT(BlueprintType)
@@ -28,11 +30,11 @@ public:
 	float AdditionalCriticalDamage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
-	GameDamageType Type;
+	EGameDamageType Type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
 	bool IsPeriodic;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Event")
-	bool ApplyVariance;	
+	bool ApplyVariance = true;	
 };

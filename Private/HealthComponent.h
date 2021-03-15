@@ -86,10 +86,10 @@ public:
 	virtual bool DamageCharacter_Implementation(float IncomingDamage);
 
 	UFUNCTION(BlueprintCallable)
-		float GetDamageFactorForType(AC_Character* DamageDealer, GameDamageType Type);
+		float GetDamageFactorForType(AC_Character* DamageDealer, EGameDamageType Type);
 	
 	UFUNCTION(BlueprintCallable)
-	float CalculateDamageReduction(GameDamageType Type);
+	float CalculateDamageReduction(EGameDamageType Type);
 
 	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 	

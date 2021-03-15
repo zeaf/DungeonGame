@@ -18,7 +18,7 @@ UHealthComponent::UHealthComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	
 	SetIsReplicatedByDefault(true);
 	// ...
 }
@@ -30,7 +30,7 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 	Pawn = Cast<AC_Character>(GetOuter());
 	CurrentHealth = MaxHealth;
-	
+	MaxHealableHealth = MaxHealth;
 }
 
 
@@ -49,22 +49,23 @@ float UHealthComponent::GetDamageFactorForType(AC_Character* DamageDealer, GameD
 		: 1.f;
 }
 
-float UHealthComponent::DamageAfterCritCalculation(AC_Character* DamageDealer, 
-	const float IncomingDamage, const float IncreasedCriticalChance, const float IncreasedCriticalDamage, bool& IsCrit)
+float UHealthComponent::GetCritMultiplier(AC_Character* DamageDealer, 
+	const float IncreasedCriticalChance, const float IncreasedCriticalDamage, bool& IsCrit)
 {
 	IsCrit = CheckCriticalHit(DamageDealer, IncreasedCriticalChance);
-	return  IsCrit ? DamageDealer->CriticalHitDamage.GetFinalValue() + IncreasedCriticalDamage * IncomingDamage
-		: IncomingDamage;
+	const float Amount = IsCrit ? DamageDealer->CombatAttributes[CombatAttributeName::CriticalHitDamage].GetFinalValue() + IncreasedCriticalDamage
+		: 1;
+	return Amount;
 }
 
 bool UHealthComponent::CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance)
 {
-	return FMath::FRandRange(0, 100) <= (DamageDealer->CriticalHitChance.GetFinalValue() + IncreasedCriticalChance);
+	return FMath::FRandRange(0, 100) <= (DamageDealer->CombatAttributes[CombatAttributeName::CriticalHitChance].GetFinalValue() + IncreasedCriticalChance);
 }
 
-float UHealthComponent::CalculateDamageReduction(GameDamageType Type, const float IncomingDamage)
+float UHealthComponent::CalculateDamageReduction(GameDamageType Type)
 {
-	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[GameDamageType::All].GetFinalValue() * IncomingDamage;
+	return Pawn->DamageResistance[Type].GetFinalValue() * Pawn->DamageResistance[GameDamageType::All].GetFinalValue();
 }
 
 void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage)
@@ -98,27 +99,29 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 	if (Pawn->Dead)
 		return;
 
-	FinalDamageTaken = 0;
+	float TotalMultiplier = 1.f;
 
 	const float Variance = DamageEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f"),Variance));
 	// Amount increase based on damage type, and variance
-	FinalDamageTaken = GetDamageFactorForType(DamageEvent.Instigator, DamageEvent.Type) * DamageEvent.Amount * Variance;
+	TotalMultiplier *= GetDamageFactorForType(DamageEvent.Instigator, DamageEvent.Type) * Variance;
 
 	// Critical hit calculation
-	FinalDamageTaken = DamageAfterCritCalculation(DamageEvent.Instigator, FinalDamageTaken,
-		DamageEvent.AdditionalCriticalChance, DamageEvent.AdditionalCriticalDamage, IsCrit);
+	TotalMultiplier *= GetCritMultiplier(DamageEvent.Instigator, DamageEvent.AdditionalCriticalChance,
+		DamageEvent.AdditionalCriticalDamage, IsCrit);
 
-	FinalDamageTaken = CalculateDamageReduction(DamageEvent.Type, FinalDamageTaken);
+	TotalMultiplier *= CalculateDamageReduction(DamageEvent.Type);
+
+	FinalDamageTaken = FMath::CeilToFloat(DamageEvent.Amount * TotalMultiplier);
 	
 	CheckForAbsorbs(FinalDamageTaken, DamageAbsorbed, FinalDamageTaken);
-
+	
 	// Damage the target based on the calculated damage value
 	if (FinalDamageTaken > 0)
 	{
 		IsKillingBlow = DamageCharacter(FinalDamageTaken);
 
-		OnDamageReceived.Broadcast(DamageEvent.Instigator, Pawn, FinalDamageTaken);
+		OnDamageReceived.Broadcast(DamageEvent.Instigator, FinalDamageTaken);
 	}
 }
 
@@ -162,23 +165,25 @@ void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float&
 	if (Pawn->Dead)
 		return;
 
-	FinalHealingTaken = 0;
-
 	const float Variance = HealingEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
 
-	FinalHealingTaken = GetHealingMultiplier(HealingEvent.Instigator) * Variance;
+	float TotalMultiplier = 1.f;
+	
+	TotalMultiplier *= GetHealingMultiplier(HealingEvent.Instigator) * Variance;
 
-	FinalHealingTaken = DamageAfterCritCalculation(HealingEvent.Instigator, FinalHealingTaken, 
-		HealingEvent.AdditionalCriticalChance, HealingEvent.AdditionalCriticalDamage, IsCrit);
+	TotalMultiplier *= GetCritMultiplier(HealingEvent.Instigator, HealingEvent.AdditionalCriticalChance,
+	HealingEvent.AdditionalCriticalDamage, IsCrit);
 
+	FinalHealingTaken = FMath::CeilToFloat(HealingEvent.Amount * TotalMultiplier);
+	
 	if (FinalHealingTaken > 0)
 	{
 		MulticastRestoreHealth(FinalHealingTaken);
-		OnHealingReceived.Broadcast(HealingEvent.Instigator, Pawn, FinalHealingTaken);
+		OnHealingReceived.Broadcast(HealingEvent.Instigator, FinalHealingTaken);
 	}
 }
 
 float UHealthComponent::GetHealingMultiplier(AC_Character* Healer)
 {
-	return Healer->HealingDone.GetFinalValue() * Pawn->HealingTaken.GetFinalValue();
+	return Healer->CombatAttributes[CombatAttributeName::HealingDone].GetFinalValue() * Pawn->CombatAttributes[CombatAttributeName::HealingTaken].GetFinalValue();
 }

@@ -9,9 +9,9 @@
 #include "HealthComponent.generated.h"
 
 class UEffectAbsorbDamage;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FDamageEventDelegate, AC_Character*, DamageDealer, AC_Character*, Target, float, IncomingDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageEventDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FHealingEventDelegate, AC_Character*, Healer, AC_Character*, Target, float, IncomingDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealingEventDelegate, AC_Character*, Healer, float, IncomingHealing);
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateHealthDelegate);
@@ -58,8 +58,8 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	float DamageAfterCritCalculation(AC_Character* DamageDealer, const float IncomingDamage, const float IncreasedCriticalChance,
-	                                 const float IncreasedCriticalDamage, bool& IsCrit);
+	float GetCritMultiplier(AC_Character* DamageDealer, const float IncreasedCriticalChance,
+	                        const float IncreasedCriticalDamage, bool& IsCrit);
 
 	UFUNCTION(BlueprintCallable)
 	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
@@ -89,7 +89,7 @@ public:
 		float GetDamageFactorForType(AC_Character* DamageDealer, GameDamageType Type);
 	
 	UFUNCTION(BlueprintCallable)
-	float CalculateDamageReduction(GameDamageType Type, float IncomingDamage);
+	float CalculateDamageReduction(GameDamageType Type);
 
 	void CheckForAbsorbs(float IncomingDamage, float& AbsorbedDamage, float& NotAbsorbedDamage);
 	

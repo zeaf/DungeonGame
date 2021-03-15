@@ -38,95 +38,48 @@ public:
 		FDeathDelegate OnCharacterDeath;
 
 #pragma region CombatAttributes
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute CriticalHitChance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute CriticalHitDamage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute CooldownRate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute Haste;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute MovementSpeed;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute HealingDone;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute HealingTaken;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
 		TMap<CombatAttributeName, FCombatAttribute> CombatAttributes = {
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitChance, CriticalHitChance),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitDamage, CriticalHitDamage),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::Haste, Haste),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CooldownRate, CooldownRate),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::MovementSpeed, MovementSpeed),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingDone, HealingDone),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingTaken, HealingTaken) };
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitChance, FCombatAttribute(15.f)),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitDamage, FCombatAttribute(2.f)),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::Haste, FCombatAttribute()),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CooldownRate, FCombatAttribute()),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::MovementSpeed, FCombatAttribute()),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingDone, FCombatAttribute()),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingTaken, FCombatAttribute()) };
 
 #pragma endregion
 	
 #pragma region DamageResistances
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute PhysicalResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute FireResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute FrostResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute LightningResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute VoidResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute EssenceResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute AstralResistance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute HolyResistance;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
 		TMap<GameDamageType, FCombatAttribute> DamageResistance = {
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, PhysicalResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FireResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FrostResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, AstralResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, VoidResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, EssenceResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, LightningResistance),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, HolyResistance) };
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::All, FCombatAttribute())};
 
 #pragma endregion
 
 #pragma region DamageFactors
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute PhysicalDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute FireDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute FrostDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute LightningDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute VoidDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute EssenceDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute AstralDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute HolyDamageFactor;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, AdvancedDisplay, Category = "Attributes")
-		FCombatAttribute AllDamageFactor;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
 		TMap<GameDamageType, FCombatAttribute> DamageFactors = {
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::All, AllDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, PhysicalDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FireDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FrostDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, AstralDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, VoidDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, EssenceDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, LightningDamageFactor),
-		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, HolyDamageFactor) };
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::All, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Physical, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Fire, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Frost, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Astral, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Void, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Essence, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Lightning, FCombatAttribute()),
+		TPairInitializer<const GameDamageType&, const FCombatAttribute&>(GameDamageType::Holy, FCombatAttribute()) };
 
 #pragma endregion
 

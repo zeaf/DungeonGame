@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attribute")
 		float BaseValue = 1.f;
 
+	FCombatAttribute() {};
+	FCombatAttribute(float Base) { BaseValue = Base; };
+
 	void AddEffect(uint32 EffectID, StatModifier Modifier, float value)
 	{
 		switch (Modifier)

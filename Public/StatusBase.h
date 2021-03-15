@@ -73,8 +73,8 @@ public:
 	void Initialize(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility);
 	virtual void Initialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void Expired();
-	virtual void Expired_Implementation();
+	void Expired(bool WasRemoved);
+	virtual void Expired_Implementation(bool WasRemoved);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void RefreshedStatus();
 	virtual void RefreshedStatus_Implementation();

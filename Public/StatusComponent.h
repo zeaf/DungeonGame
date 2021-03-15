@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "AbilityBase.h"
 #include "Components/ActorComponent.h"
 #include "StatusComponent.generated.h"
 
@@ -36,10 +38,10 @@ public:
 		TArray<UStatusBase*> Debuffs;
 
 	UFUNCTION(BlueprintCallable)
-		UStatusBase* AddStatus(UStatusBase* StatusToApply);
+		UStatusBase* AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability);
 
 	UFUNCTION()
-		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor);
+		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability);
 
 	UFUNCTION()
 		void RemoveStatus(UStatusBase* StatusToRemove);

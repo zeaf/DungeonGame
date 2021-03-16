@@ -2,6 +2,8 @@
 
 
 #include "AbilityBase.h"
+
+#include "C_Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/LineBatchComponent.h"
 #include "DrawDebugHelpers.h"
@@ -36,8 +38,24 @@ void UAbilityBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	// ...
 }
 
+void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event)
+{
+	float DamageDealt, DamageAbsorbed;
+	bool IsCrit, IsKillingBlow;
+	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow);
+	OnDealtDamage.Broadcast(Target, DamageDealt+DamageAbsorbed, this);
+}
+
+void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)
+{
+	float Healing;
+	bool IsCrit;
+	Target->OnHealingReceived(Event, Healing, IsCrit);
+	OnHealedUnit.Broadcast(Target, Healing, this);
+}
+
 void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle,
-	bool DrawDebug, TArray<AC_Character*>& CharactersHit)
+                             bool DrawDebug, TArray<AC_Character*>& CharactersHit)
 {
 	AC_Character* Owner = Cast<AC_Character>(GetOwner());
 	

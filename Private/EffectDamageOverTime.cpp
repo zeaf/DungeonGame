@@ -23,5 +23,7 @@ void UEffectDamageOverTime::Initialize(UStatusBase* ParentStatus)
 void UEffectDamageOverTime::OnTick_Implementation()
 {
 	Super::OnTick_Implementation();
-	Status->TargetActor->OnDamageReceived(Event);
+	float D, A;
+	bool C, K;
+	Status->TargetActor->OnDamageReceived(Event, D, A, C, K);
 }

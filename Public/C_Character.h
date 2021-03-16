@@ -41,13 +41,13 @@ public:
 		FDeathDelegate OnCharacterDeath;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-		void OnHealingReceived(FCharacterDamageEvent Event);
-
-	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event) {};
+		void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
+	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-		void OnDamageReceived(FCharacterDamageEvent Event);
+		void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 
-	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event) {};
+	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 
 #pragma region CombatAttributes
 

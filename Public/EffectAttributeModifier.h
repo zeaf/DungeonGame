@@ -21,14 +21,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		float Amount = 0;
 
-	void Initialize(UStatusBase* ParentStatus) override;
+	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 	
-	void OnExpired() override;
+	void OnExpired_Implementation() override;
 };
 
-inline void UEffectAttributeModifier::Initialize(UStatusBase* ParentStatus)
+inline void UEffectAttributeModifier::Initialize_Implementation(UStatusBase* ParentStatus)
 {
-	Super::Initialize(ParentStatus);
+	Super::Initialize_Implementation(ParentStatus);
 	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
@@ -36,7 +36,7 @@ inline void UEffectAttributeModifier::Initialize(UStatusBase* ParentStatus)
 	}
 }
 
-inline void UEffectAttributeModifier::OnExpired()
+inline void UEffectAttributeModifier::OnExpired_Implementation()
 {
 	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)

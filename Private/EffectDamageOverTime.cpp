@@ -5,17 +5,17 @@
 #include "C_Character.h"
 #include "StatusBase.h"
 
-void UEffectDamageOverTime::Initialize(UStatusBase* ParentStatus)
+void UEffectDamageOverTime::Initialize_Implementation(UStatusBase* ParentStatus)
 {
-	Super::Initialize(ParentStatus);
+	Super::Initialize_Implementation(ParentStatus);
 
-	HealingPerTick = TotalHealing / NumberOfTicks;
+	DamagePertTick = TotalDamage / NumberOfTicks;
 
 	Event.Ability = Status->Ability;
 	Event.Instigator = Status->Instigator;
 	Event.AdditionalCriticalChance = AdditionalCriticalChance;
 	Event.AdditionalCriticalDamage = AdditionalCriticalDamage;
-	Event.Amount = HealingPerTick;
+	Event.Amount = DamagePertTick;
 	Event.IsPeriodic = true;
 	Event.Type = Type;
 }

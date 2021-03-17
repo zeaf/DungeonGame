@@ -35,7 +35,7 @@ protected:
 	FCharacterDamageEvent Event;
 
 public:
-	void Initialize(UStatusBase* ParentStatus) override;
+	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
 	void OnTick_Implementation() override;
 };

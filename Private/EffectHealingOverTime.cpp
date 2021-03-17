@@ -5,9 +5,9 @@
 #include "C_Character.h"
 #include "StatusBase.h"
 
-void UEffectHealingOverTime::Initialize(UStatusBase* ParentStatus)
+void UEffectHealingOverTime::Initialize_Implementation(UStatusBase* ParentStatus)
 {
-	Super::Initialize(ParentStatus);
+	Super::Initialize_Implementation(ParentStatus);
 
 	HealingPerTick = TotalHealing / NumberOfTicks;
 

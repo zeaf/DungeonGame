@@ -14,7 +14,7 @@ public:
 		float AbsorbAmount;
 
 
-	void Initialize(UStatusBase* ParentStatus) override;
+	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
-	void OnExpired() override;
+	void OnExpired_Implementation() override;
 };

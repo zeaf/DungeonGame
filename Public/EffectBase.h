@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "StatusBase.h"
 #include "UObject/NoExportTypes.h"
 #include "EffectBase.generated.h"
 
@@ -17,15 +19,25 @@ class HELENAPLAYGROUND_API UEffectBase : public UObject
 
 public:
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 		UStatusBase* Status;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool SelfOnly;
 	
-	UFUNCTION(BlueprintCallable)
-		virtual void Initialize(UStatusBase* ParentStatus) { Status = ParentStatus; }
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void Initialize(UStatusBase* ParentStatus);
 
-	UFUNCTION(BlueprintCallable)
-		virtual void OnRemoved() { OnExpired(); };
+	virtual void Initialize_Implementation(UStatusBase* ParentStatus)
+	{
+		Status = ParentStatus;
+	}
 
-	UFUNCTION(BlueprintCallable)
-		virtual void OnExpired() { };
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void OnRemoved();
+	virtual void OnRemoved_Implementation() { OnExpired(); }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void OnExpired();
+	virtual void OnExpired_Implementation() { }
 };

@@ -29,12 +29,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
 		float TickInterval = 0;
-	
-		void Initialize(UStatusBase* ParentStatus) override;
 
-		void OnRemoved() override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
+		bool IsPermanent;
 	
-		void OnExpired() override;
+		void Initialize_Implementation(UStatusBase* ParentStatus) override;
+
+		void OnRemoved_Implementation() override;
+	
+		void OnExpired_Implementation() override;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void OnTick();

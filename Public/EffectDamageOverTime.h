@@ -17,7 +17,7 @@ class HELENAPLAYGROUND_API UEffectDamageOverTime : public UEffectPeriodic
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
-		float TotalHealing = 0.f;
+		float TotalDamage = 0.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
 		float AdditionalCriticalChance = 0.f;
@@ -29,12 +29,12 @@ public:
 		EGameDamageType Type;
 
 protected:
-	float HealingPerTick;
+	float DamagePertTick;
 
 	FCharacterDamageEvent Event;
 
 public:
-	void Initialize(UStatusBase* ParentStatus) override;
+	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
 	void OnTick_Implementation() override;
 };

@@ -21,12 +21,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		float Amount = 0;
 
-	void Initialize(UStatusBase* ParentStatus) override;
+	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
-	void OnExpired() override;
+	void OnExpired_Implementation() override;
 };
 
-inline void UEffectDamageFactorModifier::OnExpired()
+inline void UEffectDamageFactorModifier::OnExpired_Implementation()
 {
 	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
@@ -35,9 +35,9 @@ inline void UEffectDamageFactorModifier::OnExpired()
 	}
 }
 
-inline void UEffectDamageFactorModifier::Initialize(UStatusBase* ParentStatus)
+inline void UEffectDamageFactorModifier::Initialize_Implementation(UStatusBase* ParentStatus)
 {
-	Super::Initialize(ParentStatus);
+	Super::Initialize_Implementation(ParentStatus);
 	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{

@@ -5,28 +5,28 @@
 
 #include "StatusBase.h"
 
-void UEffectPeriodic::Initialize(UStatusBase* ParentStatus)
+void UEffectPeriodic::Initialize_Implementation(UStatusBase* ParentStatus)
 {
-	Super::Initialize(ParentStatus);
-	Duration = ParentStatus->Duration;
+	Super::Initialize_Implementation(ParentStatus);
+	Duration = IsPermanent ? 100000000 : ParentStatus->Duration;
 
 	if (NumberOfTicks > 0)
 		TickInterval = Duration / NumberOfTicks;
 	else if (!(TickInterval > 0 && TickInterval < Duration))
 		TickInterval = 1.f;
 
-	NumberOfTicks = Duration / TickInterval;
+	NumberOfTicks = IsPermanent ? 0 : Duration / TickInterval;
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UEffectPeriodic::OnTick, TickInterval, true, TickInterval);
 	
 }
 
-void UEffectPeriodic::OnRemoved()
+void UEffectPeriodic::OnRemoved_Implementation()
 {
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
 
-void UEffectPeriodic::OnExpired()
+void UEffectPeriodic::OnExpired_Implementation()
 {
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 	

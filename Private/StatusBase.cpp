@@ -79,7 +79,11 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 	GetWorld()->GetTimerManager().SetTimer(DurationTimer, ExpiredDelegate, Duration, false);
 
 	for (UEffectBase* Effect : Effects)
+	{
+		if (Effect->SelfOnly && TargetActor != Instigator)
+			break;
 		Effect->Initialize(this);
+	}
 	
 	//IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 

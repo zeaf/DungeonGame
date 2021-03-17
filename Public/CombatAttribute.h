@@ -50,11 +50,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attribute")
 		float BaseValue = 1.f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+		float CurrentValue = BaseValue;
+
 	FCombatAttribute() {};
-	FCombatAttribute(float Base) { BaseValue = Base; };
+	FCombatAttribute(const float Base) { BaseValue = Base; CurrentValue = Base; };
 
 	void AddEffect(uint32 EffectID, StatModifier Modifier, float value)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ADD EFFECT"));
 		switch (Modifier)
 		{
 		case StatModifier::Additive:
@@ -64,6 +68,8 @@ public:
 			MultiplicativeBonuses.Add(EffectID, value);
 			break;
 		}
+
+		CurrentValue = GetFinalValue();
 	}
 
 	void RemoveEffect(uint32 EffectID, StatModifier Modifier)
@@ -77,6 +83,8 @@ public:
 			MultiplicativeBonuses.Remove(EffectID);
 			break;
 		}
+
+		CurrentValue = GetFinalValue();
 	}
 
 	float GetFinalValue()

@@ -84,4 +84,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void RemoveStack();
 	virtual void RemoveStack_Implementation();
+
+	UFUNCTION(BlueprintCallable)
+	UEffectBase* DuplicateEffect(UEffectBase* In);
 };

@@ -45,6 +45,11 @@ void UStatusBase::AddStack_Implementation()
 {
 }
 
+UEffectBase* UStatusBase::DuplicateEffect(UEffectBase* In)
+{
+	return DuplicateObject<UEffectBase>(In, this);
+}
+
 void UStatusBase::RefreshedStatus_Implementation()
 {
 	if (MaxStacks > 1 && CurrentStacks < MaxStacks)

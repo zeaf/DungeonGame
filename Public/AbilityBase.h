@@ -7,6 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "AbilityBase.generated.h"
 
+class UEffectBase;
 class AC_Character;
 class UStatusBase;
 

@@ -26,7 +26,8 @@ enum class EGameDamageType : uint8
 	Astral				UMETA(DisplayName = "Astral"),
 	Lightning			UMETA(Displayname = "Lightning"),
 	Holy				UMETA(Displayname = "Holy"),
-	Essence				UMETA(DisplayName = "Essence")
+	Essence				UMETA(DisplayName = "Essence"),
+	Nature				UMETA(DisplayName = "Nature")
 };
 
 

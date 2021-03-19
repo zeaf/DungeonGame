@@ -4,6 +4,7 @@
 #include "StatusBase.h"
 #include "C_Character.h"
 #include "AbilityBase.h"
+#include "EffectBase.h"
 #include "StatusInterface.h"
 
 // Sets default values for this component's properties
@@ -43,6 +44,7 @@ void UStatusBase::RemoveStack_Implementation()
 
 void UStatusBase::AddStack_Implementation()
 {
+	if (CurrentStacks < MaxStacks) ++CurrentStacks;
 }
 
 UEffectBase* UStatusBase::DuplicateEffect(UEffectBase* In)
@@ -84,11 +86,6 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 			break;
 		Effect->Initialize(this);
 	}
-	
-	//IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
-
-	//if (StatusInterface)
-	//	StatusInterface->Execute_AddStatus(TargetActor,this);
 
 	OnApplied.Broadcast(TargetActor, this);
 }

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 //#include "C_Character.h"
-#include "EffectBase.h"
+//#include "EffectBase.h"
 #include "Components/ActorComponent.h"
 #include "StatusBase.generated.h"
 
 class AC_Character;
 class UAbilityBase;
+class UEffectBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAppliedDelegate, AC_Character*, Actor, UStatusBase*, Status);
 

@@ -14,6 +14,7 @@ UStatusBase::UStatusBase()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -40,6 +41,15 @@ void UStatusBase::RemoveStack_Implementation()
 {
 	if (--CurrentStacks < 1)
 		Expired(true);
+}
+
+void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility)
+{
+	this->TargetActor = Target;
+	this->Instigator = Caster;
+	this->Ability = ParentAbility;
+
+	InitializeEffects();
 }
 
 void UStatusBase::AddStack_Implementation()
@@ -82,11 +92,14 @@ void UStatusBase::Initialize_Implementation(AC_Character* Target, AC_Character* 
 
 	for (UEffectBase* Effect : Effects)
 	{
+		if (!Effect) continue;
 		if (Effect->SelfOnly && TargetActor != Instigator)
 			break;
 		Effect->Initialize(this);
 	}
 
+	MulticastAfterInitialize(Target, Caster, Ability);
+	
 	OnApplied.Broadcast(TargetActor, this);
 }
 
@@ -103,9 +116,13 @@ void UStatusBase::Expired_Implementation(bool WasRemoved)
 
 	IStatusInterface* StatusInterface = Cast<IStatusInterface>(TargetActor);
 
+	MulticastRemoved();
+	
+	OnRemoved.Broadcast(TargetActor, this);
+
 	if (StatusInterface)
 		StatusInterface->Execute_IRemoveStatus(TargetActor,this);
 
-	OnRemoved.Broadcast(TargetActor, this);
+	
 }
 

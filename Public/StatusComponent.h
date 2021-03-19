@@ -31,10 +31,10 @@ public:
 	UPROPERTY()
 		AC_Character* Pawn;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Status")
 		TArray<UStatusBase*> Buffs;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Status")
 		TArray<UStatusBase*> Debuffs;
 
 	UFUNCTION(BlueprintCallable)
@@ -45,4 +45,6 @@ public:
 
 	UFUNCTION()
 		void RemoveStatus(UStatusBase* StatusToRemove);
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

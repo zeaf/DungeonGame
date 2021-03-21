@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "C_Character.generated.h"
 
+class USoftTargetingComponent;
 class UStatusComponent;
 class UHealthComponent;
 struct FCharacterDamageEvent;
@@ -29,6 +30,8 @@ public:
 		UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UStatusComponent* StatusComponent;
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		USoftTargetingComponent* SoftTargeting;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 		bool Dead = false;

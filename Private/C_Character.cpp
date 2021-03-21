@@ -4,6 +4,7 @@
 #include "C_Character.h"
 #include "HealthComponent.h"
 #include "StatusComponent.h"
+#include "SoftTargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 
@@ -20,6 +21,9 @@ AC_Character::AC_Character()
 
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>("Status");
 	//StatusComponent->Pawn = this;
+
+
+	SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
 	
 }
 

@@ -9,12 +9,12 @@
 
 class UCameraComponent;
 class AC_Character;
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class HELENAPLAYGROUND_API USoftTargetingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	USoftTargetingComponent();
 
@@ -22,29 +22,52 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	UPROPERTY()
-	TArray<TEnumAsByte<EObjectTypeQuery>> TracedTypes;
+		TArray<TEnumAsByte<EObjectTypeQuery>> TracedTypes;
 
 	UPROPERTY()
 		TArray<AActor*> IgnoredActors;
 
 	UPROPERTY()
-	TArray<AActor*> OverlapResult;
-	
+		TArray<AActor*> OverlapResult;
+
 	UPROPERTY()
 		AC_Character* Pawn;
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		AC_Character* Target;
+		AC_Character* FriendlyTarget;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		AC_Character* EnemyTarget;
 
 	UPROPERTY(BlueprintReadwrite, EditAnywhere)
-		TSubclassOf<AActor> OutlineActor;
+		TSubclassOf<AActor> OutlineActorFriendly;
+
+	UPROPERTY(BlueprintReadwrite, EditAnywhere)
+		TSubclassOf<AActor> OutlineActorEnemy;
+
+	UPROPERTY(BlueprintReadwrite, EditAnywhere)
+		float MaxDotProduct = 0.99;
+
+	UPROPERTY(BlueprintReadwrite, EditAnywhere)
+		float MinDotProduct = 0.965;
+
+	UPROPERTY(BlueprintReadwrite, EditAnywhere)
+		float MaxTargetingRange = 2850;
 	
-	UPROPERTY()
-		AActor* CurrentOutline;
+	UPROPERTY(BlueprintReadwrite, EditAnywhere)
+		UCameraComponent* PawnCamera;
 
 	UPROPERTY()
-		AC_Character* PreviousTarget;
+		AActor* CurrentOutlineFriendly;
 
+	UPROPERTY()
+		AC_Character* PreviousTargetFriendly;
+
+	UPROPERTY()
+		AActor* CurrentOutlineEnemy;
+
+	UPROPERTY()
+		AC_Character* PreviousTargetEnemy;
 
 	FCollisionObjectQueryParams Params;
 	FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
@@ -55,14 +78,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool TargetFriendlies = true;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	AC_Character* GetFriendlyTarget(TArray<AActor*> Result);
-	AC_Character* GetEnemyTarget(TArray<AActor*> Result);
-
+	void GetTargets(TArray<AActor*> Result, AC_Character*& Friendly, AC_Character*& Enemy);
 	void RemoveActorsNotInLOS(TArray<AActor*>& Result);
+
+	AC_Character* CalculateScores(TArray<AC_Character*> Targets);
+
+	void MoveOutline(AC_Character* Target, bool Enemy);
+
 };
-
-

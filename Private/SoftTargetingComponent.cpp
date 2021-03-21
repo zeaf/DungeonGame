@@ -2,6 +2,7 @@
 
 #include "SoftTargetingComponent.h"
 #include "C_Character.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -40,7 +41,8 @@ void USoftTargetingComponent::BeginPlay()
 	
 	IgnoredActors.Add(Pawn);
 	if (!Pawn) return;
-	CurrentOutline = GetWorld()->SpawnActor(OutlineActor);
+	CurrentOutlineFriendly = GetWorld()->SpawnActor(OutlineActorFriendly);
+	CurrentOutlineEnemy = GetWorld()->SpawnActor(OutlineActorEnemy);
 	FAttachmentTransformRules rules(EAttachmentRule::SnapToTarget,
 		EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, false);
 	SetComponentTickEnabled(true);
@@ -72,7 +74,7 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	
 	{
 		SCOPE_CYCLE_COUNTER(STAT_SoftTargetOverlap);
-		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Pawn->GetActorLocation(), 3000.f, TracedTypes,
+		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Pawn->GetActorLocation(), MaxTargetingRange, TracedTypes,
 			AC_Character::StaticClass(), IgnoredActors, OverlapResult);
 	}
 
@@ -83,9 +85,20 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	{
 		SCOPE_CYCLE_COUNTER(STAT_SoftTargetBestTarget);
-		Target = GetFriendlyTarget(OverlapResult);
+		GetTargets(OverlapResult, FriendlyTarget, EnemyTarget);
 	}
 
+	MoveOutline(FriendlyTarget, false);
+	MoveOutline(EnemyTarget, true);
+	
+
+}
+
+void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
+{
+	AActor*& CurrentOutline = Enemy ? CurrentOutlineEnemy : CurrentOutlineFriendly;
+	AC_Character*& PreviousTarget = Enemy ? PreviousTargetEnemy : PreviousTargetFriendly;
+	
 	if (!Target)
 	{
 		CurrentOutline->SetActorHiddenInGame(true);
@@ -96,6 +109,7 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	else if (PreviousTarget != Target)
 	{
 		Target->GetMesh()->SetRenderCustomDepth(true);
+		Target->GetMesh()->SetCustomDepthStencilValue(Enemy ? 1 : 2);
 		if (PreviousTarget)
 			PreviousTarget->GetMesh()->SetRenderCustomDepth(false);
 		PreviousTarget = Target;
@@ -105,24 +119,15 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		FVector origin, Extents;
 		Target->GetActorBounds(true, origin, Extents);
 
-		CurrentOutline->SetActorScale3D(Extents/80);
+		CurrentOutline->SetActorScale3D(Extents / 80);
 	}
 }
 
-AC_Character* USoftTargetingComponent::GetFriendlyTarget(TArray<AActor*> Result)
+
+void USoftTargetingComponent::GetTargets(TArray<AActor*> Result, AC_Character*& Friendly, AC_Character*& Enemy)
 {
-	if (!TargetFriendlies) return nullptr;
-	
 	TArray<AC_Character*> Friendlies;
-
-	AC_Character* BestTarget = nullptr;
-
-	TMap<AC_Character*, float> DotProducts;
-	TMap<AC_Character*, float> Distances;
-
-	float DistanceMax = 0;
-	float DistanceMin = 100000;
-	float RotMax = 0;
+	TArray<AC_Character*> Enemies;
 	
 	for (AActor* Char : Result)
 	{
@@ -130,32 +135,59 @@ AC_Character* USoftTargetingComponent::GetFriendlyTarget(TArray<AActor*> Result)
 		if (AsChar)
 		{
 			bool IsFriendly = !Pawn->CheckHostility(AsChar);
-			if (IsFriendly)
-			{
-				FVector LineToTarget = AsChar->GetActorLocation() - Pawn->GetActorLocation();
-				LineToTarget.Normalize();
-				float dot = FVector::DotProduct(LineToTarget,Pawn->GetControlRotation().Vector());
-				if (dot > 0.4)
-				{
-					float Distance = FVector::Distance(AsChar->GetActorLocation(), Pawn->GetActorLocation());
-					DistanceMax = Distance > DistanceMax ? Distance : DistanceMax;
-					RotMax = dot > RotMax ? dot : RotMax;
-					DistanceMin = Distance < DistanceMin ? Distance : DistanceMin;
-					Friendlies.Add(AsChar);
-					DotProducts.Add(AsChar, dot);
-					Distances.Add(AsChar, Distance);
-				}
-			}
+			if (IsFriendly && TargetFriendlies)
+				Friendlies.Add(AsChar);
+			else if (!IsFriendly && TargetEnemies)
+				Enemies.Add(AsChar);
+		}
+	}
+
+	Friendly = TargetFriendlies ? CalculateScores(Friendlies) : nullptr;
+	Enemy = TargetEnemies ? CalculateScores(Enemies) : nullptr;
+	
+
+}
+
+AC_Character* USoftTargetingComponent::CalculateScores(TArray<AC_Character*> Targets)
+{
+	TMap<AC_Character*, float> DotProducts;
+	TMap<AC_Character*, float> Distances;
+
+	AC_Character* BestTarget = nullptr;
+
+	float DistanceMax = 0;
+	float DistanceMin = 100000;
+	float RotMax = 0;
+
+	TArray<AC_Character*> EligibleTargets;
+	
+	for (AC_Character* AsChar : Targets)
+	{
+		FVector LineToTarget = AsChar->GetActorLocation() - Pawn->GetActorLocation();
+		LineToTarget.Normalize();
+		float dot = FVector::DotProduct(LineToTarget, PawnCamera->GetForwardVector());
+		float Distance = FVector::Distance(AsChar->GetActorLocation(), Pawn->GetActorLocation());
+		FVector2D InRange = FVector2D(0, MaxTargetingRange); //TODO expose range as variable
+		FVector2D OutRange = FVector2D(MinDotProduct, MaxDotProduct);
+		float DotMappedToDistance = FMath::GetMappedRangeValueClamped(InRange, OutRange, Distance);
+		if (dot > DotMappedToDistance)
+		{
+			DistanceMax = Distance > DistanceMax ? Distance : DistanceMax;
+			RotMax = dot > RotMax ? dot : RotMax;
+			DistanceMin = Distance < DistanceMin ? Distance : DistanceMin;
+			DotProducts.Add(AsChar, dot);
+			Distances.Add(AsChar, Distance);
+			EligibleTargets.Add(AsChar);
 		}
 	}
 
 	float BestScore = 1000000;
-	for (AC_Character* Char : Friendlies)
+	for (AC_Character* Char : EligibleTargets)
 	{
 		FVector2D InRange = FVector2D(0, DistanceMax);
-		FVector2D OutRange = FVector2D(1, 3);
-		FVector2D InRangeRot = FVector2D(0.4f, RotMax);
-		FVector2D OutRangeRot = FVector2D(5, 1.f);
+		FVector2D OutRange = FVector2D(1, 7);
+		FVector2D InRangeRot = FVector2D(MinDotProduct, RotMax);
+		FVector2D OutRangeRot = FVector2D(4.5, 1.f);
 		float RotScore = FMath::Pow(FMath::GetMappedRangeValueClamped(InRangeRot, OutRangeRot, DotProducts[Char]), 2.8);
 		float DistScore = FMath::GetMappedRangeValueClamped(InRange, OutRange, Distances[Char]);
 		float CurrentScore = RotScore + DistScore;
@@ -168,11 +200,6 @@ AC_Character* USoftTargetingComponent::GetFriendlyTarget(TArray<AActor*> Result)
 	}
 
 	return BestTarget;
-}
-
-AC_Character* USoftTargetingComponent::GetEnemyTarget(TArray<AActor*> Result)
-{
-	return nullptr;
 }
 
 void USoftTargetingComponent::RemoveActorsNotInLOS(TArray<AActor*>& Result)

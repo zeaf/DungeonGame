@@ -7,6 +7,7 @@
 #include "SoftTargetingComponent.generated.h"
 
 
+class UCameraComponent;
 class AC_Character;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HELENAPLAYGROUND_API USoftTargetingComponent : public UActorComponent
@@ -25,6 +26,9 @@ protected:
 
 	UPROPERTY()
 		TArray<AActor*> IgnoredActors;
+
+	UPROPERTY()
+	TArray<AActor*> OverlapResult;
 	
 	UPROPERTY()
 		AC_Character* Pawn;
@@ -34,13 +38,17 @@ protected:
 
 	UPROPERTY(BlueprintReadwrite, EditAnywhere)
 		TSubclassOf<AActor> OutlineActor;
-
+	
 	UPROPERTY()
 		AActor* CurrentOutline;
 
 	UPROPERTY()
 		AC_Character* PreviousTarget;
-	
+
+
+	FCollisionObjectQueryParams Params;
+	FAttachmentTransformRules Rules = FAttachmentTransformRules(EAttachmentRule::SnapToTarget,
+		EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool TargetEnemies;
@@ -53,4 +61,8 @@ public:
 
 	AC_Character* GetFriendlyTarget(TArray<AActor*> Result);
 	AC_Character* GetEnemyTarget(TArray<AActor*> Result);
+
+	void RemoveActorsNotInLOS(TArray<AActor*>& Result);
 };
+
+

@@ -2,7 +2,18 @@
 
 #include "SoftTargetingComponent.h"
 #include "C_Character.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+
+
+DECLARE_STATS_GROUP(TEXT("DungeonGame"), STATGROUP_DungeonGame, STATCAT_Advanced);
+
+DECLARE_CYCLE_STAT(TEXT("SoftTargeting - Overlap"), STAT_SoftTargetOverlap, STATGROUP_DungeonGame);
+
+DECLARE_CYCLE_STAT(TEXT("SoftTargeting - Remove out of LOS"), STAT_SoftTargetLOS, STATGROUP_DungeonGame);
+
+DECLARE_CYCLE_STAT(TEXT("SoftTargeting - GetBestTarget"), STAT_SoftTargetBestTarget, STATGROUP_DungeonGame);
+
 
 // Sets default values for this component's properties
 USoftTargetingComponent::USoftTargetingComponent()
@@ -20,12 +31,15 @@ void USoftTargetingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AController* Controller = Cast<AController>(GetOuter());
 	
-	Pawn = Cast<AC_Character>(GetOwner());
+	Pawn = Controller->GetPawn<AC_Character>();
 	TracedTypes.Add(ObjectTypeQuery3);
-
+	Params.AddObjectTypesToQuery(ECC_WorldDynamic);
+	Params.AddObjectTypesToQuery(ECC_WorldStatic);
+	
 	IgnoredActors.Add(Pawn);
-
+	if (!Pawn) return;
 	CurrentOutline = GetWorld()->SpawnActor(OutlineActor);
 	FAttachmentTransformRules rules(EAttachmentRule::SnapToTarget,
 		EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, false);
@@ -37,12 +51,40 @@ void USoftTargetingComponent::BeginPlay()
 void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	TArray<AActor*> Result;
-	
-	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Pawn->GetActorLocation(), 3000.f, TracedTypes,
-		AC_Character::StaticClass(), IgnoredActors, Result);
 
-	Target = GetFriendlyTarget(Result);
+
+	//FVector TraceStart = Pawn->GetActorLocation() + FVector(0,0,300);
+	//FVector TraceEnd = TraceStart + Pawn->GetControlRotation().Vector() * 2500.f;
+	//FRotator TraceRot = UKismetMathLibrary::FindLookAtRotation(TraceStart, TraceEnd);
+	//TArray<FHitResult> OutHits;
+
+	
+	//UKismetSystemLibrary::BoxTraceMultiForObjects(GetWorld(), TraceStart, TraceEnd, FVector(100, 1200, 500), TraceRot,
+	//	TracedTypes, true, IgnoredActors, EDrawDebugTrace::None, OutHits, true);
+
+	//for (FHitResult Hit : OutHits)
+	//{
+	//	AActor* HitActor = Hit.GetActor();
+	//	if (HitActor)
+	//		if (HitActor->IsA(AC_Character::StaticClass()))
+	//			Result.AddUnique(Hit.GetActor());
+	//}
+	
+	{
+		SCOPE_CYCLE_COUNTER(STAT_SoftTargetOverlap);
+		UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Pawn->GetActorLocation(), 3000.f, TracedTypes,
+			AC_Character::StaticClass(), IgnoredActors, OverlapResult);
+	}
+
+	{
+		SCOPE_CYCLE_COUNTER(STAT_SoftTargetLOS);
+		RemoveActorsNotInLOS(OverlapResult);		
+	}
+
+	{
+		SCOPE_CYCLE_COUNTER(STAT_SoftTargetBestTarget);
+		Target = GetFriendlyTarget(OverlapResult);
+	}
 
 	if (!Target)
 	{
@@ -57,15 +99,13 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		if (PreviousTarget)
 			PreviousTarget->GetMesh()->SetRenderCustomDepth(false);
 		PreviousTarget = Target;
-		FAttachmentTransformRules rules(EAttachmentRule::SnapToTarget, 
-			EAttachmentRule::SnapToTarget, EAttachmentRule::KeepWorld, false);
-		CurrentOutline->AttachToActor(Target, rules);
+
+		CurrentOutline->AttachToActor(Target, Rules);
 		CurrentOutline->SetActorHiddenInGame(false);
 		FVector origin, Extents;
 		Target->GetActorBounds(true, origin, Extents);
 
 		CurrentOutline->SetActorScale3D(Extents/80);
-		//UE_LOG(LogTemp, Warning, TEXT("%s"), Target->GetName());
 	}
 }
 
@@ -133,5 +173,20 @@ AC_Character* USoftTargetingComponent::GetFriendlyTarget(TArray<AActor*> Result)
 AC_Character* USoftTargetingComponent::GetEnemyTarget(TArray<AActor*> Result)
 {
 	return nullptr;
+}
+
+void USoftTargetingComponent::RemoveActorsNotInLOS(TArray<AActor*>& Result)
+{
+	TArray<AActor*> ToRemove;
+	for (AActor* Actor : Result)
+	{
+		FHitResult Hit;
+		bool Blocking = GetWorld()->LineTraceSingleByObjectType(Hit, Pawn->GetActorLocation(), Actor->GetActorLocation(),
+			Params);
+		if (Blocking) ToRemove.Add(Actor);
+	}
+
+	for (AActor* Actor : ToRemove)
+		Result.Remove(Actor);
 }
 

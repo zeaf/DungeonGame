@@ -23,7 +23,7 @@ AC_Character::AC_Character()
 	//StatusComponent->Pawn = this;
 
 
-	SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
+	//SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
 	
 }
 

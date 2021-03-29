@@ -32,10 +32,10 @@ public:
 
 	TMap<AC_Character*, float> ThreatMap;
 
+	AC_Character* GetHighestThreatActor();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-private:
-	AC_Character* GetHighestThreatActor();
 };

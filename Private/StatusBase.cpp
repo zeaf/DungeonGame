@@ -23,7 +23,7 @@ UStatusBase::UStatusBase()
 void UStatusBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//if (!Icon) Icon = Ability->
 	// ...
 	
 }
@@ -54,7 +54,7 @@ void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, 
 
 void UStatusBase::AddStack_Implementation()
 {
-	if (CurrentStacks < MaxStacks) ++CurrentStacks;
+	if (MaxStacks > 1 && CurrentStacks < MaxStacks) ++CurrentStacks;
 }
 
 UEffectBase* UStatusBase::DuplicateEffect(UEffectBase* In)
@@ -64,11 +64,7 @@ UEffectBase* UStatusBase::DuplicateEffect(UEffectBase* In)
 
 void UStatusBase::RefreshedStatus_Implementation()
 {
-	if (MaxStacks > 1 && CurrentStacks < MaxStacks)
-	{
-		++CurrentStacks;
-		AddStack();
-	}
+	AddStack();
 
 	if (CanBeRefreshed)
 	{
@@ -76,6 +72,7 @@ void UStatusBase::RefreshedStatus_Implementation()
 		ExpiredDelegate.BindUFunction(this, FName("Expired"), false);
 
 		GetWorld()->GetTimerManager().SetTimer(DurationTimer, ExpiredDelegate, Duration, false);
+		OnRefreshed.Broadcast(TargetActor, this);
 	}
 }
 

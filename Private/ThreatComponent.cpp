@@ -14,10 +14,12 @@ void UThreatComponent::AddThreat(AC_Character* DamageDealer, const float DamageD
 {
 	if (ThreatMap.Find(DamageDealer))
 		ThreatMap[DamageDealer] += DamageDealt * DamageDealer->ThreatMultiplier;
-	else ThreatMap.Emplace(DamageDealer, DamageDealt * DamageDealer->ThreatMultiplier);
-
-	DamageDealer->OnCharacterDeath.AddDynamic(this, &UThreatComponent::RemoveFromThreatMap);
-
+	else
+	{
+		ThreatMap.Emplace(DamageDealer, DamageDealt * DamageDealer->ThreatMultiplier);
+		DamageDealer->OnCharacterDeath.AddDynamic(this, &UThreatComponent::RemoveFromThreatMap);
+	}
+	
 	ThreatMap.ValueSort([](float A, float B) {
 		return A > B; });
 	
@@ -51,10 +53,14 @@ void UThreatComponent::BeginPlay()
 
 AC_Character* UThreatComponent::GetHighestThreatActor()
 {
-	ThreatMap.ValueSort([](float A, float B){
-			return A > B; });
+	if (ThreatMap.Num() > 0)
+	{
+		ThreatMap.ValueSort([](float A, float B){
+				return A > B; });
 
-	return ThreatMap.begin().Key();
+		return ThreatMap.begin().Key();		
+	}
+	return nullptr;
 }
 
 

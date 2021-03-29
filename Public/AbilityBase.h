@@ -28,12 +28,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Status", Meta = (DisplayName = "Status", ExposeFunctionCategories="Status", AllowPrivateAccess="true"))
-		TArray<UStatusBase*> StatusToApply;
+	UFUNCTION(BlueprintCallable)
+		void ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle, bool DrawDebug,
+			TArray<AC_Character*>& CharactersHit);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 		FOnDealtDamage OnDealtDamage;
@@ -41,6 +38,21 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 		FOnHealedUnit OnHealedUnit;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTrace;
+	
+	
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Status", Meta = (DisplayName = "Status", ExposeFunctionCategories="Status", AllowPrivateAccess="true"))
+		TArray<UStatusBase*> StatusToApply;
+
+	UFUNCTION(BlueprintCallable)
+		TArray<AC_Character*> GetTargetsInRadius(const FVector Center, const float Radius, const bool IgnoreSelf, const bool Friendly, 
+			const bool Enemy, const bool DrawDebug);
+	
 	UFUNCTION(BlueprintCallable)
 		void DealDamage(AC_Character* Target, FCharacterDamageEvent Event);
 
@@ -48,14 +60,13 @@ public:
 		void HealUnit(AC_Character* Target, FCharacterDamageEvent Event);
 	
 	UFUNCTION(BlueprintNativeEvent)
-	void Initialize(AActor* Caster, int AbilitySlot);
-	virtual void Initialize_Implementation(AActor* Caster, int AbilitySlot) {};
-
-	UFUNCTION(BlueprintCallable)
-	void ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle, bool DrawDebug,
-		TArray<AC_Character*>& CharactersHit);
+	void Initialize(AActor* InCaster, int AbilitySlot);
+	virtual void Initialize_Implementation(AActor* InCaster, int AbilitySlot) {};
 
 	UFUNCTION()
 	void CastAbility() {};
+
+	UPROPERTY(BlueprintReadOnly)
+		AC_Character* Caster;
 
 };

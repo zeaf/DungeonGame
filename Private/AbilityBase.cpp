@@ -15,6 +15,7 @@ UAbilityBase::UAbilityBase()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	Caster = Cast<AC_Character>(GetOwner());
 	// ...
 }
 
@@ -36,6 +37,35 @@ void UAbilityBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, const float Radius, const bool IgnoreSelf, const bool Friendly,
+	const bool Enemy, const bool DrawDebug)
+{
+	if (DrawDebug)
+		DrawDebugSphere(GetWorld(), Center, Radius, 12, FColor::Emerald, false, 3.f, 0, 2);
+
+	TArray<AActor*> IgnoredActors;
+	if (IgnoreSelf) IgnoredActors.Add(Caster);
+
+	TArray<AActor*> OverlapResult;
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Center, Radius, ObjectsToTrace,
+	                                          AC_Character::StaticClass(), IgnoredActors, OverlapResult);
+
+	TArray<AC_Character*> Targets;
+
+	for (AActor* Target : OverlapResult)
+	{
+		AC_Character* AsChar = Cast<AC_Character>(Target);
+		bool IsEnemy = Caster->CheckHostility(AsChar);
+
+		if (IsEnemy && Enemy) 
+			Targets.Add(AsChar);
+		else if (!IsEnemy && Friendly) 
+			Targets.Add(AsChar);
+	}
+
+	return Targets;
 }
 
 void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event)

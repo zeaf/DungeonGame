@@ -16,16 +16,16 @@ class HELENAPLAYGROUND_API UEffectDamageOverTime : public UEffectPeriodic
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		float TotalDamage = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		float AdditionalCriticalChance = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		float AdditionalCriticalDamage = 0.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Healing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		EGameDamageType Type;
 
 protected:

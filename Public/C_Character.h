@@ -69,6 +69,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
 		TMap<EGameDamageType, FCombatAttribute> DamageResistance = {
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Physical, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Fire, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Frost, FCombatAttribute()),
@@ -77,7 +78,7 @@ public:
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute())};
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Nature, FCombatAttribute()) };
 
 #pragma endregion
 
@@ -93,7 +94,8 @@ public:
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Void, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
 		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()) };
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()),
+		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Nature, FCombatAttribute()) };
 
 #pragma endregion
 

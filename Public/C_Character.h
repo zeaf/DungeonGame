@@ -110,8 +110,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool CheckHostility(AActor* ActorToCheck);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		float GetCombatAttributeValue(CombatAttributeName Attribute);
 
 	UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability) override;
 

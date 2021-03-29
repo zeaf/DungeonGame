@@ -57,6 +57,11 @@ bool AC_Character::CheckHostility(AActor* ActorToCheck)
 	return false;
 }
 
+float AC_Character::GetCombatAttributeValue(CombatAttributeName Attribute)
+{
+	return CombatAttributes[Attribute].CurrentValue;
+}
+
 UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability)
 {
 	return StatusComponent->AddStatus(Status, Caster, Ability);

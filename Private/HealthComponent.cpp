@@ -29,8 +29,15 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Pawn = Cast<AC_Character>(GetOuter());
-	CurrentHealth = MaxHealth;
-	MaxHealableHealth = MaxHealth;
+	CurrentHealth = MaxHealth.GetFinalValue();
+	MaxHealableHealth = FCombatAttribute(MaxHealth.GetFinalValue());
+	MaxHealth.OnValueChange.AddDynamic(this, &UHealthComponent::OnMaxHealthUpdate);
+}
+
+void UHealthComponent::OnMaxHealthUpdate(float NewMaxHealth)
+{
+	if (CurrentHealth > MaxHealth.CurrentValue)
+		CurrentHealth = MaxHealth.CurrentValue;
 }
 
 
@@ -135,7 +142,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & Ou
 
 void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage)
 {
-	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, MinHealth, MaxHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, MinHealth, MaxHealth.GetFinalValue());
 	UpdateHealth.Broadcast();
 }
 
@@ -156,7 +163,7 @@ bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
 
 void UHealthComponent::MulticastRestoreHealth_Implementation(float IncomingHealing)
 {
-	CurrentHealth = FMath::Clamp(CurrentHealth + IncomingHealing, 0.f, MaxHealableHealth);
+	CurrentHealth = FMath::Clamp(CurrentHealth + IncomingHealing, 0.f, MaxHealableHealth.GetFinalValue());
 	UpdateHealth.Broadcast();
 }
 

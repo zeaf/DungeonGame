@@ -13,6 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageEventDelegate, AC_Character*
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealingEventDelegate, AC_Character*, Healer, float, IncomingHealing);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMaxHealthUpdate, float, MaxHealth);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUpdateHealthDelegate);
 
@@ -26,6 +27,10 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	UFUNCTION()
+	void OnMaxHealthUpdate(float NewMaxHealth);
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -43,11 +48,11 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
 		float MinHealth;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
-		float MaxHealableHealth;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Health")
+		FCombatAttribute MaxHealableHealth;
 	
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepMaxHealth, EditAnywhere, Category = "Health")
-		float MaxHealth;
+		FCombatAttribute MaxHealth;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepCurrentHealth, EditAnywhere, Category = "Health")
 		float CurrentHealth;

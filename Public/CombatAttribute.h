@@ -38,25 +38,29 @@ enum class StatModifier : uint8
 	Additive		UMETA(DisplayName = "Additive")
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeValueChanged, float, NewValue);
+
 USTRUCT(BlueprintType)
 struct HELENAPLAYGROUND_API FCombatAttribute
 {
 	GENERATED_USTRUCT_BODY()
-
+	
 protected:
 	TMap<uint32, float> AdditiveBonuses;
 	TMap<uint32, float> MultiplicativeBonuses;
 	
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attribute")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attribute")
 		float BaseValue = 1.f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute")
 		float CurrentValue = BaseValue;
-
-	FCombatAttribute() {};
+	
+	FCombatAttribute() { CurrentValue = BaseValue; };
 	FCombatAttribute(const float Base) { BaseValue = Base; CurrentValue = Base; };
 
+	FAttributeValueChanged OnValueChange;
+	
 	void AddEffect(uint32 EffectID, StatModifier Modifier, float value)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ADD EFFECT"));
@@ -99,6 +103,10 @@ public:
 		for (auto& ModIt : MultiplicativeBonuses)
 			MultiplicativeProduct *= ModIt.Value;
 
-		return BaseValue * MultiplicativeProduct + AdditiveSum;
+		float NewValue = BaseValue * MultiplicativeProduct + AdditiveSum;
+
+		OnValueChange.Broadcast(NewValue);
+		
+		return NewValue;
 	}
 };

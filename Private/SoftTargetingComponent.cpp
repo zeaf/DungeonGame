@@ -3,6 +3,7 @@
 #include "SoftTargetingComponent.h"
 #include "C_Character.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -85,7 +86,7 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	{
 		SCOPE_CYCLE_COUNTER(STAT_SoftTargetBestTarget);
-		GetTargets(OverlapResult, FriendlyTarget, EnemyTarget);
+		GetTargets(FriendlyTarget, EnemyTarget);
 	}
 
 	MoveOutline(FriendlyTarget, false);
@@ -124,12 +125,12 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 }
 
 
-void USoftTargetingComponent::GetTargets(TArray<AActor*> Result, AC_Character*& Friendly, AC_Character*& Enemy)
+void USoftTargetingComponent::GetTargets(AC_Character*& Friendly, AC_Character*& Enemy)
 {
 	TArray<AC_Character*> Friendlies;
 	TArray<AC_Character*> Enemies;
 	
-	for (AActor* Char : Result)
+	for (AActor* Char : OverlapResult)
 	{
 		AC_Character* AsChar = Cast<AC_Character>(Char);
 		if (AsChar)
@@ -158,24 +159,28 @@ AC_Character* USoftTargetingComponent::CalculateScores(TArray<AC_Character*> Tar
 	float DistanceMax = 0;
 	float DistanceMin = 100000;
 	float RotMax = 0;
+	float RotMin = 10000;
 
 	TArray<AC_Character*> EligibleTargets;
 	
 	for (AC_Character* AsChar : Targets)
 	{
-		FVector LineToTarget = AsChar->GetActorLocation() - Pawn->GetActorLocation();
+		FVector LineToTarget = AsChar->GetCapsuleComponent()->GetComponentLocation() - Pawn->GetCapsuleComponent()->GetComponentLocation();
 		LineToTarget.Normalize();
 		float dot = FVector::DotProduct(LineToTarget, PawnCamera->GetForwardVector());
+		float dotForward = FVector::DotProduct(LineToTarget, Pawn->GetActorForwardVector());
 		float Distance = FVector::Distance(AsChar->GetActorLocation(), Pawn->GetActorLocation());
 		FVector2D InRange = FVector2D(0, MaxTargetingRange); //TODO expose range as variable
 		FVector2D OutRange = FVector2D(MinDotProduct, MaxDotProduct);
 		float DotMappedToDistance = FMath::GetMappedRangeValueClamped(InRange, OutRange, Distance);
-		if (dot > DotMappedToDistance)
+		if (dot > DotMappedToDistance || dotForward > DotMappedToDistance)
 		{
+			float DotUsed = dot > dotForward ? dot : dotForward;
 			DistanceMax = Distance > DistanceMax ? Distance : DistanceMax;
-			RotMax = dot > RotMax ? dot : RotMax;
+			RotMax = DotUsed > RotMax ? DotUsed : RotMax;
+			RotMin = DotUsed < RotMin ? DotUsed : RotMin;
 			DistanceMin = Distance < DistanceMin ? Distance : DistanceMin;
-			DotProducts.Add(AsChar, dot);
+			DotProducts.Add(AsChar, DotUsed);
 			Distances.Add(AsChar, Distance);
 			EligibleTargets.Add(AsChar);
 		}
@@ -184,11 +189,11 @@ AC_Character* USoftTargetingComponent::CalculateScores(TArray<AC_Character*> Tar
 	float BestScore = 1000000;
 	for (AC_Character* Char : EligibleTargets)
 	{
-		FVector2D InRange = FVector2D(0, DistanceMax);
-		FVector2D OutRange = FVector2D(1, 7);
-		FVector2D InRangeRot = FVector2D(MinDotProduct, RotMax);
+		FVector2D InRange = FVector2D(DistanceMin, DistanceMax);
+		FVector2D OutRange = FVector2D(1, 5);
+		FVector2D InRangeRot = FVector2D(RotMin, MaxDotProduct);
 		FVector2D OutRangeRot = FVector2D(4.5, 1.f);
-		float RotScore = FMath::Pow(FMath::GetMappedRangeValueClamped(InRangeRot, OutRangeRot, DotProducts[Char]), 2.8);
+		float RotScore = FMath::Pow(FMath::GetMappedRangeValueClamped(InRangeRot, OutRangeRot, DotProducts[Char]), 1.5);
 		float DistScore = FMath::GetMappedRangeValueClamped(InRange, OutRange, Distances[Char]);
 		float CurrentScore = RotScore + DistScore;
 

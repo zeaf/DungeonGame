@@ -82,7 +82,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void GetTargets(TArray<AActor*> Result, AC_Character*& Friendly, AC_Character*& Enemy);
+	void GetTargets(AC_Character*& Friendly, AC_Character*& Enemy);
 	void RemoveActorsNotInLOS(TArray<AActor*>& Result);
 
 	AC_Character* CalculateScores(TArray<AC_Character*> Targets);

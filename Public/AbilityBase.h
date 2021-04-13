@@ -54,7 +54,14 @@ public:
 			const bool Enemy, const bool DrawDebug);
 	
 	UFUNCTION(BlueprintCallable)
-		void DealDamage(AC_Character* Target, FCharacterDamageEvent Event);
+		void DealDamage(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
+		                IsKillingBlow);
+
+	UFUNCTION(BlueprintCallable)
+		UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex);
+
+	UFUNCTION(BlueprintCallable)
+		void LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, UStatusBase*& FoundStatus, int& Stacks, bool OwnOnly = true);
 
 	UFUNCTION(BlueprintCallable)
 		void HealUnit(AC_Character* Target, FCharacterDamageEvent Event);

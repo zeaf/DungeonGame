@@ -7,6 +7,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/LineBatchComponent.h"
 #include "DrawDebugHelpers.h"
+#include "StatusComponent.h"
 
 // Sets default values for this component's properties
 UAbilityBase::UAbilityBase()
@@ -68,12 +69,39 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 	return Targets;
 }
 
-void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event)
+void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event, 
+	float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow)
 {
-	float DamageDealt, DamageAbsorbed;
-	bool IsCrit, IsKillingBlow;
+	if (!Target) return;
+	//float DamageDealt, DamageAbsorbed;
+	//bool IsCrit, IsKillingBlow;
 	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow);
 	OnDealtDamage.Broadcast(Target, DamageDealt+DamageAbsorbed, this);
+}
+
+UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex)
+{
+	if (!Target) return nullptr;
+	if (!StatusToApply[StatusIndex]) return nullptr;
+	return Target->Execute_AddStatus(Target, StatusToApply[StatusIndex], Caster, this);
+}
+
+void UAbilityBase::LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, 
+	UStatusBase*& FoundStatus, int& Stacks,	bool OwnOnly)
+{
+	if (!StatusToLookFor) return;
+	if (!Target) return;
+
+	TArray<UStatusBase*>& StatusArray = IsDebuff ? Target->StatusComponent->Debuffs : Target->StatusComponent->Buffs;
+
+	for (UStatusBase* Status : StatusArray)
+	{
+		if (Status->GetClass() == StatusToLookFor && (Status->Instigator == Caster || !OwnOnly))
+		{
+			FoundStatus = Status;
+			Stacks = FoundStatus->CurrentStacks;
+		}
+	}
 }
 
 void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)

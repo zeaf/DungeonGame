@@ -27,23 +27,33 @@ USoftTargetingComponent::USoftTargetingComponent()
 	// ...
 }
 
+void USoftTargetingComponent::InitializeTargeting()
+{
+	AController* Controller = Cast<AController>(GetOuter());
+	Pawn = Controller->GetPawn<AC_Character>();
+	IgnoredActors.Add(Pawn);
+	if (CurrentOutlineEnemy) CurrentOutlineEnemy->Destroy();
+	if (CurrentOutlineFriendly) CurrentOutlineFriendly->Destroy();
+
+	if (!Pawn) return;
+	CurrentOutlineFriendly = GetWorld()->SpawnActor(OutlineActorFriendly);
+	CurrentOutlineEnemy = GetWorld()->SpawnActor(OutlineActorEnemy);
+}
+
 
 // Called when the game starts
 void USoftTargetingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AController* Controller = Cast<AController>(GetOuter());
-	
-	Pawn = Controller->GetPawn<AC_Character>();
 	TracedTypes.Add(ObjectTypeQuery3);
 	Params.AddObjectTypesToQuery(ECC_WorldDynamic);
 	Params.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	InitializeTargeting();
 	
-	IgnoredActors.Add(Pawn);
 	if (!Pawn) return;
-	CurrentOutlineFriendly = GetWorld()->SpawnActor(OutlineActorFriendly);
-	CurrentOutlineEnemy = GetWorld()->SpawnActor(OutlineActorEnemy);
+
 	FAttachmentTransformRules rules(EAttachmentRule::SnapToTarget,
 		EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, false);
 	SetComponentTickEnabled(true);
@@ -55,6 +65,8 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!Pawn) return;
+	if (!PawnCamera) return;
 
 	//FVector TraceStart = Pawn->GetActorLocation() + FVector(0,0,300);
 	//FVector TraceEnd = TraceStart + Pawn->GetControlRotation().Vector() * 2500.f;

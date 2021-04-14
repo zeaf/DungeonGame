@@ -79,11 +79,11 @@ void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event,
 	OnDealtDamage.Broadcast(Target, DamageDealt+DamageAbsorbed, this);
 }
 
-UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex)
+UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed)
 {
 	if (!Target) return nullptr;
 	if (!StatusToApply[StatusIndex]) return nullptr;
-	return Target->Execute_AddStatus(Target, StatusToApply[StatusIndex], Caster, this);
+	return Target->Execute_AddStatus(Target, StatusToApply[StatusIndex], Caster, this, Refreshed);
 }
 
 void UAbilityBase::LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, 

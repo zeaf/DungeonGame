@@ -38,10 +38,10 @@ public:
 		TArray<UStatusBase*> Debuffs;
 
 	UFUNCTION(BlueprintCallable)
-		UStatusBase* AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability);
+		UStatusBase* AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed);
 
 	UFUNCTION()
-		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability);
+		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed);
 
 	UFUNCTION()
 		void RemoveStatus(UStatusBase* StatusToRemove);

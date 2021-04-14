@@ -35,15 +35,15 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability)
+UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed)
 {
 	if (Pawn)
 		if (!Pawn->Dead)
-			return LookForStatus(StatusToApply, Caster, Ability);
+			return LookForStatus(StatusToApply, Caster, Ability, Refreshed);
 	return nullptr;
 }
 
-UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability)
+UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed)
 {
 	if (!StatusToLookFor)
 		return nullptr;
@@ -55,6 +55,7 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor, AC_Ch
 		if (Status->GetClass() == StatusToLookFor->GetClass() && Status->Instigator == Caster)
 		{
 			Status->RefreshedStatus();
+			Refreshed = true;
 			return Status;
 		}
 	}

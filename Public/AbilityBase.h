@@ -58,7 +58,7 @@ public:
 		                IsKillingBlow);
 
 	UFUNCTION(BlueprintCallable)
-		UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex);
+		UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed);
 
 	UFUNCTION(BlueprintCallable)
 		void LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, UStatusBase*& FoundStatus, int& Stacks, bool OwnOnly = true);

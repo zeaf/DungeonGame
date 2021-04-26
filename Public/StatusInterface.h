@@ -20,7 +20,7 @@ class IStatusInterface
 public:
 		//class UStatusBase;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Status")
-	UStatusBase* AddStatus(UStatusBase* Status, class AC_Character* Caster, class UAbilityBase* Ability, bool& Refreshed);
+	UStatusBase* AddStatus(UStatusBase* Status, class AC_Character* Caster, class UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration=false, float Duration=0.f);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Status")
 		void IRemoveStatus(UStatusBase* Status);

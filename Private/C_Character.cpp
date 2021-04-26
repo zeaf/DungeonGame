@@ -62,9 +62,9 @@ float AC_Character::GetCombatAttributeValue(CombatAttributeName Attribute)
 	return CombatAttributes[Attribute].CurrentValue;
 }
 
-UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed)
+UStatusBase* AC_Character::AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration, float Duration)
 {
-	return StatusComponent->AddStatus(Status, Caster, Ability, Refreshed);
+	return StatusComponent->AddStatus(Status, Caster, Ability, Refreshed, OverrideDuration, Duration);
 }
 
 void AC_Character::IRemoveStatus_Implementation(UStatusBase* Status)

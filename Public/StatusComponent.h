@@ -38,7 +38,7 @@ public:
 		TArray<UStatusBase*> Debuffs;
 
 	UFUNCTION(BlueprintCallable)
-		UStatusBase* AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed);
+		UStatusBase* AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f);
 
 	UFUNCTION()
 		UStatusBase* LookForStatus(UStatusBase* StatusToLookFor, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed);

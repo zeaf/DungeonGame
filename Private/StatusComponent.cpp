@@ -35,11 +35,27 @@ void UStatusComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed)
+UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration, float Duration)
 {
 	if (Pawn)
 		if (!Pawn->Dead)
-			return LookForStatus(StatusToApply, Caster, Ability, Refreshed);
+		{
+			UStatusBase* SearchStatus = LookForStatus(StatusToApply, Caster, Ability, Refreshed);
+
+			if (!SearchStatus)
+				if (Pawn->HasAuthority())
+				{
+					TArray<UStatusBase*>& StatusArray = StatusToApply->IsDebuff ? Debuffs : Buffs;
+					UStatusBase* NewStatus = DuplicateObject<UStatusBase>(StatusToApply, Pawn);
+
+					if (OverrideDuration)
+						NewStatus->Duration = Duration;
+					
+					StatusArray.Add(NewStatus);
+					NewStatus->Initialize(Pawn, Caster, Ability);
+					return NewStatus;
+				}
+		}
 	return nullptr;
 }
 
@@ -60,13 +76,6 @@ UStatusBase* UStatusComponent::LookForStatus(UStatusBase* StatusToLookFor, AC_Ch
 		}
 	}
 
-	if (Pawn->HasAuthority())
-	{
-		UStatusBase* NewStatus = DuplicateObject<UStatusBase>(StatusToLookFor, Pawn);
-		StatusArray.Add(NewStatus);
-		NewStatus->Initialize(Pawn, Caster, Ability);
-		return NewStatus;
-	}
 	return nullptr;
 }
 

@@ -116,7 +116,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetCombatAttributeValue(CombatAttributeName Attribute);
 
-	UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed) override;
+	virtual UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f) override;
 
 	void IRemoveStatus_Implementation(UStatusBase* Status) override;
 

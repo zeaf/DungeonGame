@@ -163,7 +163,7 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool Targe
 
 		AC_Character* ActorAsChar = Cast<AC_Character>(Hit.GetActor());
 		if (!ActorAsChar)
-			IgnoredActors.Add(Hit.GetActor(),1);
+			IgnoredActors.Add(Hit.GetActor(),true);
 		else
 		{
 			if (!ActorsHit.Find(ActorAsChar))

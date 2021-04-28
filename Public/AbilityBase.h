@@ -76,4 +76,26 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		AC_Character* Caster;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		EGameDamageType AbilitySchool;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		FName AbilityName;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		UTexture2D* Icon;
+	
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//	FCombatAttribute CastTime;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//	bool CastableWhileMoving;
+	//
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//	bool CastableWhileCasting;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//	bool IsChanneled;
+
+	
 };

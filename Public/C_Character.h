@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "C_Character.generated.h"
 
+class UAbilityCastingComponent;
 class UStatusComponent;
 class UHealthComponent;
 struct FCharacterDamageEvent;
@@ -29,8 +30,8 @@ public:
 		UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UStatusComponent* StatusComponent;
-	//UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	//	USoftTargetingComponent* SoftTargeting;
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UAbilityCastingComponent* AbilityCasting;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 		bool Dead = false;
@@ -111,7 +112,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool CheckHostility(AActor* ActorToCheck);
+	UPARAM(DisplayName="IsEnemy") bool CheckHostility(AActor* ActorToCheck);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		float GetCombatAttributeValue(CombatAttributeName Attribute);

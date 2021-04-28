@@ -2,6 +2,8 @@
 
 
 #include "C_Character.h"
+
+#include "AbilityCastingComponent.h"
 #include "HealthComponent.h"
 #include "StatusComponent.h"
 #include "SoftTargetingComponent.h"
@@ -17,11 +19,10 @@ AC_Character::AC_Character()
 	bReplicates = true;
 	
 	Health = CreateDefaultSubobject<UHealthComponent>("Health");
-	//Health->Pawn = this;
 
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>("Status");
-	//StatusComponent->Pawn = this;
-
+	
+	AbilityCasting = CreateDefaultSubobject<UAbilityCastingComponent>("Ability Component");
 
 	//SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
 	

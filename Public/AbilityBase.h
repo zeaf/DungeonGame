@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDealtDamage, AC_Character*, Ta
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealedUnit, AC_Character*, Target, float, Healing, UAbilityBase*, Ability);
 
-UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HELENAPLAYGROUND_API UAbilityBase : public UActorComponent
 {
 	GENERATED_BODY()
@@ -40,11 +40,27 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectsToTrace;
-	
+
+
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = RemoveResource))
+	void BPRemoveResource();
+	virtual void BPRemoveResource_Implementation() {}
+
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = GenerateResource))
+	void BPGenerateResource();
+	virtual void BPGenerateResource_Implementation() {}
 	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastGenerateResource();
+	void MulticastGenerateResource_Implementation() { BPGenerateResource(); }
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastRemoveResource();
+	void MulticastRemoveResource_Implementation() { BPRemoveResource(); }
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Status", Meta = (DisplayName = "Status", ExposeFunctionCategories="Status", AllowPrivateAccess="true"))
 		TArray<UStatusBase*> StatusToApply;

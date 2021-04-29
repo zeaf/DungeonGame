@@ -4,6 +4,7 @@
 #include "C_Character.h"
 
 #include "AbilityCastingComponent.h"
+#include "DungeonCharacterPlayerController.h"
 #include "HealthComponent.h"
 #include "StatusComponent.h"
 #include "SoftTargetingComponent.h"
@@ -22,7 +23,7 @@ AC_Character::AC_Character()
 
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>("Status");
 	
-	AbilityCasting = CreateDefaultSubobject<UAbilityCastingComponent>("Ability Component");
+	AbilityCastingComponent = CreateDefaultSubobject<UAbilityCastingComponent>("Ability Component");
 
 	//SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
 	
@@ -33,6 +34,7 @@ void AC_Character::BeginPlay()
 {
 	Super::BeginPlay();
 	Dead = false;
+	DungeonPlayerController = Cast<ADungeonCharacterPlayerController>(GetController());
 	
 }
 

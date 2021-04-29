@@ -10,6 +10,7 @@
 #include "GameFramework/Character.h"
 #include "C_Character.generated.h"
 
+class ADungeonCharacterPlayerController;
 class UAbilityCastingComponent;
 class UStatusComponent;
 class UHealthComponent;
@@ -30,8 +31,8 @@ public:
 		UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UStatusComponent* StatusComponent;
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UAbilityCastingComponent* AbilityCasting;
+	UPROPERTY(Category = Character, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UAbilityCastingComponent* AbilityCastingComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 	bool Dead = false;
@@ -103,12 +104,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(BlueprintGetter= GetPlayerController)
+	ADungeonCharacterPlayerController* DungeonPlayerController;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintPure)
+	ADungeonCharacterPlayerController* GetPlayerController() { return DungeonPlayerController; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UPARAM(DisplayName="IsEnemy") bool CheckHostility(AActor* ActorToCheck);
@@ -135,7 +142,7 @@ public:
 	virtual void AddResource_Implementation(const float Resource) {};
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Resource")
-	void GetResource(float& Resource, float& ResourcePct);
+	void GetResource(float& Resource, float& MaxResource, float& ResourcePct);
 	virtual void GetResource_Implementation(float& Resource, float& MaxResource, float& ResourcePct) { Resource = 0; ResourcePct = 0; MaxResource = 0; };
 
 #pragma endregion 

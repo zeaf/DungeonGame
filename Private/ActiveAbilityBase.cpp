@@ -3,20 +3,43 @@
 
 #include "ActiveAbilityBase.h"
 
+#include "AbilityCastingComponent.h"
 #include "C_Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
 void UActiveAbilityBase::BeginPlay()
 {
+	Super::BeginPlay();
 	CanCastWhileMoving = CastTime == 0 || CanCastWhileMoving;
-	AbilityCastingComponent = Caster->AbilityCasting;
+	AbilityCastingComponent = Caster->AbilityCastingComponent;
 }
 
 void UActiveAbilityBase::BPRemoveResource_Implementation()
 {
 	if (Cost > 0)
 		Caster->RemoveResource(Cost);
+}
+
+void UActiveAbilityBase::BPServerAbilityEndCast_Implementation(AbilityCastResult CastResult)
+{
+	switch (CastResult)
+	{
+		case AbilityCastResult::Successful:
+			ServerStartCooldown(Caster->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Cooldown, false);
+			OnCastSuccess.Broadcast();
+			break;
+		case AbilityCastResult::Failed:
+			OnCastFailed.Broadcast();
+			break;
+		case AbilityCastResult::Interrupted:
+			OnCastInterrupted.Broadcast();
+			break;
+		case AbilityCastResult::Stopped:
+			OnCastStopped.Broadcast();
+			break;
+		default: ;
+	}
 }
 
 void UActiveAbilityBase::ServerStartCooldown_Implementation(const float Duration, const bool IsGCD)

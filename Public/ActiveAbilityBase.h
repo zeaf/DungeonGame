@@ -11,25 +11,34 @@ class UAbilityCastingComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCastSuccessDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCastFailedDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCastInterruptedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCastStoppedDelegate);
 
-UCLASS()
+UENUM()
+enum class AbilityCastResult : uint8
+{
+	Successful,
+	Failed,
+	Stopped,
+	Interrupted
+};
+
+UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class HELENAPLAYGROUND_API UActiveAbilityBase : public UAbilityBase
 {
 	GENERATED_BODY()
 
 protected:
 	virtual void BeginPlay() override;
+
+
+	UPROPERTY(BlueprintReadOnly)
+	UAbilityCastingComponent* AbilityCastingComponent;
+	
+	UPROPERTY()
+	FTimerHandle CooldownTimer;
+	
 	
 public:
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-		FCastSuccessDelegate OnCastSuccess;
-
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-		FCastFailedDelegate OnCastFailed;
-	
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-		FCastInterruptedDelegate OnCastInterrupted;
-	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool CanCastWhileMoving;
 
@@ -56,12 +65,18 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float ElapsedCD;
-
-	UPROPERTY(BlueprintReadOnly)
-	UAbilityCastingComponent* AbilityCastingComponent;
 	
-	UPROPERTY()
-	FTimerHandle CooldownTimer;
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+		FCastSuccessDelegate OnCastSuccess;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+		FCastFailedDelegate OnCastFailed;
+	
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+		FCastInterruptedDelegate OnCastInterrupted;
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+		FCastInterruptedDelegate OnCastStopped;
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void CastSuccess();
@@ -75,9 +90,7 @@ public:
 	void ServerOnFinishedCast();
 	virtual void ServerOnFinishedCast_Implementation() {}
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRemoveResource();
-	void MulticastRemoveResource_Implementation() { BPRemoveResource(); }
+	virtual void BPRemoveResource_Implementation() override;	
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAbilityCast();
@@ -86,10 +99,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = MulticastAbilityCast))
 	void BPMulticastAbilityCast();
 	virtual void BPMulticastAbilityCast_Implementation() {}
-	
-	UFUNCTION(BlueprintNativeEvent, meta=(DisplayName = RemoveResource))
-	void BPRemoveResource();
-	virtual void BPRemoveResource_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAbilityEndCast(AbilityCastResult CastResult);
+	void ServerAbilityEndCast_Implementation(AbilityCastResult CastResult) { BPServerAbilityEndCast(CastResult); }
+
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = EndCast))
+	void BPServerAbilityEndCast(AbilityCastResult CastResult);
+	virtual void BPServerAbilityEndCast_Implementation(AbilityCastResult CastResult);
 
 	UFUNCTION(Server, Reliable)
 	void ServerStartCooldown(const float Duration, const bool IsGCD);

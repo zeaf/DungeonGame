@@ -34,22 +34,21 @@ public:
 		UAbilityCastingComponent* AbilityCasting;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
-		bool Dead = false;
+	bool Dead = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Affiliation")
 	int Team = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Threat")
 	float ThreatMultiplier = 1;
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable, Category = "Health")
-		FDeathDelegate OnCharacterDeath;
+	FDeathDelegate OnCharacterDeath;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-		void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
+	void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
 	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-		void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
-
+	void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
 
 #pragma region CombatAttributes
@@ -115,14 +114,29 @@ public:
 	UPARAM(DisplayName="IsEnemy") bool CheckHostility(AActor* ActorToCheck);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-		float GetCombatAttributeValue(CombatAttributeName Attribute);
+	float GetCombatAttributeValue(CombatAttributeName Attribute);
 
 	virtual UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f) override;
 
 	void IRemoveStatus_Implementation(UStatusBase* Status) override;
 
 	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
-		void OnDeath();
-	virtual void OnDeath_Implementation();	
+	void OnDeath();
+	virtual void OnDeath_Implementation();
 
+#pragma region Resource
+public:
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Resource")
+	void RemoveResource(const float Resource);
+	virtual void RemoveResource_Implementation(const float Resource) {};
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Resource")
+	void AddResource(const float Resource);
+	virtual void AddResource_Implementation(const float Resource) {};
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Resource")
+	void GetResource(float& Resource, float& ResourcePct);
+	virtual void GetResource_Implementation(float& Resource, float& MaxResource, float& ResourcePct) { Resource = 0; ResourcePct = 0; MaxResource = 0; };
+
+#pragma endregion 
 };

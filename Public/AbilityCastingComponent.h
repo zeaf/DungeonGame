@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "ActiveAbilityBase.h"
 #include "Components/ActorComponent.h"
 #include "AbilityCastingComponent.generated.h"
 
@@ -25,6 +27,9 @@ protected:
 
 private:
 	AC_Character* Character;
+	UPROPERTY(EditDefaultsOnly)
+	float SpellQueueWindow = 0.5f;
+
 
 public:	
 	// Called every frame
@@ -39,18 +44,26 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		UActiveAbilityBase* CurrentlyCastingAbility;
 
+
+	UPROPERTY()
+	UActiveAbilityBase* QueuedAbility;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool IsCasting;
 
 	UPROPERTY(BlueprintReadWrite)
 		FTimerHandle CastingTimer;
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Active Abilities", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
-	TArray<UActiveAbilityBase*> ActiveAbilities;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Active Abilities", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
+	TArray<TSubclassOf<class UActiveAbilityBase>> ActiveAbilities;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Passive Ability", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
+	TSubclassOf<UAbilityBase> PassiveAbility;
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Passive Ability", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
-	UAbilityBase* PassiveAbility;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<UActiveAbilityBase*> Abilities;
 
+	void InitializeAbilities();
 
 	UFUNCTION(Server, Reliable)
 	void ServerCastTime();
@@ -59,7 +72,7 @@ public:
 	UFUNCTION()
 	void SuccessfulCastSequence();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ServerAttemptToCast(UActiveAbilityBase* Ability);
 	void ServerAttemptToCast_Implementation(UActiveAbilityBase* Ability);
 
@@ -68,4 +81,17 @@ public:
 	void ClientCastbar_Implementation(const UActiveAbilityBase* Ability);
 	
 	void TriggerGCD(const float Time);
+
+	UFUNCTION()
+	void CastQueuedAbility();
 };
+
+inline void UAbilityCastingComponent::CastQueuedAbility()
+{
+	if(QueuedAbility)
+	{
+		CurrentlyCastingAbility->OnCastSuccess.Remove(this, FName("CastQueuedAbility"));
+		ServerAttemptToCast(QueuedAbility);
+		QueuedAbility = nullptr;
+	}
+}

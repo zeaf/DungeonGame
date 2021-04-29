@@ -5,6 +5,7 @@
 
 #include "ActiveAbilityBase.h"
 #include "C_Character.h"
+#include "DungeonCharacterPlayerController.h"
 
 // Sets default values for this component's properties
 UAbilityCastingComponent::UAbilityCastingComponent()
@@ -22,7 +23,8 @@ void UAbilityCastingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if (GetOwner()->HasAuthority())
+		InitializeAbilities();
 	
 }
 
@@ -33,6 +35,32 @@ void UAbilityCastingComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UAbilityCastingComponent::InitializeAbilities()
+{
+	for (auto Ability : ActiveAbilities)
+	{
+		if (Ability)
+		{
+			UActiveAbilityBase* NewAbility = NewObject<UActiveAbilityBase>(Character, Ability);
+			Character->AddOwnedComponent(NewAbility);
+			NewAbility->Activate();
+			NewAbility->RegisterComponent();
+			NewAbility->SetComponentTickEnabled(false);
+			Abilities.Add(NewAbility);
+		}
+	}
+
+	uint8 const Length = Abilities.Num();
+	for (uint8 i = 0; i < Length; ++i)
+	{
+		if (Abilities[i])
+		{
+			Abilities[i]->Initialize(Character, i);
+			Abilities[i]->AddTickPrerequisiteActor(Character);
+		}
+	}
 }
 
 void UAbilityCastingComponent::ServerCastTime_Implementation()
@@ -50,13 +78,16 @@ void UAbilityCastingComponent::ServerCastTime_Implementation()
 
 void UAbilityCastingComponent::SuccessfulCastSequence()
 {
-	if (CurrentlyCastingAbility->IsChanneled)
+	if (!CurrentlyCastingAbility->IsChanneled)
 	{
 		CurrentlyCastingAbility->MulticastAbilityCast();
 		CurrentlyCastingAbility->MulticastRemoveResource();
 	}
 
 	CurrentlyCastingAbility->ServerOnFinishedCast();
+	CurrentlyCastingAbility->ServerAbilityEndCast(AbilityCastResult::Successful);
+	if (!CurrentlyCastingAbility->CanCastWhileCasting)
+		IsCasting = false;
 	
 }
 
@@ -83,16 +114,29 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 				SuccessfulCastSequence();
 		}
 	}
+	else // Queue ability
+	{
+		if (GetWorld()->GetTimerManager().GetTimerRemaining(CastingTimer) <= SpellQueueWindow)
+		{
+			if (CurrentlyCastingAbility)
+			{
+				CurrentlyCastingAbility->OnCastSuccess.Remove(this, FName("CastQueuedAbility"));
+				QueuedAbility = Ability;
+				CurrentlyCastingAbility->OnCastSuccess.AddDynamic(this, &UAbilityCastingComponent::CastQueuedAbility);
+			}
+		}
+	}
 }
 
 void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbilityBase* Ability)
 {
-	
+	if (Character->GetPlayerController())
+		Character->GetPlayerController()->Castbar(Ability);
 }
 
 void UAbilityCastingComponent::TriggerGCD(const float Time)
 {
-	for (UActiveAbilityBase* Ability : ActiveAbilities)
+	for (UActiveAbilityBase* Ability : Abilities)
 		Ability->StartGCD(Time);
 }
 

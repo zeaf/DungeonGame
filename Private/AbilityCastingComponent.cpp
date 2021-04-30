@@ -6,6 +6,7 @@
 #include "ActiveAbilityBase.h"
 #include "C_Character.h"
 #include "DungeonCharacterPlayerController.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UAbilityCastingComponent::UAbilityCastingComponent()
@@ -73,7 +74,7 @@ void UAbilityCastingComponent::ServerCastTime_Implementation()
 
 	CurrentlyCastingAbility->ServerOnBeginCast();
 
-	GetWorld()->GetTimerManager().SetTimer(CastingTimer, this, &UAbilityCastingComponent::SuccessfulCastSequence, CurrentlyCastingAbility->CastTime, false);
+	GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence, CurrentlyCastingAbility->CastTime, false);
 }
 
 void UAbilityCastingComponent::SuccessfulCastSequence()
@@ -93,6 +94,8 @@ void UAbilityCastingComponent::SuccessfulCastSequence()
 
 void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbilityBase* Ability)
 {
+	if (!Ability) return;
+	
 	if (!IsCasting || CanCastWhileCasting)
 	{
 		if (Ability->CastConditions())
@@ -111,7 +114,7 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 				}
 			}
 			else
-				SuccessfulCastSequence();
+				Ability->ServerSuccessfulCastSequence();
 		}
 	}
 	else // Queue ability
@@ -138,5 +141,11 @@ void UAbilityCastingComponent::TriggerGCD(const float Time)
 {
 	for (UActiveAbilityBase* Ability : Abilities)
 		Ability->StartGCD(Time);
+}
+
+void UAbilityCastingComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UAbilityCastingComponent, Abilities);
 }
 

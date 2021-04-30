@@ -44,12 +44,39 @@ void UActiveAbilityBase::BPServerAbilityEndCast_Implementation(AbilityCastResult
 
 void UActiveAbilityBase::ServerStartCooldown_Implementation(const float Duration, const bool IsGCD)
 {
+	BPServerStartCooldown(Duration, IsGCD);
+}
+
+void UActiveAbilityBase::BPServerStartCooldown_Implementation(const float Duration, const bool IsGCD)
+{
 	if (Duration > 0)
 	{
 		CooldownReady = false;
-		GetWorld()->GetTimerManager().SetTimer(CooldownTimer, this,  &UActiveAbilityBase::ResetCooldown, Duration, false);
+		GetWorld()->GetTimerManager().SetTimer(CooldownTimer, this, &UActiveAbilityBase::ResetCooldown, Duration, false);
 		ClientCooldown(Duration, IsGCD);
 	}
+}
+
+void UActiveAbilityBase::ServerSuccessfulCastSequence_Implementation()
+{
+	if(!IsChanneled)
+	{
+		MulticastAbilityCast();
+		MulticastRemoveResource();
+	}
+
+	ServerOnFinishedCast();
+	ServerAbilityEndCast(AbilityCastResult::Successful);
+
+	if (AbilityCastingComponent->CurrentlyCastingAbility)
+		if (!AbilityCastingComponent->CurrentlyCastingAbility->CanCastWhileCasting)
+			AbilityCastingComponent->IsCasting = false;
+
+	BPServerSuccessfulCastSequence();
+}
+
+void UActiveAbilityBase::BPServerSuccessfulCastSequence_Implementation()
+{
 }
 
 void UActiveAbilityBase::ResetCooldown()
@@ -73,7 +100,7 @@ bool UActiveAbilityBase::CheckCastableWhileMoving()
 	return CanCastWhileMoving || Caster->GetCharacterMovement()->GetLastUpdateVelocity().Equals(FVector(0, 0, 0), 1);
 }
 
-void UActiveAbilityBase::StartGCD(const float Time)
+void UActiveAbilityBase::StartGCD_Implementation(const float Time)
 {
 	if (GetWorld()->GetTimerManager().GetTimerRemaining(CooldownTimer) < Time)
 		ServerStartCooldown(Time, true);

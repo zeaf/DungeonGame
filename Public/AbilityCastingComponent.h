@@ -60,7 +60,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Passive Ability", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
 	TSubclassOf<UAbilityBase> PassiveAbility;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<UActiveAbilityBase*> Abilities;
 
 	void InitializeAbilities();
@@ -84,6 +84,8 @@ public:
 
 	UFUNCTION()
 	void CastQueuedAbility();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 
 inline void UAbilityCastingComponent::CastQueuedAbility()

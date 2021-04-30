@@ -49,7 +49,7 @@ public:
 		bool IsChanneled;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		bool CooldownReady;
+		bool CooldownReady = true;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		float Cost;
@@ -112,21 +112,35 @@ public:
 	void ServerStartCooldown(const float Duration, const bool IsGCD);
 	void ServerStartCooldown_Implementation(const float Duration, const bool IsGCD);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (DisplayName = "Start Cooldown"))
+	void BPServerStartCooldown(const float Duration, const bool IsGCD);
+	virtual void BPServerStartCooldown_Implementation(const float Duration, const bool IsGCD);
+
 	UFUNCTION(BlueprintNativeEvent)
 	void ClientCooldown(const float Duration, const bool IsGCD);
 	virtual void ClientCooldown_Implementation(const float Duration, const bool IsGCD) {};
 
+	UFUNCTION(Server, Reliable)
+	void ServerSuccessfulCastSequence();
+	void ServerSuccessfulCastSequence_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = SuccessfulCastSequence))
+	void BPServerSuccessfulCastSequence();
+	virtual void BPServerSuccessfulCastSequence_Implementation();
+	
 	void ResetCooldown();
 
 	UFUNCTION(BlueprintNativeEvent)
 	UPARAM(DisplayName = "Can Cast") bool CastConditions();
 	bool CastConditions_Implementation();
 
-	UFUNCTION(BlueprintNativeEvent)
-	UPARAM(DisplayName = "Resource Available") bool CheckResourceAvailability();
-	bool CheckResourceAvailability_Implementation();
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
+	UPARAM(DisplayName = "ResourceAvailable") bool CheckResourceAvailability();
+	UPARAM(DisplayName = "ResourceAvailable") virtual bool CheckResourceAvailability_Implementation();
 
 	bool CheckCastableWhileMoving();
-
+	
+	UFUNCTION(BlueprintNativeEvent)
 	void StartGCD(const float Time);
+	virtual void StartGCD_Implementation(const float Time);
 };

@@ -50,6 +50,9 @@ public:
 		bool IsChanneled;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		bool AffectedByCDR = true;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool CooldownReady = true;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -140,6 +143,8 @@ public:
 	UPARAM(DisplayName = "ResourceAvailable") virtual bool CheckResourceAvailability_Implementation();
 
 	bool CheckCastableWhileMoving();
+
+	float GetCDAfterCdr(const float CD);
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void StartGCD(const float Time);

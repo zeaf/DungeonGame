@@ -26,7 +26,7 @@ void UActiveAbilityBase::BPServerAbilityEndCast_Implementation(AbilityCastResult
 	switch (CastResult)
 	{
 		case AbilityCastResult::Successful:
-			ServerStartCooldown(Caster->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Cooldown, false);
+			ServerStartCooldown(GetCDAfterCdr(Cooldown), false);
 			OnCastSuccess.Broadcast();
 			break;
 		case AbilityCastResult::Failed:
@@ -51,6 +51,8 @@ void UActiveAbilityBase::BPServerStartCooldown_Implementation(const float Durati
 {
 	if (Duration > 0)
 	{
+		//const float CD = !IsGCD && AffectedByCDR ? Duration * 
+		
 		CooldownReady = false;
 		GetWorld()->GetTimerManager().SetTimer(CooldownTimer, this, &UActiveAbilityBase::ResetCooldown, Duration, false);
 		ClientCooldown(Duration, IsGCD);
@@ -98,6 +100,11 @@ bool UActiveAbilityBase::CheckResourceAvailability_Implementation()
 bool UActiveAbilityBase::CheckCastableWhileMoving()
 {
 	return CanCastWhileMoving || Caster->GetCharacterMovement()->GetLastUpdateVelocity().Equals(FVector(0, 0, 0), 1);
+}
+
+float UActiveAbilityBase::GetCDAfterCdr(const float CD)
+{
+	return AffectedByCDR ? Caster->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * CD : CD;
 }
 
 void UActiveAbilityBase::StartGCD_Implementation(const float Time)

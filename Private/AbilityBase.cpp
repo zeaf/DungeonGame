@@ -76,14 +76,17 @@ void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event,
 	//float DamageDealt, DamageAbsorbed;
 	//bool IsCrit, IsKillingBlow;
 	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow);
-	OnDealtDamage.Broadcast(Target, DamageDealt+DamageAbsorbed, this);
+	OnDealtDamage.Broadcast(Target, DamageDealt+DamageAbsorbed, this, Event.IsPeriodic);
 }
 
 UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration, float Duration)
 {
 	if (!Target) return nullptr;
+	
 	if (!StatusToApply[StatusIndex]) return nullptr;
-	return Target->Execute_AddStatus(Target, StatusToApply[StatusIndex], Caster, this, Refreshed, OverrideDuration, Duration);
+	auto Status = Target->Execute_AddStatus(Target, StatusToApply[StatusIndex], Caster, this, Refreshed, OverrideDuration, Duration);
+
+	return Status;
 }
 
 void UAbilityBase::LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, 
@@ -109,7 +112,7 @@ void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)
 	float Healing;
 	bool IsCrit;
 	Target->OnHealingReceived(Event, Healing, IsCrit);
-	OnHealedUnit.Broadcast(Target, Healing, this);
+	OnHealedUnit.Broadcast(Target, Healing, this, Event.IsPeriodic);
 }
 
 void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle,

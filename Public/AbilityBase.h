@@ -11,9 +11,9 @@ class UEffectBase;
 class AC_Character;
 class UStatusBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDealtDamage, AC_Character*, Target, float, Damage, UAbilityBase*, Ability);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnDealtDamage, AC_Character*, Target, float, Damage, UAbilityBase*, Ability, bool, Periodic);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealedUnit, AC_Character*, Target, float, Healing, UAbilityBase*, Ability);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, float, Healing, UAbilityBase*, Ability, bool, Periodic);
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class HELENAPLAYGROUND_API UAbilityBase : public UActorComponent

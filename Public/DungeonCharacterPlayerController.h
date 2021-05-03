@@ -17,7 +17,7 @@ class HELENAPLAYGROUND_API ADungeonCharacterPlayerController : public APlayerCon
 
 public:
 	UFUNCTION(BlueprintNativeEvent)
-	void Castbar(const UActiveAbilityBase* Ability);
-	virtual void Castbar_Implementation(const UActiveAbilityBase* Ability) {};
+	void Castbar(const UActiveAbilityBase* Ability, float CastTime);
+	virtual void Castbar_Implementation(const UActiveAbilityBase* Ability, float CastTime) {};
 	
 };

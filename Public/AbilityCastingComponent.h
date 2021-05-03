@@ -66,8 +66,8 @@ public:
 	void InitializeAbilities();
 
 	UFUNCTION(Server, Reliable)
-	void ServerCastTime();
-	void ServerCastTime_Implementation();
+	void ServerCastTime(float CastTime);
+	void ServerCastTime_Implementation(float CastTime);
 
 	UFUNCTION()
 	void SuccessfulCastSequence();
@@ -77,10 +77,12 @@ public:
 	void ServerAttemptToCast_Implementation(UActiveAbilityBase* Ability);
 
 	UFUNCTION(Client, Reliable)
-	void ClientCastbar(const UActiveAbilityBase* Ability);
-	void ClientCastbar_Implementation(const UActiveAbilityBase* Ability);
+	void ClientCastbar(const UActiveAbilityBase* Ability, const float CastTime);
+	void ClientCastbar_Implementation(const UActiveAbilityBase* Ability, const float CastTime);
 	
 	void TriggerGCD(const float Time);
+
+	float GetCastTimeAfterHaste(const float CastTime);
 
 	UFUNCTION()
 	void CastQueuedAbility();

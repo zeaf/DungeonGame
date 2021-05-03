@@ -64,7 +64,7 @@ void UAbilityCastingComponent::InitializeAbilities()
 	}
 }
 
-void UAbilityCastingComponent::ServerCastTime_Implementation()
+void UAbilityCastingComponent::ServerCastTime_Implementation(float CastTime)
 {
 	if (CurrentlyCastingAbility->IsChanneled)
 	{
@@ -74,7 +74,7 @@ void UAbilityCastingComponent::ServerCastTime_Implementation()
 
 	//CurrentlyCastingAbility->ServerOnBeginCast();
 
-	GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence, CurrentlyCastingAbility->CastTime, false);
+	GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence,  CastTime, false);
 }
 
 void UAbilityCastingComponent::SuccessfulCastSequence()
@@ -104,17 +104,19 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 			Ability->ServerOnBeginCast(Result);
 			TriggerGCD(Character->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Ability->GCD);
 
+			const float CastTime = GetCastTimeAfterHaste(Ability->CastTime);
+
 			if (Result == AbilityCastResult::Successful)
 			{
-				if (Ability->CastTime > 0)
+				if (CastTime > 0)
 				{
-					ClientCastbar(Ability);
+					ClientCastbar(Ability, CastTime);
 					if (!Ability->CanCastWhileCasting)
 					{
 						IsCasting = true;
 						CanCastWhileMoving = true;
 						CurrentlyCastingAbility = Ability;
-						ServerCastTime();
+						ServerCastTime(CastTime);
 					}
 				}
 				else
@@ -138,16 +140,21 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 	}
 }
 
-void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbilityBase* Ability)
+void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbilityBase* Ability, const float CastTime)
 {
 	if (Character->GetPlayerController())
-		Character->GetPlayerController()->Castbar(Ability);
+		Character->GetPlayerController()->Castbar(Ability, CastTime);
 }
 
 void UAbilityCastingComponent::TriggerGCD(const float Time)
 {
 	for (UActiveAbilityBase* Ability : Abilities)
-		Ability->StartGCD(Time);
+		Ability->StartGCD(GetCastTimeAfterHaste(Time));
+}
+
+float UAbilityCastingComponent::GetCastTimeAfterHaste(const float CastTime)
+{
+	return FMath::Max<float>((1 - Character->GetCombatAttributeValue(CombatAttributeName::Haste) / 100.) * CastTime, CastTime/2);
 }
 
 void UAbilityCastingComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

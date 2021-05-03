@@ -2,6 +2,8 @@
 
 
 #include "EffectDamageOverTime.h"
+
+#include "AbilityBase.h"
 #include "C_Character.h"
 #include "StatusBase.h"
 
@@ -26,5 +28,17 @@ void UEffectDamageOverTime::OnTick_Implementation()
 	Event.Amount = DamagePertTick * Status->CurrentStacks;
 	float D, A;
 	bool C, K;
-	Status->TargetActor->OnDamageReceived(Event, D, A, C, K);
+	Status->Ability->DealDamage(Status->TargetActor, Event, D, A, C, K);
+	//Status->TargetActor->OnDamageReceived(Event, D, A, C, K);
+}
+
+void UEffectDamageOverTime::OnRefreshed_Implementation()
+{
+	if (KeepPreviousDamage)
+	{
+		float UndealtDamage = DamagePertTick * (NumberOfTicks - TicksDone);
+		DamagePertTick = (TotalDamage + UndealtDamage) / NumberOfTicks;
+	}
+	Super::OnRefreshed_Implementation();
+
 }

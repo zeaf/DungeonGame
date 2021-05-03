@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
 		EGameDamageType Type;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+		bool KeepPreviousDamage;
+	
 protected:
 	float DamagePertTick;
 
@@ -37,4 +40,6 @@ public:
 	void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
 	void OnTick_Implementation() override;
+
+	virtual void OnRefreshed_Implementation() override;
 };

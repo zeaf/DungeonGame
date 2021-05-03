@@ -68,6 +68,9 @@ void UStatusBase::RefreshedStatus_Implementation()
 
 	if (CanBeRefreshed)
 	{
+		for (UEffectBase* Effect : Effects)
+			Effect->OnRefreshed();
+		
 		FTimerDelegate ExpiredDelegate;
 		ExpiredDelegate.BindUFunction(this, FName("Expired"), false);
 

@@ -40,4 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 		void OnExpired();
 	virtual void OnExpired_Implementation() { }
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+		void OnRefreshed();
+	virtual void OnRefreshed_Implementation() { }
 };

@@ -41,3 +41,12 @@ void UEffectPeriodic::OnTick_Implementation()
 		TimerHandle.Invalidate();
 	}
 }
+
+void UEffectPeriodic::OnRefreshed_Implementation()
+{
+	Super::OnRefreshed_Implementation();
+
+	TicksDone = 0;
+}
+
+

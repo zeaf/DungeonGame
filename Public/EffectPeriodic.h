@@ -33,15 +33,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Effect)
 		bool IsPermanent;
 	
-		void Initialize_Implementation(UStatusBase* ParentStatus) override;
+	virtual void Initialize_Implementation(UStatusBase* ParentStatus) override;
 
-		void OnRemoved_Implementation() override;
+	virtual	void OnRemoved_Implementation() override;
 	
-		void OnExpired_Implementation() override;
+	virtual void OnExpired_Implementation() override;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 		void OnTick();
 
 	virtual void OnTick_Implementation();
+
+	virtual void OnRefreshed_Implementation() override;
 
 };

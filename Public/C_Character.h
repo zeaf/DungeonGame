@@ -58,7 +58,7 @@ public:
 		TMap<CombatAttributeName, FCombatAttribute> CombatAttributes = {
 		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitChance, FCombatAttribute(15.f)),
 		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitDamage, FCombatAttribute(2.f)),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::Haste, FCombatAttribute()),
+		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::Haste, FCombatAttribute(0.f)),
 		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CooldownRate, FCombatAttribute()),
 		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::MovementSpeed, FCombatAttribute()),
 		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingDone, FCombatAttribute()),

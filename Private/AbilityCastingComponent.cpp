@@ -72,7 +72,7 @@ void UAbilityCastingComponent::ServerCastTime_Implementation()
 		CurrentlyCastingAbility->MulticastAbilityCast();	
 	}
 
-	CurrentlyCastingAbility->ServerOnBeginCast();
+	//CurrentlyCastingAbility->ServerOnBeginCast();
 
 	GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence, CurrentlyCastingAbility->CastTime, false);
 }
@@ -100,21 +100,28 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 	{
 		if (Ability->CastConditions())
 		{
+			AbilityCastResult Result;
+			Ability->ServerOnBeginCast(Result);
 			TriggerGCD(Character->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Ability->GCD);
 
-			if (Ability->CastTime > 0)
+			if (Result == AbilityCastResult::Successful)
 			{
-				ClientCastbar(Ability);
-				if (!Ability->CanCastWhileCasting)
+				if (Ability->CastTime > 0)
 				{
-					IsCasting = true;
-					CanCastWhileMoving = true;
-					CurrentlyCastingAbility = Ability;
-					ServerCastTime();
+					ClientCastbar(Ability);
+					if (!Ability->CanCastWhileCasting)
+					{
+						IsCasting = true;
+						CanCastWhileMoving = true;
+						CurrentlyCastingAbility = Ability;
+						ServerCastTime();
+					}
 				}
+				else
+					Ability->ServerSuccessfulCastSequence();
 			}
 			else
-				Ability->ServerSuccessfulCastSequence();
+				Ability->ServerAbilityEndCast(Result);
 		}
 	}
 	else // Queue ability

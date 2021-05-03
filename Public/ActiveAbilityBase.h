@@ -19,7 +19,8 @@ enum class AbilityCastResult : uint8
 	Successful,
 	Failed,
 	Stopped,
-	Interrupted
+	Interrupted,
+	None
 };
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -83,8 +84,8 @@ public:
 	virtual void CastSuccess_Implementation() {}
 
 	UFUNCTION(BlueprintNativeEvent)
-	void ServerOnBeginCast();
-	virtual void ServerOnBeginCast_Implementation() {}
+	void ServerOnBeginCast(AbilityCastResult& CastResult);
+	virtual void ServerOnBeginCast_Implementation(AbilityCastResult& CastResult) {}
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ServerOnFinishedCast();
@@ -120,7 +121,7 @@ public:
 	void ClientCooldown(const float Duration, const bool IsGCD);
 	virtual void ClientCooldown_Implementation(const float Duration, const bool IsGCD) {};
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSuccessfulCastSequence();
 	void ServerSuccessfulCastSequence_Implementation();
 

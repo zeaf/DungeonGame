@@ -42,19 +42,20 @@ UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Characte
 		{
 			UStatusBase* SearchStatus = LookForStatus(StatusToApply, Caster, Ability, Refreshed);
 
-			if (!SearchStatus)
-				if (Pawn->HasAuthority())
-				{
-					TArray<UStatusBase*>& StatusArray = StatusToApply->IsDebuff ? Debuffs : Buffs;
-					UStatusBase* NewStatus = DuplicateObject<UStatusBase>(StatusToApply, Pawn);
+			if (SearchStatus) return SearchStatus;
 
-					if (OverrideDuration)
-						NewStatus->Duration = Duration;
-					
-					StatusArray.Add(NewStatus);
-					NewStatus->Initialize(Pawn, Caster, Ability);
-					return NewStatus;
-				}
+			if (Pawn->HasAuthority())
+			{
+				TArray<UStatusBase*>& StatusArray = StatusToApply->IsDebuff ? Debuffs : Buffs;
+				UStatusBase* NewStatus = DuplicateObject<UStatusBase>(StatusToApply, Pawn);
+
+				if (OverrideDuration)
+					NewStatus->Duration = Duration;
+				
+				StatusArray.Add(NewStatus);
+				NewStatus->Initialize(Pawn, Caster, Ability);
+				return NewStatus;
+			}
 		}
 	return nullptr;
 }

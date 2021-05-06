@@ -9,6 +9,15 @@
 
 class UCameraComponent;
 class AC_Character;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFriendlyTargetUpdate, AC_Character*, NewTarget);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyTargetUpdate, AC_Character*, NewTarget);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFriendlyTargetCleared);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyTargetCleared);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class HELENAPLAYGROUND_API USoftTargetingComponent : public UActorComponent
 {
@@ -21,6 +30,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InitializeTargeting();
 
+	UPROPERTY(BlueprintAssignable)
+		FOnFriendlyTargetCleared OnFriendlyTargetCleared;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnEnemyTargetCleared OnEnemyTargetCleared;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnEnemyTargetUpdate OnEnemyTargetUpdate;
+
+	UPROPERTY(BlueprintAssignable)
+		FOnFriendlyTargetUpdate OnFriendlyTargetUpdate;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

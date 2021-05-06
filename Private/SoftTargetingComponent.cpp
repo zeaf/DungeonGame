@@ -118,9 +118,19 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 		if (PreviousTarget)
 			PreviousTarget->GetMesh()->SetRenderCustomDepth(false);
 		PreviousTarget = nullptr;
+
+		if (Enemy)
+			OnEnemyTargetCleared.Broadcast();
+		else
+			OnFriendlyTargetCleared.Broadcast();
 	}
 	else if (PreviousTarget != Target)
 	{
+		if (Enemy)
+			OnEnemyTargetUpdate.Broadcast(Target);
+		else
+			OnFriendlyTargetUpdate.Broadcast(Target);
+		
 		Target->GetMesh()->SetRenderCustomDepth(true);
 		Target->GetMesh()->SetCustomDepthStencilValue(Enemy ? 1 : 2);
 		if (PreviousTarget)

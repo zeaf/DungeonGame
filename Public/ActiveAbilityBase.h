@@ -88,7 +88,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ServerOnBeginCast(AbilityCastResult& CastResult);
-	virtual void ServerOnBeginCast_Implementation(AbilityCastResult& CastResult) {}
+	virtual void ServerOnBeginCast_Implementation(AbilityCastResult& CastResult) { CastResult = AbilityCastResult::Successful; }
 
 	UFUNCTION(BlueprintNativeEvent)
 	void ServerOnFinishedCast();

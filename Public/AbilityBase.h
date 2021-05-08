@@ -49,6 +49,12 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = GenerateResource))
 	void BPGenerateResource();
 	virtual void BPGenerateResource_Implementation() {}
+
+	UFUNCTION(BlueprintCallable, meta = (DeterminesoutputType = "AbilityClass"), BlueprintPure)
+	UAbilityBase* LookForAbility(const TSubclassOf<UAbilityBase> AbilityClass);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UAbilityBase* GetPassive();
 	
 public:	
 	// Called every frame

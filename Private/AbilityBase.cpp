@@ -3,6 +3,7 @@
 
 #include "AbilityBase.h"
 
+#include "AbilityCastingComponent.h"
 #include "C_Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/LineBatchComponent.h"
@@ -31,6 +32,21 @@ void UAbilityBase::BeginPlay()
 	
 }
 
+
+UAbilityBase* UAbilityBase::LookForAbility(const TSubclassOf<UAbilityBase> AbilityClass)
+{
+	for (UAbilityBase* Ability : Caster->AbilityCastingComponent->Abilities)
+	{
+		if (Ability->GetClass() == AbilityClass)
+			return Ability;
+	}
+	return nullptr;
+}
+
+UAbilityBase* UAbilityBase::GetPassive()
+{
+	return Caster->AbilityCastingComponent->PassiveAbility;
+}
 
 // Called every frame
 void UAbilityBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

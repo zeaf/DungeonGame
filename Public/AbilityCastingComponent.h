@@ -49,20 +49,23 @@ public:
 	UActiveAbilityBase* QueuedAbility;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		bool IsCasting;
+	bool IsCasting;
 
 	UPROPERTY(BlueprintReadWrite)
-		FTimerHandle CastingTimer;
+	FTimerHandle CastingTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Active Abilities", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UActiveAbilityBase>> ActiveAbilities;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Passive Ability", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
-	TSubclassOf<UAbilityBase> PassiveAbility;
+	TSubclassOf<UAbilityBase> PassiveAbilityReference;
 
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<UActiveAbilityBase*> Abilities;
 
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	UAbilityBase* PassiveAbility;
+	
 	void InitializeAbilities();
 
 	UFUNCTION(Server, Reliable)

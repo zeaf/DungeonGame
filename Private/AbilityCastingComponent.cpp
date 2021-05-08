@@ -53,6 +53,9 @@ void UAbilityCastingComponent::InitializeAbilities()
 		}
 	}
 
+	if (PassiveAbilityReference)
+		PassiveAbility = NewObject<UAbilityBase>(Character, PassiveAbilityReference);
+
 	uint8 const Length = Abilities.Num();
 	for (uint8 i = 0; i < Length; ++i)
 	{
@@ -62,6 +65,8 @@ void UAbilityCastingComponent::InitializeAbilities()
 			Abilities[i]->AddTickPrerequisiteActor(Character);
 		}
 	}
+
+	if (PassiveAbility) PassiveAbility->Initialize(Character, -1);
 }
 
 void UAbilityCastingComponent::ServerCastTime_Implementation(float CastTime)

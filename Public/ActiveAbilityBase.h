@@ -24,7 +24,7 @@ enum class AbilityCastResult : uint8
 };
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API UActiveAbilityBase : public UAbilityBase
+class EMPYREAN_API UActiveAbilityBase : public UAbilityBase
 {
 	GENERATED_BODY()
 

@@ -12,7 +12,7 @@ class AC_Character;
  * 
  */
 UCLASS(Blueprintable, BlueprintType)
-class HELENAPLAYGROUND_API AAIControllerBase : public AAIController
+class EMPYREAN_API AAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
 

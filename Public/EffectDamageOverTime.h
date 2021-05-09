@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class HELENAPLAYGROUND_API UEffectDamageOverTime : public UEffectPeriodic
+class EMPYREAN_API UEffectDamageOverTime : public UEffectPeriodic
 {
 	GENERATED_BODY()
 public:

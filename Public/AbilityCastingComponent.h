@@ -13,7 +13,7 @@ class AC_Character;
 class UActiveAbilityBase;
 class UAbilityBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HELENAPLAYGROUND_API UAbilityCastingComponent : public UActorComponent
+class EMPYREAN_API UAbilityCastingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

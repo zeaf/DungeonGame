@@ -11,7 +11,7 @@ class UActiveAbilityBase;
  * 
  */
 UCLASS()
-class HELENAPLAYGROUND_API ADungeonCharacterPlayerController : public APlayerController
+class EMPYREAN_API ADungeonCharacterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 

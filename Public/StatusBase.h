@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshedDelegate, AC_Character*, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRemovedDelegate, AC_Character*, Actor, UStatusBase*, Status);
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HELENAPLAYGROUND_API UStatusBase : public UActorComponent
+class EMPYREAN_API UStatusBase : public UActorComponent
 {
 	GENERATED_BODY()
 

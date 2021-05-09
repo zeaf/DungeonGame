@@ -8,7 +8,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HELENAPLAYGROUND_API UTargetSystem : public UActorComponent
+class EMPYREAN_API UTargetSystem : public UActorComponent
 {
 	GENERATED_BODY()
 

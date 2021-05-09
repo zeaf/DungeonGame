@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDeathDelegate, AC_Character*, Actor
 
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API AC_Character : public ACharacter, public IStatusInterface
+class EMPYREAN_API AC_Character : public ACharacter, public IStatusInterface
 {
 	GENERATED_BODY()
 

@@ -13,7 +13,7 @@
  * 
  */
 UCLASS(Blueprintable)
-class HELENAPLAYGROUND_API UAnimBPBase : public UAnimInstance
+class EMPYREAN_API UAnimBPBase : public UAnimInstance
 {
 	GENERATED_BODY()
 

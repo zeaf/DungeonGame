@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class HELENAPLAYGROUND_API UEffectPeriodic : public UEffectBase
+class EMPYREAN_API UEffectPeriodic : public UEffectBase
 {
 	GENERATED_BODY()
 

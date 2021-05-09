@@ -41,7 +41,7 @@ enum class StatModifier : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAttributeValueChanged, float, NewValue);
 
 USTRUCT(BlueprintType)
-struct HELENAPLAYGROUND_API FCombatAttribute
+struct EMPYREAN_API FCombatAttribute
 {
 	GENERATED_USTRUCT_BODY()
 	

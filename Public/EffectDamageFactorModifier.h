@@ -6,7 +6,7 @@
 #include "EffectDamageFactorModifier.generated.h"
 
 UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API UEffectDamageFactorModifier : public UEffectBase
+class EMPYREAN_API UEffectDamageFactorModifier : public UEffectBase
 {
 
 	GENERATED_BODY()

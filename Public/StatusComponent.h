@@ -12,7 +12,7 @@
 class AC_Character;
 class UStatusBase;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HELENAPLAYGROUND_API UStatusComponent : public UActorComponent
+class EMPYREAN_API UStatusComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

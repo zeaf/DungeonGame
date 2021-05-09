@@ -7,7 +7,7 @@
 /**
  * 
  */
-class HELENAPLAYGROUND_API MyClass
+class EMPYREAN_API MyClass
 {
 public:
 	MyClass();

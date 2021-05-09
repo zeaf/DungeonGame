@@ -8,7 +8,7 @@
 class UAbilityBase;
 class AC_Character;
 USTRUCT(BlueprintType)
-struct HELENAPLAYGROUND_API FCharacterDamageEvent
+struct EMPYREAN_API FCharacterDamageEvent
 {
 	GENERATED_USTRUCT_BODY()
 

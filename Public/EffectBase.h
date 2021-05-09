@@ -13,7 +13,7 @@ class UStatusBase;
  * 
  */
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API UEffectBase : public UObject
+class EMPYREAN_API UEffectBase : public UObject
 {
 	GENERATED_BODY()
 

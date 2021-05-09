@@ -6,7 +6,7 @@
 #include "EffectAttributeModifier.generated.h"
 
 UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API UEffectAttributeModifier : public UEffectBase
+class EMPYREAN_API UEffectAttributeModifier : public UEffectBase
 {
 
 	GENERATED_BODY()

@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnDealtDamage, AC_Character*, Tar
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, float, Healing, UAbilityBase*, Ability, bool, Periodic);
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class HELENAPLAYGROUND_API UAbilityBase : public UActorComponent
+class EMPYREAN_API UAbilityBase : public UActorComponent
 {
 	GENERATED_BODY()
 

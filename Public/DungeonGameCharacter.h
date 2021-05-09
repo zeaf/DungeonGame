@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class HELENAPLAYGROUND_API UDungeonGameCharacter : public UBlueprintFunctionLibrary
+class EMPYREAN_API UDungeonGameCharacter : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class HelenaPlayground : ModuleRules
+public class Empyrean : ModuleRules
 {
-	public HelenaPlayground(ReadOnlyTargetRules Target) : base(Target)
+	public Empyrean (ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	

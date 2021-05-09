@@ -7,7 +7,7 @@
 #include "EffectMaxHealthModifier.generated.h"
 
 UCLASS(BlueprintType, EditInlineNew, DefaultToInstanced, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API UEffectMaxHealthModifier : public UEffectBase
+class EMPYREAN_API UEffectMaxHealthModifier : public UEffectBase
 {
 
 	GENERATED_BODY()

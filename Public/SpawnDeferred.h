@@ -9,7 +9,7 @@
  * 
  */
 
-class HELENAPLAYGROUND_API SpawnDeferred
+class EMPYREAN_API SpawnDeferred
 {
 	public:
 		SpawnDeferred();

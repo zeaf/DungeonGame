@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFriendlyTargetCleared);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyTargetCleared);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class HELENAPLAYGROUND_API USoftTargetingComponent : public UActorComponent
+class EMPYREAN_API USoftTargetingComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

@@ -11,9 +11,9 @@ class UEffectBase;
 class AC_Character;
 class UStatusBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnDealtDamage, AC_Character*, Target, float, Damage, UAbilityBase*, Ability, bool, Periodic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnDealtDamage, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalDamage, bool, IsCrit, bool, IsKillingBlow);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, float, Healing, UAbilityBase*, Ability, bool, Periodic);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalHealing, bool, IsCrit);
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EMPYREAN_API UAbilityBase : public UActorComponent
@@ -95,17 +95,20 @@ public:
 	UFUNCTION()
 	void CastAbility() {};
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, category = Ability)
 		AC_Character* Caster;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
 		EGameDamageType AbilitySchool;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
 		FName AbilityName;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
 		UTexture2D* Icon;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability, meta = (Multiline = "true"))
+		FText Description;
 	
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//	FCombatAttribute CastTime;

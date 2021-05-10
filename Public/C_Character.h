@@ -17,6 +17,7 @@ class UHealthComponent;
 struct FCharacterDamageEvent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDeathDelegate, AC_Character*, Actor);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FResourceUpdatedDelegate, float, CurrentResource, float, MaxResource);
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class EMPYREAN_API AC_Character : public ACharacter, public IStatusInterface
@@ -133,6 +134,9 @@ public:
 
 #pragma region Resource
 public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FResourceUpdatedDelegate OnResourceUpdated;
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Resource")
 	void RemoveResource(const float Resource);
 	virtual void RemoveResource_Implementation(const float Resource) {};
@@ -141,7 +145,7 @@ public:
 	void AddResource(const float Resource);
 	virtual void AddResource_Implementation(const float Resource) {};
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Resource")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, BlueprintPure, Category = "Resource")
 	void GetResource(float& Resource, float& MaxResource, float& ResourcePct);
 	virtual void GetResource_Implementation(float& Resource, float& MaxResource, float& ResourcePct) { Resource = 0; ResourcePct = 0; MaxResource = 0; };
 

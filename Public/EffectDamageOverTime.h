@@ -32,7 +32,7 @@ public:
 		bool KeepPreviousDamage;
 	
 protected:
-	float DamagePertTick;
+	float DamagePerTick;
 
 	FCharacterDamageEvent Event;
 

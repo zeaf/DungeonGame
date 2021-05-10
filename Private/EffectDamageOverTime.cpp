@@ -11,13 +11,13 @@ void UEffectDamageOverTime::Initialize_Implementation(UStatusBase* ParentStatus)
 {
 	Super::Initialize_Implementation(ParentStatus);
 
-	DamagePertTick = TotalDamage / NumberOfTicks;
+	DamagePerTick = TotalDamage / NumberOfTicks;
 
 	Event.Ability = Status->Ability;
 	Event.Instigator = Status->Instigator;
 	Event.AdditionalCriticalChance = AdditionalCriticalChance;
 	Event.AdditionalCriticalDamage = AdditionalCriticalDamage;
-	Event.Amount = DamagePertTick;
+	Event.Amount = DamagePerTick;
 	Event.IsPeriodic = true;
 	Event.Type = Type;
 }
@@ -25,7 +25,7 @@ void UEffectDamageOverTime::Initialize_Implementation(UStatusBase* ParentStatus)
 void UEffectDamageOverTime::OnTick_Implementation()
 {
 	Super::OnTick_Implementation();
-	Event.Amount = DamagePertTick * Status->CurrentStacks;
+	Event.Amount = DamagePerTick * Status->CurrentStacks;
 	float D, A;
 	bool C, K;
 	Status->Ability->DealDamage(Status->TargetActor, Event, D, A, C, K);
@@ -36,8 +36,8 @@ void UEffectDamageOverTime::OnRefreshed_Implementation()
 {
 	if (KeepPreviousDamage)
 	{
-		float UndealtDamage = DamagePertTick * (NumberOfTicks - TicksDone);
-		DamagePertTick = (TotalDamage + UndealtDamage) / NumberOfTicks;
+		float UndealtDamage = DamagePerTick * (NumberOfTicks - TicksDone);
+		DamagePerTick = (TotalDamage + UndealtDamage) / NumberOfTicks;
 	}
 	Super::OnRefreshed_Implementation();
 

@@ -136,6 +136,10 @@ public:
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FResourceUpdatedDelegate OnResourceUpdated;
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastOnResourceUpdated(const float Current, const float Max);
+	void MulticastOnResourceUpdated_Implementation(const float Current, const float Max) { OnResourceUpdated.Broadcast(Current, Max); }
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Resource")
 	void RemoveResource(const float Resource);

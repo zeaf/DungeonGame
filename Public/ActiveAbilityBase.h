@@ -40,34 +40,34 @@ protected:
 	
 	
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		bool CanCastWhileMoving;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		bool CanCastWhileCasting;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		bool IsChanneled;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		bool AffectedByCDR = true;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, AdvancedDisplay)
 		bool CooldownReady = true;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		float Cost;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		float CastTime;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		float Cooldown = 1.f;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		float GCD = 1.5f;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Ability)
+		float GCD = 1.f;
 	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, AdvancedDisplay)
 		float ElapsedCD;
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)

@@ -42,8 +42,13 @@ UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Characte
 		{
 			UStatusBase* SearchStatus = LookForStatus(StatusToApply, Caster, Ability, Refreshed);
 
-			if (SearchStatus) return SearchStatus;
-
+			if (SearchStatus)
+			{
+				MulticastOnStatusRefreshed(Pawn, SearchStatus, SearchStatus->GetUniqueID());
+				//OnStatusRefreshed.Broadcast(Pawn, SearchStatus, SearchStatus->GetUniqueID());
+				return SearchStatus;
+			}
+			
 			if (Pawn->HasAuthority())
 			{
 				TArray<UStatusBase*>& StatusArray = StatusToApply->IsDebuff ? Debuffs : Buffs;
@@ -54,6 +59,8 @@ UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Characte
 				
 				StatusArray.Add(NewStatus);
 				NewStatus->Initialize(Pawn, Caster, Ability);
+				MulticastOnStatusApplied(Pawn, NewStatus, NewStatus->GetUniqueID());
+				//OnStatusApplied.Broadcast(Pawn, NewStatus, NewStatus->GetUniqueID());
 				return NewStatus;
 			}
 		}
@@ -87,6 +94,8 @@ void UStatusComponent::RemoveStatus(UStatusBase* StatusToRemove)
 		{
 			TArray<UStatusBase*> &StatusArray = StatusToRemove->IsDebuff ? Debuffs : Buffs;
 			StatusArray.Remove(StatusToRemove);
+			MulticastOnStatusRemoved(Pawn, StatusToRemove->GetUniqueID());
+			//OnStatusRemoved.Broadcast(Pawn, StatusToRemove->GetUniqueID());
 			StatusToRemove->DestroyComponent();
 		}
 }

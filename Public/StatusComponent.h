@@ -11,6 +11,14 @@
 
 class AC_Character;
 class UStatusBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnStatusApplied, AC_Character*, Target, UStatusBase*, Status, int, ID);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnStatusRefreshed, AC_Character*, Target, UStatusBase*, Status, int, ID);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStatusRemoved, AC_Character*, Target, int, ID);
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EMPYREAN_API UStatusComponent : public UActorComponent
 {
@@ -28,6 +36,27 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnStatusApplied OnStatusApplied;
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastOnStatusApplied(AC_Character* Target, UStatusBase* Status, int ID);
+	void MulticastOnStatusApplied_Implementation(AC_Character* Target, UStatusBase* Status, int ID) { OnStatusApplied.Broadcast(Target, Status, ID); }
+	
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnStatusRefreshed OnStatusRefreshed;
+	
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastOnStatusRefreshed(AC_Character* Target, UStatusBase* Status, int ID);
+	void MulticastOnStatusRefreshed_Implementation(AC_Character* Target, UStatusBase* Status, int ID) { OnStatusRefreshed.Broadcast(Target, Status, ID); }
+
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FOnStatusRemoved OnStatusRemoved;
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastOnStatusRemoved(AC_Character* Target, int ID);
+	void MulticastOnStatusRemoved_Implementation(AC_Character* Target, int ID) { OnStatusRemoved.Broadcast(Target, ID); }
+	
 	UPROPERTY()
 		AC_Character* Pawn;
 	

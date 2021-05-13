@@ -6,9 +6,7 @@
 #include "EffectBase.h"
 #include "EffectPeriodic.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class EMPYREAN_API UEffectPeriodic : public UEffectBase
 {

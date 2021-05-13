@@ -32,7 +32,7 @@ void UWidget_StatusList::OnStatusApplied(AC_Character* Target, UStatusBase* Stat
 	{
 		if (!IsAuraIncluded(Status)) return;
 
-		UE_LOG(LogTemp, Warning, TEXT("%s, %s, %d"), *Target->GetName(), *Status->GetName(), ID);
+		//UE_LOG(LogTemp, Warning, TEXT("%s, %s, %d"), *Target->GetName(), *Status->GetName(), ID);
 		
 		UWidget_AuraWrapper* NewAuraWidget = CreateWidget<UWidget_AuraWrapper>(this, AuraWrapperClass);
 		NewAuraWidget->InitializeAura(Status,Icon, Duration);

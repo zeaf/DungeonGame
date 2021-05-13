@@ -63,7 +63,7 @@ public:
 	
 	void AddEffect(uint32 EffectID, StatModifier Modifier, float value)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ADD EFFECT"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ADD EFFECT"));
 		switch (Modifier)
 		{
 		case StatModifier::Additive:

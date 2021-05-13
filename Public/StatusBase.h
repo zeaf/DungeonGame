@@ -49,6 +49,10 @@ public:
 		bool IsDebuff;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		int MaxStacks;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+		FName Name;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status", meta = (Multiline = "true"))
+		FText Description;
 	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 		UTexture2D* Icon;
 

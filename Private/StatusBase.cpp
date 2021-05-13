@@ -11,12 +11,20 @@
 // Sets default values for this component's properties
 UStatusBase::UStatusBase()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
 	SetIsReplicatedByDefault(true);
-	// ...
+	auto Outer = GetOuter();
+	UAbilityBase* Spell = Cast<UAbilityBase>(Outer);
+	if (Spell)
+	{
+		if (!Icon)
+			Icon = Spell->Icon;
+
+		if (Name == NAME_None)
+			Name = Spell->AbilityName;
+	}
+	
 }
 
 
@@ -33,6 +41,16 @@ void UStatusBase::BeginPlay()
 	Super::BeginPlay();
 	//if (!Icon) Icon = Ability->
 	// ...
+	auto Outer = GetOuter();
+	UAbilityBase* Spell = Cast<UAbilityBase>(Outer);
+	if (Spell)
+	{
+		if (!Icon)
+			Icon = Spell->Icon;
+
+		if (Name == NAME_None)
+			Name = Spell->AbilityName;
+	}
 	
 }
 
@@ -57,6 +75,9 @@ void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, 
 	this->Instigator = Caster;
 	this->Ability = ParentAbility;
 
+	if (!Icon) Icon = Ability->Icon;
+	if (Name == NAME_None) Name = Ability->AbilityName;
+	
 	InitializeEffects();
 }
 

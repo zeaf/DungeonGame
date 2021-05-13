@@ -45,7 +45,7 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void UpdateStacksDisplay(int Stacks);
+	void UpdateStacksDisplay(int Stacks, bool Force=false);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void PlayRadialSwipe(const float StartAtTime, const float Duration);

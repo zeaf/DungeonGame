@@ -11,12 +11,13 @@ void UWidget_SpellIcon::InitializeIcon(UStatusBase* Status, UTexture2D* Icon, fl
 	AbilityIcon->SetBrushFromTexture(Icon);
 	CurrentStacks = Status->CurrentStacks;
 	UpdateStacksDisplay(CurrentStacks);
-	PlayRadialSwipe(0, Duration);
+	if (Duration > 0)
+		PlayRadialSwipe(0, Duration);
 }
 
-void UWidget_SpellIcon::UpdateStacksDisplay(int Stacks)
+void UWidget_SpellIcon::UpdateStacksDisplay(int Stacks, bool Force)
 {
-	if (Stacks > 1)
+	if (Stacks > 1 || Force)
 	{
 		StacksText->SetText(UKismetTextLibrary::Conv_IntToText(Stacks));
 		StacksText->SetVisibility(ESlateVisibility::HitTestInvisible);

@@ -12,9 +12,9 @@
 class AC_Character;
 class UStatusBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnStatusApplied, AC_Character*, Target, UStatusBase*, Status, int, ID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnStatusApplied, AC_Character*, Target, UStatusBase*, Status, int, ID, UTexture2D*, Icon, float, Duration);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnStatusRefreshed, AC_Character*, Target, UStatusBase*, Status, int, ID);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnStatusRefreshed, AC_Character*, Target, UStatusBase*, Status, int, ID, int, Stacks);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStatusRemoved, AC_Character*, Target, int, ID);
 
@@ -40,15 +40,15 @@ public:
 	FOnStatusApplied OnStatusApplied;
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void MulticastOnStatusApplied(AC_Character* Target, UStatusBase* Status, int ID);
-	void MulticastOnStatusApplied_Implementation(AC_Character* Target, UStatusBase* Status, int ID) { OnStatusApplied.Broadcast(Target, Status, ID); }
+	void MulticastOnStatusApplied(AC_Character* Target, UStatusBase* Status, int ID, UTexture2D* Icon, float Duration);
+	void MulticastOnStatusApplied_Implementation(AC_Character* Target, UStatusBase* Status, int ID, UTexture2D* Icon, float Duration) { OnStatusApplied.Broadcast(Target, Status, ID, Icon, Duration); }
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStatusRefreshed OnStatusRefreshed;
 	
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void MulticastOnStatusRefreshed(AC_Character* Target, UStatusBase* Status, int ID);
-	void MulticastOnStatusRefreshed_Implementation(AC_Character* Target, UStatusBase* Status, int ID) { OnStatusRefreshed.Broadcast(Target, Status, ID); }
+	void MulticastOnStatusRefreshed(AC_Character* Target, UStatusBase* Status, int ID, int Stacks);
+	void MulticastOnStatusRefreshed_Implementation(AC_Character* Target, UStatusBase* Status, int ID, int Stacks) { OnStatusRefreshed.Broadcast(Target, Status, ID, Stacks); }
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnStatusRemoved OnStatusRemoved;

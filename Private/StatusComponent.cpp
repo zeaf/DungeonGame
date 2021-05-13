@@ -44,7 +44,7 @@ UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Characte
 
 			if (SearchStatus)
 			{
-				MulticastOnStatusRefreshed(Pawn, SearchStatus, SearchStatus->GetUniqueID());
+				MulticastOnStatusRefreshed(Pawn, SearchStatus, SearchStatus->GetUniqueID(), SearchStatus->CurrentStacks);
 				//OnStatusRefreshed.Broadcast(Pawn, SearchStatus, SearchStatus->GetUniqueID());
 				return SearchStatus;
 			}
@@ -59,7 +59,7 @@ UStatusBase* UStatusComponent::AddStatus(UStatusBase* StatusToApply, AC_Characte
 				
 				StatusArray.Add(NewStatus);
 				NewStatus->Initialize(Pawn, Caster, Ability);
-				MulticastOnStatusApplied(Pawn, NewStatus, NewStatus->GetUniqueID());
+				MulticastOnStatusApplied(Pawn, NewStatus, NewStatus->GetUniqueID(), NewStatus->Icon, NewStatus->Duration);
 				//OnStatusApplied.Broadcast(Pawn, NewStatus, NewStatus->GetUniqueID());
 				return NewStatus;
 			}

@@ -6,6 +6,7 @@
 #include "AbilityBase.h"
 #include "EffectBase.h"
 #include "StatusInterface.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UStatusBase::UStatusBase()
@@ -18,6 +19,13 @@ UStatusBase::UStatusBase()
 	// ...
 }
 
+
+void UStatusBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UStatusBase, Duration);
+	DOREPLIFETIME(UStatusBase, Icon);
+}
 
 // Called when the game starts
 void UStatusBase::BeginPlay()

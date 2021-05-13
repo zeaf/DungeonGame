@@ -35,14 +35,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, AdvancedDisplay, Category = "Status")
 		AC_Character* Instigator;
 
-
 	UPROPERTY(BlueprintReadOnly, AdvancedDisplay, Category = "Status")
 		UAbilityBase* Ability;
 
-	UPROPERTY(BlueprintReadOnly, AdvancedDisplay, Category = "Status")
+	UPROPERTY(BlueprintReadOnly, Replicated, AdvancedDisplay, Category = "Status")
 		int CurrentStacks = 1;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 		float Duration;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		bool CanBeRefreshed;
@@ -50,7 +49,7 @@ public:
 		bool IsDebuff;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
 		int MaxStacks;
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Status")
+	UPROPERTY(BlueprintReadWrite, Replicated, EditAnywhere, Category = "Status")
 		UTexture2D* Icon;
 
 	FTimerHandle DurationTimer;
@@ -61,6 +60,8 @@ public:
 		FRefreshedDelegate OnRefreshed;
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Status")
 		FRemovedDelegate OnRemoved;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	// Called when the game starts

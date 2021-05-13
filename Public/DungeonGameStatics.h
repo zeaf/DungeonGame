@@ -19,9 +19,8 @@ class EMPYREAN_API UDungeonGameStatics : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<Classes, FColor> ClassColors;
+	UFUNCTION(BlueprintCallable, Category = Empyrean)
+	static UPARAM(meta = (Displayname = "Found")) bool GetFloatParameterByName(UObject* Target, FName Name, float& OutFloat);
 
-	UFUNCTION(BlueprintCallable, Category = DungeonGame)
-	static FColor GetClassColor(Classes Class);
+	
 };

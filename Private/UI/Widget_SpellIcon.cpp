@@ -17,6 +17,8 @@ void UWidget_SpellIcon::InitializeIcon(UStatusBase* Status, UTexture2D* Icon, fl
 
 void UWidget_SpellIcon::UpdateStacksDisplay(int Stacks, bool Force)
 {
+	Stacks = Stacks == -1 ? CurrentStacks : Stacks;
+	CurrentStacks = Stacks == -1 ? CurrentStacks : Stacks;
 	if (Stacks > 1 || Force)
 	{
 		StacksText->SetText(UKismetTextLibrary::Conv_IntToText(Stacks));

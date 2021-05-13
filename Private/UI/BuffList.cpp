@@ -4,6 +4,7 @@
 #include "UI/BuffList.h"
 #include "UI/Widget_AuraWrapper.h"
 #include "Components/UniformGridPanel.h"
+#include "UI/Widget_SpellIcon.h"
 
 void UBuffList::GetRowAndColumn(int Index, int& Row, int& Column)
 {
@@ -37,9 +38,9 @@ void UBuffList::RemoveAura(int ID)
 	{
 		int Row, Column;
 		GetRowAndColumn(Counter, Row, Column);
-		UE_LOG(LogTemp, Warning, TEXT("%d %d"), Row, Column);
+		//UE_LOG(LogTemp, Warning, TEXT("%d %d"), Row, Column);
 		AuraList->AddChildToUniformGrid(It, Row, Column);
-		//AddNewAura(It.Value);
+		It->Icon->UpdateStacksDisplay(-1);
 		Counter++;
 	}
 	//	int Row, Column;

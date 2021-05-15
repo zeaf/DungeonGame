@@ -131,10 +131,18 @@ public:
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = SuccessfulCastSequence))
 	void BPServerSuccessfulCastSequence();
 	virtual void BPServerSuccessfulCastSequence_Implementation();
-	
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnInterrupted();
+	void MulticastOnInterrupted_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = OnInterrupted))
+	void BPMulticastOnInterrupted();
+	virtual void BPMulticastOnInterrupted_Implementation() {}
+
 	void ResetCooldown();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
 	UPARAM(DisplayName = "Can Cast") bool CastConditions();
 	bool CastConditions_Implementation();
 

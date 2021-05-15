@@ -15,6 +15,8 @@ void UActiveAbilityBase::BeginPlay()
 	AbilityCastingComponent = Caster->AbilityCastingComponent;
 }
 
+
+
 void UActiveAbilityBase::BPRemoveResource_Implementation()
 {
 	if (Cost > 0)
@@ -79,6 +81,15 @@ void UActiveAbilityBase::ServerSuccessfulCastSequence_Implementation()
 
 void UActiveAbilityBase::BPServerSuccessfulCastSequence_Implementation()
 {
+}
+
+void UActiveAbilityBase::MulticastOnInterrupted_Implementation()
+{
+	if (IsChanneled)
+	{
+		ServerAbilityEndCast(AbilityCastResult::Interrupted);
+	}
+	BPMulticastOnInterrupted();
 }
 
 void UActiveAbilityBase::ResetCooldown()

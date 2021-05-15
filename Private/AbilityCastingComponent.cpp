@@ -145,6 +145,21 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 	}
 }
 
+void UAbilityCastingComponent::ServerInterruptCast_Implementation()
+{
+	if (IsCasting)
+	{
+		CastingTimer.Invalidate();
+		IsCasting = false;
+		CanCastWhileMoving = false;
+		Character->GetMesh()->GetAnimInstance()->StopAllMontages(0.25f);
+		//if (Character->GetPlayerController())
+		//	Character->GetPlayerController()->
+		if (IsValid(CurrentlyCastingAbility))
+			CurrentlyCastingAbility->MulticastOnInterrupted();
+	}
+}
+
 void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbilityBase* Ability, const float CastTime)
 {
 	if (Character->GetPlayerController())

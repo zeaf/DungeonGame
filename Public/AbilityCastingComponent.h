@@ -79,6 +79,10 @@ public:
 	void ServerAttemptToCast(UActiveAbilityBase* Ability);
 	void ServerAttemptToCast_Implementation(UActiveAbilityBase* Ability);
 
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+	void ServerInterruptCast();
+	void ServerInterruptCast_Implementation();
+
 	UFUNCTION(Client, Reliable)
 	void ClientCastbar(const UActiveAbilityBase* Ability, const float CastTime);
 	void ClientCastbar_Implementation(const UActiveAbilityBase* Ability, const float CastTime);

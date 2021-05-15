@@ -50,8 +50,10 @@ public:
 	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-	void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
-	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
+	void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, 
+		bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
+	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, 
+		bool& IsCrit, bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
 
 #pragma region CombatAttributes
 

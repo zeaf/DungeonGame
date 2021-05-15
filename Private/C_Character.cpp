@@ -96,8 +96,9 @@ void AC_Character::OnHealingReceived_Implementation(FCharacterDamageEvent Event,
 	Health->OnHealReceived(Event, Healing, IsCrit);
 }
 
-void AC_Character::OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow)
+void AC_Character::OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, float&
+                                                   UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
 {
-	Health->OnHit(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow);
+	Health->OnHit(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
 }
 

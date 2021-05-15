@@ -101,7 +101,8 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 }
 
 void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken,
-	float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow)
+                            float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, 
+							float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
 {
 	if (Pawn->Dead)
 		return;
@@ -111,15 +112,35 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 	const float Variance = DamageEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f"),Variance));
 	// Amount increase based on damage type, and variance
-	TotalMultiplier *= GetDamageFactorForType(DamageEvent.Instigator, DamageEvent.Type) * Variance;
-
 	// Critical hit calculation
-	TotalMultiplier *= GetCritMultiplier(DamageEvent.Instigator, DamageEvent.AdditionalCriticalChance,
+	const float CritMultiplier = GetCritMultiplier(DamageEvent.Instigator, DamageEvent.AdditionalCriticalChance,
 		DamageEvent.AdditionalCriticalDamage, IsCrit);
 
-	TotalMultiplier *= CalculateDamageReduction(DamageEvent.Type);
+	const float DamageIncreaseMultiplier = GetDamageFactorForType(DamageEvent.Instigator, DamageEvent.Type);
+
+	const float DamageReductionMultiplier = CalculateDamageReduction(DamageEvent.Type);
+
+	const float DamageAfterVariance = DamageEvent.Amount * Variance;
+
+
+	//UE_LOG(LogTemp, Warning, TEXT("After variance %f"), DamageAfterVariance);
+	
+	DamageWithNoModifiers = DamageAfterVariance * CritMultiplier;
+
+	//UE_LOG(LogTemp, Warning, TEXT("No mod %f"), DamageWithNoModifiers);
+
+	DamageWithoutIncreases = DamageWithNoModifiers * DamageReductionMultiplier;
+
+	//UE_LOG(LogTemp, Warning, TEXT("No increases %f"), DamageWithoutIncreases);
+
+	UnmitigatedDamage = DamageWithNoModifiers * DamageIncreaseMultiplier;
+
+	//UE_LOG(LogTemp, Warning, TEXT("UnmitigatedDamage %f"), UnmitigatedDamage);
+	
+	TotalMultiplier = Variance * CritMultiplier * DamageIncreaseMultiplier * DamageReductionMultiplier;
 
 	FinalDamageTaken = FMath::CeilToFloat(DamageEvent.Amount * TotalMultiplier);
+	
 	
 	CheckForAbsorbs(FinalDamageTaken, DamageAbsorbed, FinalDamageTaken);
 	

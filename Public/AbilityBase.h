@@ -11,7 +11,8 @@ class UEffectBase;
 class AC_Character;
 class UStatusBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnDealtDamage, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalDamage, bool, IsCrit, bool, IsKillingBlow);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FOnDealtDamage, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalDamage, 
+	bool, IsCrit, bool, IsKillingBlow, float, UnmitigatedDamage, float, DamageWithoutModifiers, float, DamageWithNoIncreases);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalHealing, bool, IsCrit);
 
@@ -77,7 +78,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 		void DealDamage(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
-		                IsKillingBlow);
+		                IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
 
 	UFUNCTION(BlueprintCallable)
 		UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f);

@@ -86,13 +86,13 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 }
 
 void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event, 
-	float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow)
+	float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
 {
 	if (!Target) return;
 	//float DamageDealt, DamageAbsorbed;
 	//bool IsCrit, IsKillingBlow;
-	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow);
-	OnDealtDamage.Broadcast(Target, Event, DamageDealt + DamageAbsorbed, IsCrit, IsKillingBlow);
+	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
+	OnDealtDamage.Broadcast(Target, Event, DamageDealt + DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
 }
 
 UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration, float Duration)

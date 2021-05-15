@@ -72,7 +72,8 @@ public:
 	
 
 	UFUNCTION(BlueprintCallable)
-	void OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow);
+	void OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, float& DamageAbsorbed, bool& IsCrit, 
+		bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

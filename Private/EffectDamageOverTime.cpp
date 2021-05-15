@@ -26,9 +26,9 @@ void UEffectDamageOverTime::OnTick_Implementation()
 {
 	Super::OnTick_Implementation();
 	Event.Amount = DamagePerTick * Status->CurrentStacks;
-	float D, A;
+	float D, A, Unmitigated, NoModifier, NoIncreases;
 	bool C, K;
-	Status->Ability->DealDamage(Status->TargetActor, Event, D, A, C, K);
+	Status->Ability->DealDamage(Status->TargetActor, Event, D, A, C, K,Unmitigated, NoModifier, NoIncreases);
 	//Status->TargetActor->OnDamageReceived(Event, D, A, C, K);
 }
 

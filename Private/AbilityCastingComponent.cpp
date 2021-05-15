@@ -101,7 +101,7 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 {
 	if (!Ability) return;
 	
-	if (!IsCasting || CanCastWhileCasting)
+	if (!IsCasting || Ability->CanCastWhileCasting)
 	{
 		if (Ability->CastConditions())
 		{

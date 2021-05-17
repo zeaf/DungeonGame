@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DamageMeterEntry.generated.h"
 
+class UAbilityBase;
+class UDamageMeterEntryBreakdown;
 class AC_Character;
 class UTextBlock;
 class UProgressBar;
@@ -29,6 +31,9 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* PerSecondValue;
+
+	UPROPERTY(BlueprintReadonly, meta = (BindWidget))
+	UDamageMeterEntryBreakdown* Breakdown;
 	
 	TWeakObjectPtr<AC_Character> Character;
 
@@ -44,10 +49,10 @@ public:
 	void UpdatePerSecondValue();
 	
 	UFUNCTION(BlueprintCallable)
-	void InitializeDamageMeterEntry(AC_Character* Instigator, const float AmountDealt, const float CurrentMax);
+	void InitializeDamageMeterEntry(AC_Character* Instigator, const float AmountDealt, const float CurrentMax, UAbilityBase* Ability);
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateValue(const float AmountDealt, const float CurrentMax);
+	void UpdateValue(const float AmountDealt, const float CurrentMax, UAbilityBase* Ability);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateBarPercent(const float CurrentMax);

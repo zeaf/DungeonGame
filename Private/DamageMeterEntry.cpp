@@ -9,6 +9,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetTextLibrary.h"
+#include "UI/DamageMeterEntryBreakdown.h"
 
 void UDamageMeterEntry::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -23,26 +24,27 @@ void UDamageMeterEntry::UpdatePerSecondValue()
 		false, true, 1, 15, 1, 1));
 }
 
-void UDamageMeterEntry::InitializeDamageMeterEntry(AC_Character* Instigator, const float AmountDealt, const float CurrentMax)
+void UDamageMeterEntry::InitializeDamageMeterEntry(AC_Character* Instigator, const float AmountDealt, const float CurrentMax, UAbilityBase* Ability)
 {
 	Character = Instigator;
 	NameBlock->SetText(FText::FromString(Instigator->GetName()));
-	UpdateValue(AmountDealt, CurrentMax);
+	UpdateValue(AmountDealt, CurrentMax, Ability);
 	UpdateBarPercent(CurrentMax);
 	StartTime = FDateTime::UtcNow();
 	GetWorld()->GetTimerManager().SetTimer(PerSecondUpdateTimer, this, &UDamageMeterEntry::UpdatePerSecondValue, 1.f, true);
+	Breakdown->UpdateEntry(Ability, AmountDealt, TotalAmountDealt);
 }
 
-void UDamageMeterEntry::UpdateValue(const float AmountDealt, const float CurrentMax)
+void UDamageMeterEntry::UpdateValue(const float AmountDealt, const float CurrentMax, UAbilityBase* Ability)
 {
+	TotalAmountDealt += AmountDealt;
 	Amount->SetText(UKismetTextLibrary::Conv_FloatToText(AmountDealt, HalfFromZero,
 		false, true, 1, 15, 1, 1));
-	TotalAmountDealt = AmountDealt;
+	Breakdown->UpdateEntry(Ability, AmountDealt, TotalAmountDealt);
 }
 
 void UDamageMeterEntry::UpdateBarPercent(const float CurrentMax)
 {
-	//Bar->SetPercent(TotalAmountDealt / CurrentMax);
 	BarFillPercent = TotalAmountDealt / CurrentMax;
 }
 

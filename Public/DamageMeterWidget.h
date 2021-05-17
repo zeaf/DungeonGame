@@ -8,6 +8,7 @@
 #include "DamageMeterWidget.generated.h"
 
 
+class UAbilityBase;
 class UDamageMeterEntry;
 class AC_Character;
 class UScrollBox;
@@ -36,7 +37,7 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateEntry(AC_Character* Character, const float AmountDealt);
+	void UpdateEntry(AC_Character* Character, const float AmountDealt, UAbilityBase* Ability);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UDamageMeterEntry* CreateEntryWidget();

@@ -6,14 +6,13 @@
 #include "DamageMeterEntry.h"
 #include "Components/ScrollBox.h"
 
-void UDamageMeterWidget::UpdateEntry(AC_Character* Character, const float AmountDealt)
+void UDamageMeterWidget::UpdateEntry(AC_Character* Character, const float AmountDealt, UAbilityBase* Ability)
 {
 	if (EntriesMap.Find(Character))
 	{
 		float NewValue = ValuesMap.Add(Character, ValuesMap[Character] + AmountDealt);
 		CurrentMax = NewValue >= CurrentMax ? NewValue : CurrentMax;
-
-		EntriesMap[Character]->UpdateValue(NewValue, CurrentMax);
+		EntriesMap[Character]->UpdateValue(AmountDealt, CurrentMax, Ability);
 	}
 	else
 	{
@@ -21,7 +20,7 @@ void UDamageMeterWidget::UpdateEntry(AC_Character* Character, const float Amount
 		EntriesMap.Emplace(Character, NewEntry);
 		float NewValue = ValuesMap.Emplace(Character, AmountDealt);
 		CurrentMax = NewValue >= CurrentMax ? NewValue : CurrentMax;
-		NewEntry->InitializeDamageMeterEntry(Character, AmountDealt, CurrentMax);
+		NewEntry->InitializeDamageMeterEntry(Character, AmountDealt, CurrentMax, Ability);
 
 		MeterEntries->AddChild(NewEntry);	
 	}
@@ -36,7 +35,6 @@ void UDamageMeterWidget::UpdateEntry(AC_Character* Character, const float Amount
 		Entry.Value->UpdateBarPercent(CurrentMax);
 		MeterEntries->AddChild(Entry.Value);
 	}
-
 }
 
 UDamageMeterEntry* UDamageMeterWidget::CreateEntryWidget_Implementation()

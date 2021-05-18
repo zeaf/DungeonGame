@@ -30,7 +30,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-		void ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle, bool DrawDebug,
+		void ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle, bool DrawDebug,
 			TArray<AC_Character*>& CharactersHit);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
@@ -70,24 +70,24 @@ public:
 	void MulticastRemoveResource_Implementation() { BPRemoveResource(); }
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Status", Meta = (DisplayName = "Status", ExposeFunctionCategories="Status", AllowPrivateAccess="true"))
-		TArray<UStatusBase*> StatusToApply;
+	TArray<UStatusBase*> StatusToApply;
 
 	UFUNCTION(BlueprintCallable)
-		TArray<AC_Character*> GetTargetsInRadius(const FVector Center, const float Radius, const bool IgnoreSelf, const bool Friendly, 
+	TArray<AC_Character*> GetTargetsInRadius(const FVector Center, const float Radius, const bool IgnoreSelf, const bool Friendly, 
 			const bool Enemy, const bool DrawDebug);
 	
 	UFUNCTION(BlueprintCallable)
-		void DealDamage(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
+	void DealDamage(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
 		                IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
 
 	UFUNCTION(BlueprintCallable)
-		UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f);
+	UStatusBase* ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f);
 
 	UFUNCTION(BlueprintCallable)
-		void LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, UStatusBase*& FoundStatus, int& Stacks, bool OwnOnly = true);
+	void LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, UStatusBase*& FoundStatus, int& Stacks, bool OwnOnly = true);
 
 	UFUNCTION(BlueprintCallable)
-		void HealUnit(AC_Character* Target, FCharacterDamageEvent Event);
+	void HealUnit(AC_Character* Target, FCharacterDamageEvent Event);
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void Initialize(AActor* InCaster, int AbilitySlot);
@@ -96,20 +96,23 @@ public:
 	UFUNCTION()
 	void CastAbility() {};
 
+	UFUNCTION(BlueprintCallable)
+	AC_Character* GetMainTarget(TArray<AC_Character*> Targets);
+
 	UPROPERTY(BlueprintReadOnly, category = Ability)
-		AC_Character* Caster;
+	AC_Character* Caster;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
-		EGameDamageType AbilitySchool;
+	EGameDamageType AbilitySchool;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
-		FName AbilityName;
+	FName AbilityName;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
-		UTexture2D* Icon;
+	UTexture2D* Icon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability, meta = (Multiline = "true"))
-		FText Description;
+	FText Description;
 	
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//	FCombatAttribute CastTime;

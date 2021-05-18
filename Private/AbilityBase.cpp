@@ -9,6 +9,8 @@
 #include "Components/LineBatchComponent.h"
 #include "DrawDebugHelpers.h"
 #include "StatusComponent.h"
+#include "Chaos/AABB.h"
+#include "Chaos/AABB.h"
 
 // Sets default values for this component's properties
 UAbilityBase::UAbilityBase()
@@ -131,33 +133,51 @@ void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)
 	OnHealedUnit.Broadcast(Target, Event, Healing, IsCrit);
 }
 
-void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle,
-                             bool DrawDebug, TArray<AC_Character*>& CharactersHit)
+AC_Character* UAbilityBase::GetMainTarget(TArray<AC_Character*> Targets)
 {
-	AC_Character* Owner = Cast<AC_Character>(GetOwner());
+	AC_Character* CurrentTarget = nullptr;
+	float MinDistance = 1000000;
+	for (AC_Character* Char : Targets)
+	{
+		float TempDist = FVector::Dist(Caster->GetActorLocation(), Char->GetActorLocation());
 	
+		if (TempDist < MinDistance)
+		{
+			MinDistance = TempDist;
+			CurrentTarget = Char;
+		}
+	}
+	return CurrentTarget;
+}
+
+void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range,
+                             float ConeAngle, bool DrawDebug, TArray<AC_Character*>& CharactersHit)
+{
+	if (ForwardVector == FVector(0, 0, 0))
+		ForwardVector = Caster->GetActorForwardVector();
+
 	if (DrawDebug)
 	{
 		float s = sin(FMath::DegreesToRadians(ConeAngle));
 		float c = cos(FMath::DegreesToRadians(ConeAngle));
 
-		FVector fwv = Owner->GetActorForwardVector();
 		
-		float x = fwv.X * c - fwv.Y * s;
-		float y = fwv.X * s + fwv.Y * c;
+		
+		float x = ForwardVector.X * c - ForwardVector.Y * s;
+		float y = ForwardVector.X * s + ForwardVector.Y * c;
 
 		GetWorld()->PersistentLineBatcher->DrawLine(ConeOrigin, 
-			ConeOrigin+FVector(x, y, fwv.Z)*Range,
+			ConeOrigin+FVector(x, y, ForwardVector.Z)*Range,
 			FColor::Red, 1, 5, 3);
 		
 		s = sin(FMath::DegreesToRadians(-ConeAngle));
 		c = cos(FMath::DegreesToRadians(-ConeAngle));
 
-		x = fwv.X * c - fwv.Y * s;
-		y = fwv.X * s + fwv.Y * c;
+		x = ForwardVector.X * c - ForwardVector.Y * s;
+		y = ForwardVector.X * s + ForwardVector.Y * c;
 		
 		GetWorld()->PersistentLineBatcher->DrawLine(ConeOrigin, 
-			ConeOrigin+FVector(x, y, fwv.Z)*Range,
+			ConeOrigin+FVector(x, y, ForwardVector.Z)*Range,
 			FColor::Red, 1, 5, 3);
 	}
 	
@@ -165,7 +185,7 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool Targe
 
 	auto OverlapParams = FCollisionQueryParams(FName("cone"), true, IgnoreSelf ? GetOwner() : nullptr);
 	
-	GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, Owner->GetActorRotation().Quaternion(), 
+GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, ForwardVector.ToOrientationRotator().Quaternion(), 
 		ECC_GameTraceChannel12,	FCollisionShape::MakeSphere(Range), OverlapParams, FCollisionResponseParams());
 
 	TMap<AC_Character*, bool> ActorsHit;
@@ -187,11 +207,11 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, bool TargetFriendly, bool Targe
 		{
 			if (!ActorsHit.Find(ActorAsChar))
 			{
-				bool Affiliation = Owner->CheckHostility(ActorAsChar);
+				bool Affiliation = Caster->CheckHostility(ActorAsChar);
 
 				if ((TargetFriendly && !Affiliation) || (TargetEnemy && Affiliation))
 				{
-					float DotProduct = (Hit.ImpactPoint - ConeOrigin).CosineAngle2D(Owner->GetActorForwardVector());
+					float DotProduct = (Hit.ImpactPoint - ConeOrigin).CosineAngle2D(ForwardVector);
 					if (DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle)))
 					{
 						CharactersHit.Add(Cast<AC_Character>(ActorAsChar));

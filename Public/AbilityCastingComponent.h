@@ -8,7 +8,9 @@
 #include "Components/ActorComponent.h"
 #include "AbilityCastingComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCastStart, UActiveAbilityBase*, Ability, float, CastTime);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCastEnd);
 class AC_Character;
 class UActiveAbilityBase;
 class UAbilityBase;
@@ -34,6 +36,12 @@ private:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UPROPERTY(BlueprintAssignable, AdvancedDisplay)
+		FOnCastStart OnCastStart;
+
+	UPROPERTY(BlueprintAssignable, AdvancedDisplay)
+		FOnCastEnd OnCastEnd;
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		bool CanCastWhileMoving;
@@ -44,6 +52,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 		UActiveAbilityBase* CurrentlyCastingAbility;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		float CurrentCastTime;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+		FDateTime CurrentAbilityCastStart;
 
 	UPROPERTY()
 	UActiveAbilityBase* QueuedAbility;
@@ -72,6 +85,9 @@ public:
 	void ServerCastTime(float CastTime);
 	void ServerCastTime_Implementation(float CastTime);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSetCurrentCastParameters(UActiveAbilityBase* Ability, float CastTime);
+	void MulticastSetCurrentCastParameters_Implementation(UActiveAbilityBase* Ability, float CastTime);
 	UFUNCTION()
 	void SuccessfulCastSequence();
 

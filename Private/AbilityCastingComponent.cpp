@@ -79,22 +79,30 @@ void UAbilityCastingComponent::ServerCastTime_Implementation(float CastTime)
 
 	//CurrentlyCastingAbility->ServerOnBeginCast();
 
-	GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence,  CastTime, false);
+	GetWorld()->GetTimerManager().SetTimer(CastingTimer, this, &UAbilityCastingComponent::SuccessfulCastSequence,  CastTime, false);
+
+	//GetWorld()->GetTimerManager().SetTimer(CastingTimer, CurrentlyCastingAbility, &UActiveAbilityBase::ServerSuccessfulCastSequence_Implementation, CastTime, false);
+	
+	MulticastSetCurrentCastParameters(CurrentlyCastingAbility, CastTime);
+}
+
+void UAbilityCastingComponent::MulticastSetCurrentCastParameters_Implementation(UActiveAbilityBase* Ability, float CastTime)
+{
+	IsCasting = IsValid(Ability);
+	if (IsValid(Ability))
+	{
+		CurrentlyCastingAbility = Ability;
+		CurrentAbilityCastStart = FDateTime::UtcNow();
+		CurrentCastTime = CastTime;
+		OnCastStart.Broadcast(CurrentlyCastingAbility, CastTime);
+	}
+	else OnCastEnd.Broadcast();
 }
 
 void UAbilityCastingComponent::SuccessfulCastSequence()
 {
-	if (!CurrentlyCastingAbility->IsChanneled)
-	{
-		CurrentlyCastingAbility->MulticastAbilityCast();
-		CurrentlyCastingAbility->MulticastRemoveResource();
-	}
-
-	CurrentlyCastingAbility->ServerOnFinishedCast();
-	CurrentlyCastingAbility->ServerAbilityEndCast(AbilityCastResult::Successful);
-	if (!CurrentlyCastingAbility->CanCastWhileCasting)
-		IsCasting = false;
-	
+	CurrentlyCastingAbility->ServerSuccessfulCastSequence();
+	MulticastSetCurrentCastParameters(nullptr, 0);
 }
 
 void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbilityBase* Ability)
@@ -157,6 +165,8 @@ void UAbilityCastingComponent::ServerInterruptCast_Implementation()
 		//	Character->GetPlayerController()->
 		if (IsValid(CurrentlyCastingAbility))
 			CurrentlyCastingAbility->MulticastOnInterrupted();
+		CurrentlyCastingAbility = nullptr;
+		MulticastSetCurrentCastParameters(nullptr, 0);
 	}
 }
 

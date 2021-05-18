@@ -38,7 +38,7 @@ void UDamageMeterEntry::InitializeDamageMeterEntry(AC_Character* Instigator, con
 void UDamageMeterEntry::UpdateValue(const float AmountDealt, const float CurrentMax, UAbilityBase* Ability)
 {
 	TotalAmountDealt += AmountDealt;
-	Amount->SetText(UKismetTextLibrary::Conv_FloatToText(AmountDealt, HalfFromZero,
+	Amount->SetText(UKismetTextLibrary::Conv_FloatToText(TotalAmountDealt, HalfFromZero,
 		false, true, 1, 15, 1, 1));
 	Breakdown->UpdateEntry(Ability, AmountDealt, TotalAmountDealt);
 }

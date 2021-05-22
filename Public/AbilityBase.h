@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CharacterDamageEvent.h"
+#include "C_Character.h"
 #include "Components/ActorComponent.h"
 #include "AbilityBase.generated.h"
 
@@ -44,12 +45,12 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = RemoveResource))
-	void BPRemoveResource();
-	virtual void BPRemoveResource_Implementation() {}
+	void BPRemoveResource(const float Amount);
+	virtual void BPRemoveResource_Implementation(const float Amount) {}
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = GenerateResource))
-	void BPGenerateResource();
-	virtual void BPGenerateResource_Implementation() {}
+	void BPGenerateResource(float Resource);
+	virtual void BPGenerateResource_Implementation(float Resource) { Caster->AddResource(Resource); }
 
 	UFUNCTION(BlueprintCallable, meta = (DeterminesoutputType = "AbilityClass"), BlueprintPure)
 	UAbilityBase* LookForAbility(const TSubclassOf<UAbilityBase> AbilityClass);
@@ -62,12 +63,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void MulticastGenerateResource();
-	void MulticastGenerateResource_Implementation() { BPGenerateResource(); }
+	void MulticastGenerateResource(float Resource);
+	void MulticastGenerateResource_Implementation(float Resource) { BPGenerateResource(Resource); }
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void MulticastRemoveResource();
-	void MulticastRemoveResource_Implementation() { BPRemoveResource(); }
+	void MulticastRemoveResource_Implementation() { BPRemoveResource(0); }
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadwrite, SimpleDisplay, Category = "Status", Meta = (DisplayName = "Status", ExposeFunctionCategories="Status", AllowPrivateAccess="true"))
 	TArray<UStatusBase*> StatusToApply;

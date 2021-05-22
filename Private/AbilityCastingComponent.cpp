@@ -109,13 +109,13 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 {
 	if (!Ability) return;
 	
-	if (!IsCasting || Ability->CanCastWhileCasting)
+	if ((!IsCasting || Ability->CanCastWhileCasting) && !InGCD)
 	{
 		if (Ability->CastConditions())
 		{
 			AbilityCastResult Result;
 			Ability->ServerOnBeginCast(Result);
-			TriggerGCD(Character->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Ability->GCD);
+			TriggerGCD(Character->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Ability->GCD, Ability);
 
 			const float CastTime = GetCastTimeAfterHaste(Ability->CastTime);
 
@@ -176,10 +176,20 @@ void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbility
 		Character->GetPlayerController()->Castbar(Ability, CastTime);
 }
 
-void UAbilityCastingComponent::TriggerGCD(const float Time)
+void UAbilityCastingComponent::TriggerGCD(const float Time, const UActiveAbilityBase* TriggeringAbility)
 {
 	for (UActiveAbilityBase* Ability : Abilities)
+	{
+		if (Ability == TriggeringAbility && Ability->Cooldown > 0) continue;
 		Ability->StartGCD(GetCastTimeAfterHaste(Time));
+	}
+	GetWorld()->GetTimerManager().SetTimer(GlobalCooldownTimer, this, &UAbilityCastingComponent::GCDEnd, Time);
+	InGCD = true;
+}
+
+void UAbilityCastingComponent::GCDEnd()
+{
+	InGCD = false;
 }
 
 float UAbilityCastingComponent::GetCastTimeAfterHaste(const float CastTime)

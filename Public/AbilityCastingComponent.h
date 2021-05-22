@@ -67,6 +67,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	FTimerHandle CastingTimer;
 
+	UPROPERTY(BlueprintReadWrite)
+	FTimerHandle GlobalCooldownTimer;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Active Abilities", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UActiveAbilityBase>> ActiveAbilities;
 	
@@ -103,8 +106,12 @@ public:
 	void ClientCastbar(const UActiveAbilityBase* Ability, const float CastTime);
 	void ClientCastbar_Implementation(const UActiveAbilityBase* Ability, const float CastTime);
 	
-	void TriggerGCD(const float Time);
+	void TriggerGCD(const float Time, const UActiveAbilityBase* TriggeringAbility);
 
+	bool InGCD;
+	
+	void GCDEnd();
+	
 	float GetCastTimeAfterHaste(const float CastTime);
 
 	UFUNCTION()

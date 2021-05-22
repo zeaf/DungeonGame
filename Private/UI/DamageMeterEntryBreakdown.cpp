@@ -26,6 +26,7 @@ void UDamageMeterEntryBreakdown::ShowBreakdown()
 void UDamageMeterEntryBreakdown::UpdateEntry(UAbilityBase* Ability, float Amount, float TotalCharacterDamage)
 {
 	TotalDamage = TotalCharacterDamage;
+	if (!IsValid(Ability)) return;
 	if (Ability->AbilityName == NAME_None) return;
 	if (Entries.Find(Ability->GetUniqueID()))
 	{

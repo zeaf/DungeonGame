@@ -17,7 +17,7 @@ void UActiveAbilityBase::BeginPlay()
 
 
 
-void UActiveAbilityBase::BPRemoveResource_Implementation()
+void UActiveAbilityBase::BPRemoveResource_Implementation(const float Amount)
 {
 	if (Cost > 0)
 		Caster->RemoveResource(Cost);

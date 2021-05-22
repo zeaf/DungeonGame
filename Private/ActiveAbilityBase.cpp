@@ -96,6 +96,25 @@ void UActiveAbilityBase::ResetCooldown()
 {
 	CooldownReady = true;
 	ElapsedCD = 0;
+	GetWorld()->GetTimerManager().ClearTimer(CooldownTimer);
+	CooldownTimer.Invalidate();
+}
+
+void UActiveAbilityBase::ServerStopCooldown_Implementation()
+{
+	if (GetWorld()->GetTimerManager().IsTimerActive(CooldownTimer))
+	{
+		ResetCooldown();
+	}
+	CooldownReady = true;
+	const float Remaining =  GetWorld()->GetTimerManager().GetTimerRemaining(AbilityCastingComponent->GlobalCooldownTimer);
+	const float Elapsed = GetWorld()->GetTimerManager().GetTimerElapsed(AbilityCastingComponent->GlobalCooldownTimer);
+	const float Total = Remaining + Elapsed;
+	ElapsedCD = Elapsed;
+
+	ClientCooldown(Total, true);
+	ElapsedCD = 0;
+	//ClientStopCooldown();
 }
 
 bool UActiveAbilityBase::CastConditions_Implementation()
@@ -121,5 +140,6 @@ float UActiveAbilityBase::GetCDAfterCdr(const float CD)
 void UActiveAbilityBase::StartGCD_Implementation(const float Time)
 {
 	if (GetWorld()->GetTimerManager().GetTimerRemaining(CooldownTimer) < Time)
-		ServerStartCooldown(Time, true);
+		ClientCooldown(Time, true);
+		//ServerStartCooldown(Time, true);
 }

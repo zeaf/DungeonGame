@@ -37,7 +37,10 @@ protected:
 	
 	UPROPERTY()
 	FTimerHandle CooldownTimer;
-	
+
+
+	UPROPERTY()
+	FTimerHandle GlobalCooldownTimer;
 	
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
@@ -94,7 +97,7 @@ public:
 	void ServerOnFinishedCast();
 	virtual void ServerOnFinishedCast_Implementation() {}
 
-	virtual void BPRemoveResource_Implementation() override;	
+	virtual void BPRemoveResource_Implementation(const float Amount) override;	
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAbilityCast();
@@ -104,7 +107,7 @@ public:
 	void BPMulticastAbilityCast();
 	virtual void BPMulticastAbilityCast_Implementation() {}
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable, Server, Reliable)
 	void ServerAbilityEndCast(AbilityCastResult CastResult);
 	void ServerAbilityEndCast_Implementation(AbilityCastResult CastResult) { BPServerAbilityEndCast(CastResult); }
 
@@ -141,6 +144,14 @@ public:
 	virtual void BPMulticastOnInterrupted_Implementation() {}
 
 	void ResetCooldown();
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerStopCooldown();
+	void ServerStopCooldown_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void ClientStopCooldown();
+	virtual void ClientStopCooldown_Implementation() {}
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
 	UPARAM(DisplayName = "Can Cast") bool CastConditions();

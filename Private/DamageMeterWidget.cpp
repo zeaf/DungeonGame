@@ -4,10 +4,12 @@
 #include "DamageMeterWidget.h"
 
 #include "DamageMeterEntry.h"
+#include "AbilityBase.h"
 #include "Components/ScrollBox.h"
 
 void UDamageMeterWidget::UpdateEntry(AC_Character* Character, const float AmountDealt, UAbilityBase* Ability)
 {
+	if (!IsValid(Ability)) return;
 	if (EntriesMap.Find(Character))
 	{
 		float NewValue = ValuesMap.Add(Character, ValuesMap[Character] + AmountDealt);

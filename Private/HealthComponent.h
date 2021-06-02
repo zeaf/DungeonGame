@@ -110,7 +110,7 @@ public:
 	virtual void MulticastRestoreHealth_Implementation(float IncomingHealing);
 
 	UFUNCTION(BlueprintCallable)
-		void OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, bool& IsCrit);
+		void OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit);
 
 	float GetHealingMultiplier(AC_Character* Healer);
 	

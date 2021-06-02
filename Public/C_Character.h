@@ -46,8 +46,8 @@ public:
 	FDeathDelegate OnCharacterDeath;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-	void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
-	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, bool& IsCrit);
+	void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
+	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
 	void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, 

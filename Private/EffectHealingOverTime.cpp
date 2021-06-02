@@ -2,6 +2,8 @@
 
 
 #include "EffectHealingOverTime.h"
+
+#include "AbilityBase.h"
 #include "C_Character.h"
 #include "StatusBase.h"
 
@@ -23,7 +25,7 @@ void UEffectHealingOverTime::Initialize_Implementation(UStatusBase* ParentStatus
 void UEffectHealingOverTime::OnTick_Implementation()
 {
 	Super::OnTick_Implementation();
-	float H;
+	float H, O;
 	bool C;
-	Status->TargetActor->OnHealingReceived(Event, H, C);
+	Event.Ability->HealUnit(Status->TargetActor, Event, H, O, C);
 }

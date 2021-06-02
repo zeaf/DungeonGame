@@ -188,7 +188,7 @@ void UHealthComponent::MulticastRestoreHealth_Implementation(float IncomingHeali
 	UpdateHealth.Broadcast();
 }
 
-void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, bool& IsCrit)
+void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit)
 {
 	if (Pawn->Dead)
 		return;
@@ -206,6 +206,7 @@ void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float&
 	
 	if (FinalHealingTaken > 0)
 	{
+		Overhealing = FinalHealingTaken - Pawn->Health->MaxHealableHealth.CurrentValue + Pawn->Health->CurrentHealth;
 		MulticastRestoreHealth(FinalHealingTaken);
 		OnHealingReceived.Broadcast(HealingEvent.Instigator, FinalHealingTaken);
 	}

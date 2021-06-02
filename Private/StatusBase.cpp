@@ -67,6 +67,8 @@ void UStatusBase::RemoveStack_Implementation()
 {
 	if (--CurrentStacks < 1)
 		Expired(true);
+
+	OnStacksUpdated.Broadcast(TargetActor, this, CurrentStacks);
 }
 
 void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility)
@@ -83,7 +85,11 @@ void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, 
 
 void UStatusBase::AddStack_Implementation()
 {
-	if (MaxStacks > 1 && CurrentStacks < MaxStacks) ++CurrentStacks;
+	if (MaxStacks > 1 && CurrentStacks < MaxStacks)
+	{
+		++CurrentStacks;
+		OnStacksUpdated.Broadcast(TargetActor, this, CurrentStacks);
+	}
 }
 
 UEffectBase* UStatusBase::DuplicateEffect(UEffectBase* In)

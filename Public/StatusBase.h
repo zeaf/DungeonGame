@@ -18,6 +18,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshedDelegate, AC_Character*, 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRemovedDelegate, AC_Character*, Actor, UStatusBase*, Status);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnStacksUpdated, AC_Character*, Actor, UStatusBase*, Status, int, Stacks);
+
+
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EMPYREAN_API UStatusBase : public UActorComponent
 {
@@ -64,7 +67,9 @@ public:
 		FRefreshedDelegate OnRefreshed;
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Status")
 		FRemovedDelegate OnRemoved;
-
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Status")
+		FOnStacksUpdated OnStacksUpdated;
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:

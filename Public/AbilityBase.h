@@ -32,7 +32,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 		void ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range, float ConeAngle, bool DrawDebug,
-			TArray<AC_Character*>& CharactersHit);
+			TArray<AC_Character*>& CharactersHit, ECollisionChannel TraceChannel = ECC_Pawn);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 		FOnDealtDamage OnDealtDamage;

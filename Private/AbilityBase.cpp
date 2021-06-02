@@ -71,6 +71,24 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Center, Radius, ObjectsToTrace,
 	                                          AC_Character::StaticClass(), IgnoredActors, OverlapResult);
 
+
+	TArray<UPrimitiveComponent*> OverlapComponents;
+	bool bOverlapped = UKismetSystemLibrary::SphereOverlapComponents(GetWorld(), Center, Radius, ObjectsToTrace, NULL, IgnoredActors, OverlapComponents);
+
+	TArray<UPrimitiveComponent*> OverlapComponentsFixed;
+
+	for (auto Comp : OverlapComponents)
+	{
+		if (Comp->GetGenerateOverlapEvents())
+			OverlapComponentsFixed.Add(Comp);
+	}
+	
+	if (bOverlapped)
+	{
+		UKismetSystemLibrary::GetActorListFromComponentList(OverlapComponentsFixed, AC_Character::StaticClass(), OverlapResult);
+	}
+
+
 	TArray<AC_Character*> Targets;
 
 	for (AActor* Target : OverlapResult)
@@ -149,7 +167,7 @@ AC_Character* UAbilityBase::GetMainTarget(TArray<AC_Character*> Targets)
 }
 
 void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range,
-                             float ConeAngle, bool DrawDebug, TArray<AC_Character*>& CharactersHit)
+                             float ConeAngle, bool DrawDebug, TArray<AC_Character*>& CharactersHit, ECollisionChannel TraceChannel)
 {
 	if (ForwardVector == FVector(0, 0, 0))
 		ForwardVector = Caster->GetActorForwardVector();
@@ -184,7 +202,7 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool Tar
 	auto OverlapParams = FCollisionQueryParams(FName("cone"), true, IgnoreSelf ? GetOwner() : nullptr);
 	
 GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, ForwardVector.ToOrientationRotator().Quaternion(), 
-		ECC_GameTraceChannel12,	FCollisionShape::MakeSphere(Range), OverlapParams, FCollisionResponseParams());
+	TraceChannel,	FCollisionShape::MakeSphere(Range), OverlapParams, FCollisionResponseParams());
 
 	TMap<AC_Character*, bool> ActorsHit;
 	TMap<AActor*, bool> IgnoredActors;

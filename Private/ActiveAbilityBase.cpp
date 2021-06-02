@@ -89,6 +89,8 @@ void UActiveAbilityBase::MulticastOnInterrupted_Implementation()
 	{
 		ServerAbilityEndCast(AbilityCastResult::Interrupted);
 	}
+	else
+		ServerAbilityEndCast(AbilityCastResult::Stopped);
 	BPMulticastOnInterrupted();
 }
 

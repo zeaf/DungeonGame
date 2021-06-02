@@ -125,11 +125,9 @@ void UAbilityBase::LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassO
 	}
 }
 
-void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)
+void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit)
 {
-	float Healing;
-	bool IsCrit;
-	Target->OnHealingReceived(Event, Healing, IsCrit);
+	Target->OnHealingReceived(Event, Healing, Overhealing, IsCrit);
 	OnHealedUnit.Broadcast(Target, Event, Healing, IsCrit);
 }
 

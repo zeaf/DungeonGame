@@ -88,7 +88,7 @@ public:
 	void LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, UStatusBase*& FoundStatus, int& Stacks, bool OwnOnly = true);
 
 	UFUNCTION(BlueprintCallable)
-	void HealUnit(AC_Character* Target, FCharacterDamageEvent Event);
+	void HealUnit(AC_Character* Target, FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
 	
 	UFUNCTION(BlueprintNativeEvent)
 	void Initialize(AActor* InCaster, int AbilitySlot);

@@ -11,8 +11,16 @@ void UWidget_SpellIcon::InitializeIcon(UStatusBase* Status, UTexture2D* Icon, fl
 	AbilityIcon->SetBrushFromTexture(Icon);
 	CurrentStacks = Status->CurrentStacks;
 	UpdateStacksDisplay(CurrentStacks);
+
+	Status->OnStacksUpdated.AddDynamic(this, &UWidget_SpellIcon::StacksUpdated);
+	
 	if (Duration > 0)
 		PlayRadialSwipe(0, Duration);
+}
+
+void UWidget_SpellIcon::StacksUpdated(AC_Character* Character, UStatusBase* Status, int Stacks)
+{
+	UpdateStacksDisplay(Stacks);
 }
 
 void UWidget_SpellIcon::UpdateStacksDisplay(int Stacks, bool Force)

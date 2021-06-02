@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "C_Character.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -53,7 +55,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void InitializeIcon(UStatusBase* Status, UTexture2D* Icon, float Duration);
-	
+
+	UFUNCTION()
+	void StacksUpdated(AC_Character* Character, UStatusBase* Status, int Stacks);
+
 	UFUNCTION(BlueprintCallable)
 	void CheckResourceAvailability(bool ResourceAvailable);
 

@@ -102,6 +102,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool TargetFriendlies = true;
 
+	UFUNCTION(Server, Reliable)
+		void ServerBroadcastTarget(AC_Character* Target, bool IsEnemy);
+	void ServerBroadcastTarget_Implementation(AC_Character* Target, bool IsEnemy);
+
+	
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

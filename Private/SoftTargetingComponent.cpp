@@ -24,6 +24,7 @@ USoftTargetingComponent::USoftTargetingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetComponentTickEnabled(false);
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -59,6 +60,14 @@ void USoftTargetingComponent::BeginPlay()
 	SetComponentTickEnabled(true);
 }
 
+
+void USoftTargetingComponent::ServerBroadcastTarget_Implementation(AC_Character* Target, bool IsEnemy)
+{
+	if (IsEnemy)
+		EnemyTarget = Target;
+	else
+		FriendlyTarget = Target;
+}
 
 // Called every frame
 void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -123,6 +132,8 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 			OnEnemyTargetCleared.Broadcast();
 		else
 			OnFriendlyTargetCleared.Broadcast();
+
+		ServerBroadcastTarget(Target, Enemy);
 	}
 	else if (PreviousTarget != Target)
 	{
@@ -130,6 +141,8 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 			OnEnemyTargetUpdate.Broadcast(Target);
 		else
 			OnFriendlyTargetUpdate.Broadcast(Target);
+
+		ServerBroadcastTarget(Target, Enemy);
 		
 		Target->GetMesh()->SetRenderCustomDepth(true);
 		Target->GetMesh()->SetCustomDepthStencilValue(Enemy ? 1 : 2);

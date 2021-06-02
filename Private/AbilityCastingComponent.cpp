@@ -155,8 +155,9 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 
 void UAbilityCastingComponent::ServerInterruptCast_Implementation()
 {
-	if (IsCasting)
+	if (IsValid(CurrentlyCastingAbility))
 	{
+		GetWorld()->GetTimerManager().ClearTimer(CastingTimer);
 		CastingTimer.Invalidate();
 		IsCasting = false;
 		CanCastWhileMoving = false;
@@ -167,6 +168,7 @@ void UAbilityCastingComponent::ServerInterruptCast_Implementation()
 			CurrentlyCastingAbility->MulticastOnInterrupted();
 		CurrentlyCastingAbility = nullptr;
 		MulticastSetCurrentCastParameters(nullptr, 0);
+		OnCastEnd.Broadcast();
 	}
 }
 
@@ -178,6 +180,8 @@ void UAbilityCastingComponent::ClientCastbar_Implementation(const UActiveAbility
 
 void UAbilityCastingComponent::TriggerGCD(const float Time, const UActiveAbilityBase* TriggeringAbility)
 {
+	if (Time <= 0) return;
+	
 	for (UActiveAbilityBase* Ability : Abilities)
 	{
 		if (Ability == TriggeringAbility && Ability->Cooldown > 0) continue;

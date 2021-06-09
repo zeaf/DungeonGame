@@ -110,7 +110,15 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 void UAbilityBase::DealDamage(AC_Character* Target, FCharacterDamageEvent Event, 
 	float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
 {
+	DamageDealt = 0;
+	DamageAbsorbed = 0;
+	IsCrit = false;
+	IsKillingBlow = false;
+	UnmitigatedDamage = false;
+	DamageWithNoModifiers = 0;
+	DamageWithoutIncreases = 0;
 	if (!Target) return;
+	if (Target->Dead) return;
 	//float DamageDealt, DamageAbsorbed;
 	//bool IsCrit, IsKillingBlow;
 	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);

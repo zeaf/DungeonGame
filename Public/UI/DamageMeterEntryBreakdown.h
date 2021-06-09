@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DamageMeterEntryBreakdown.generated.h"
 
+class UWrapBoxNoEditor;
 class UWrapBox;
 class UDamageMeterBreakdownEntry;
 class UAbilityBase;
@@ -19,9 +20,7 @@ class UDamageMeterEntryBreakdown : public UUserWidget
 	GENERATED_BODY()
 
 	UPROPERTY(meta = (BindWidget))
-	UWrapBox* EntryList;
-
-	void ShiftChild(UWrapBox* WrapBox, int32 Index, UWidget* Child);
+	UWrapBoxNoEditor* EntryList;
 
 public:
 	UPROPERTY(BlueprintReadOnly)

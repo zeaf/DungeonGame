@@ -106,6 +106,7 @@ protected:
 		void ServerBroadcastTarget(AC_Character* Target, bool IsEnemy);
 	void ServerBroadcastTarget_Implementation(AC_Character* Target, bool IsEnemy);
 
+	void SetCustomDepthEnabled(AC_Character* Target, const bool Enemy, const bool Enabled);
 	
 public:
 	// Called every frame

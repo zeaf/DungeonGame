@@ -69,6 +69,29 @@ void USoftTargetingComponent::ServerBroadcastTarget_Implementation(AC_Character*
 		FriendlyTarget = Target;
 }
 
+void USoftTargetingComponent::SetCustomDepthEnabled(AC_Character* Target, const bool Enemy, const bool Enabled)
+{
+	TArray<USceneComponent*> Children;
+	USkeletalMeshComponent* SkelMesh = Target->GetMesh();
+
+	if (SkelMesh)
+	{
+		SkelMesh->GetChildrenComponents(true, Children);
+		SkelMesh->SetRenderCustomDepth(Enabled);
+		SkelMesh->SetCustomDepthStencilValue(Enemy ? 1 : 2);	
+	}
+	
+	for (USceneComponent* Comp : Children)
+	{
+		UMeshComponent* Mesh = Cast<UMeshComponent>(Comp);
+		if (Mesh)
+		{
+			Mesh->SetRenderCustomDepth(Enabled);
+			Mesh->SetCustomDepthStencilValue(Enemy ? 1 : 2);
+		}
+	}
+}
+
 // Called every frame
 void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -76,23 +99,6 @@ void USoftTargetingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	if (!Pawn) return;
 	if (!PawnCamera) return;
-
-	//FVector TraceStart = Pawn->GetActorLocation() + FVector(0,0,300);
-	//FVector TraceEnd = TraceStart + Pawn->GetControlRotation().Vector() * 2500.f;
-	//FRotator TraceRot = UKismetMathLibrary::FindLookAtRotation(TraceStart, TraceEnd);
-	//TArray<FHitResult> OutHits;
-
-	
-	//UKismetSystemLibrary::BoxTraceMultiForObjects(GetWorld(), TraceStart, TraceEnd, FVector(100, 1200, 500), TraceRot,
-	//	TracedTypes, true, IgnoredActors, EDrawDebugTrace::None, OutHits, true);
-
-	//for (FHitResult Hit : OutHits)
-	//{
-	//	AActor* HitActor = Hit.GetActor();
-	//	if (HitActor)
-	//		if (HitActor->IsA(AC_Character::StaticClass()))
-	//			Result.AddUnique(Hit.GetActor());
-	//}
 	
 	{
 		SCOPE_CYCLE_COUNTER(STAT_SoftTargetOverlap);
@@ -125,7 +131,7 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 	{
 		CurrentOutline->SetActorHiddenInGame(true);
 		if (PreviousTarget)
-			PreviousTarget->GetMesh()->SetRenderCustomDepth(false);
+			SetCustomDepthEnabled(PreviousTarget, Enemy, false);
 		PreviousTarget = nullptr;
 
 		if (Enemy)
@@ -143,11 +149,10 @@ void USoftTargetingComponent::MoveOutline(AC_Character* Target, bool Enemy)
 			OnFriendlyTargetUpdate.Broadcast(Target);
 
 		ServerBroadcastTarget(Target, Enemy);
+		SetCustomDepthEnabled(Target, Enemy, true);
 		
-		Target->GetMesh()->SetRenderCustomDepth(true);
-		Target->GetMesh()->SetCustomDepthStencilValue(Enemy ? 1 : 2);
 		if (PreviousTarget)
-			PreviousTarget->GetMesh()->SetRenderCustomDepth(false);
+			SetCustomDepthEnabled(PreviousTarget, Enemy, false);
 		PreviousTarget = Target;
 
 		CurrentOutline->AttachToActor(Target, Rules);
@@ -170,6 +175,7 @@ void USoftTargetingComponent::GetTargets(AC_Character*& Friendly, AC_Character*&
 		AC_Character* AsChar = Cast<AC_Character>(Char);
 		if (AsChar)
 		{
+			if (AsChar->Dead) continue;
 			bool IsFriendly = !Pawn->CheckHostility(AsChar);
 			if (IsFriendly && TargetFriendlies)
 				Friendlies.Add(AsChar);

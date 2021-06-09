@@ -117,6 +117,9 @@ public:
 	UFUNCTION()
 	void CastQueuedAbility();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UPARAM(meta = (DisplayName = CanCast)) bool CheckAbilityCastConditions(const int AbilityNumber, UActiveAbilityBase*& Ability);
+	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };
 

@@ -201,6 +201,18 @@ float UAbilityCastingComponent::GetCastTimeAfterHaste(const float CastTime)
 	return FMath::Max<float>((1 - Character->GetCombatAttributeValue(CombatAttributeName::Haste) / 100.) * CastTime, CastTime/2);
 }
 
+bool UAbilityCastingComponent::CheckAbilityCastConditions(const int AbilityNumber, UActiveAbilityBase*& Ability)
+{
+	if (!Abilities.IsValidIndex(AbilityNumber)) return false;
+	
+	if (Abilities[AbilityNumber]->IsValidLowLevel())
+	{
+		Ability = Abilities[AbilityNumber];
+		return Abilities[AbilityNumber]->CastConditions();
+	}
+	return false;
+}
+
 void UAbilityCastingComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

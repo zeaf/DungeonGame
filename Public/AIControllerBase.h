@@ -17,7 +17,7 @@ class EMPYREAN_API AAIControllerBase : public AAIController
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 		AC_Character* ControlledPawn;
 	
 	UPROPERTY()

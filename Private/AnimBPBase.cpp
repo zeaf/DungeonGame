@@ -2,6 +2,7 @@
 
 #include "AnimBPBase.h"
 
+#include "C_Character.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Misc/DateTime.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -11,7 +12,13 @@ void UAnimBPBase::InitializeAnimation()
 {
 	Pawn = TryGetPawnOwner();
 	if (Pawn)
+	{
 		MovementComponent = Pawn->GetMovementComponent();
+
+		Character = Cast<AC_Character>(Pawn);
+		if (Character)
+			Character->OnCharacterDeath.AddDynamic(this, &UAnimBPBase::Death);
+	}
 }
 
 void UAnimBPBase::UpdateAnimation(float DeltaTime, FVector LastUpdateVelocity)

@@ -9,6 +9,7 @@
 #include "AnimBPBase.generated.h"
 
 
+class AC_Character;
 /**
  * 
  */
@@ -20,6 +21,8 @@ class EMPYREAN_API UAnimBPBase : public UAnimInstance
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
 	APawn* Pawn;
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	AC_Character* Character;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
 	bool IsInAir;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
@@ -41,6 +44,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
 	bool FullBody;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
+	bool IsDead;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
 	UPawnMovementComponent* MovementComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Animation")
 	bool IsHit;
@@ -56,6 +61,9 @@ private:
 	void InitializeAnimation();
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimation(float DeltaTime, FVector LastUpdateVelocity);
+
+	UFUNCTION()
+	void Death(AC_Character* C) { IsDead = true; };
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)

@@ -8,6 +8,14 @@
 #include "Components/VerticalBox.h"
 #include "Components/WrapBox.h"
 
+void UDamageMeterEntryBreakdown::ShiftChild(UWrapBox* WrapBox, int32 Index, UWidget* Child)
+{
+	int32 CurrentIndex = WrapBox->GetChildIndex(Child);
+	auto Slots = WrapBox->GetSlots();
+	Slots.RemoveAt(CurrentIndex);
+	Slots.Insert(Child->Slot, FMath::Clamp(Index, 0, Slots.Num()));
+}
+
 void UDamageMeterEntryBreakdown::ShowBreakdown()
 {	
 	Entries.ValueSort([](const UDamageMeterBreakdownEntry& A, const UDamageMeterBreakdownEntry& B) {
@@ -18,7 +26,7 @@ void UDamageMeterEntryBreakdown::ShowBreakdown()
 	{
 		It.Value->UpdateBreakdownEntry(CurrentMax, TotalDamage);
 		if (EntryList->GetChildIndex(It.Value) != i)
-			EntryList->ShiftChild(i, It.Value);
+			ShiftChild(EntryList, i, It.Value);
 		++i;
 	}
 }

@@ -21,6 +21,8 @@ class UDamageMeterEntryBreakdown : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	UWrapBox* EntryList;
 
+	void ShiftChild(UWrapBox* WrapBox, int32 Index, UWidget* Child);
+
 public:
 	UPROPERTY(BlueprintReadOnly)
 	TMap<int, UDamageMeterBreakdownEntry*> Entries;

@@ -129,6 +129,14 @@ bool UActiveAbilityBase::CheckResourceAvailability_Implementation()
 	return true;
 }
 
+void UActiveAbilityBase::Initialize_Implementation(AActor* InCaster, int AbilitySlot)
+{
+	if (StartOnCooldown)
+	{
+		ServerAbilityEndCast(AbilityCastResult::Successful);
+	}
+}
+
 bool UActiveAbilityBase::CheckCastableWhileMoving()
 {
 	return CanCastWhileMoving || Caster->GetCharacterMovement()->GetLastUpdateVelocity().Equals(FVector(0, 0, 0), 1);

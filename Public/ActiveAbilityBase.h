@@ -72,6 +72,9 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, AdvancedDisplay)
 		float ElapsedCD;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, category = Ability)
+		bool StartOnCooldown;
 	
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 		FCastSuccessDelegate OnCastSuccess;
@@ -160,6 +163,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintPure)
 	UPARAM(DisplayName = "ResourceAvailable") bool CheckResourceAvailability();
 	UPARAM(DisplayName = "ResourceAvailable") virtual bool CheckResourceAvailability_Implementation();
+
+	virtual void Initialize_Implementation(AActor* InCaster, int AbilitySlot) override;
 
 	bool CheckCastableWhileMoving();
 

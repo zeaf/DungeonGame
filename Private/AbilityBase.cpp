@@ -95,7 +95,9 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 	{
 		AC_Character* AsChar = Cast<AC_Character>(Target);
 		bool IsEnemy = Caster->CheckHostility(AsChar);
-
+		
+		if (AsChar->Dead) continue;
+		
 		if (IsEnemy && Enemy) 
 			Targets.Add(AsChar);
 		else if (!IsEnemy && Friendly) 

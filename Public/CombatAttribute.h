@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
 #include "CombatAttribute.Generated.h"
 
@@ -55,6 +55,13 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute")
 		float CurrentValue = BaseValue;
+
+	// Do not call this for gameplay reasons
+	void SetHealth(float NewHealth)
+	{
+		BaseValue = NewHealth;
+		CurrentValue = NewHealth;
+	}
 	
 	FCombatAttribute() { CurrentValue = BaseValue; };
 	FCombatAttribute(const float Base) { BaseValue = Base; CurrentValue = Base; };

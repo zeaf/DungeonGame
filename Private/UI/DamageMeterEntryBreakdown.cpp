@@ -4,17 +4,10 @@
 #include "UI/DamageMeterEntryBreakdown.h"
 
 #include "AbilityBase.h"
+#include "WrapBoxNoEditor.h"
 #include "UI/DamageMeterBreakdownEntry.h"
 #include "Components/VerticalBox.h"
 #include "Components/WrapBox.h"
-
-void UDamageMeterEntryBreakdown::ShiftChild(UWrapBox* WrapBox, int32 Index, UWidget* Child)
-{
-	int32 CurrentIndex = WrapBox->GetChildIndex(Child);
-	auto Slots = WrapBox->GetSlots();
-	Slots.RemoveAt(CurrentIndex);
-	Slots.Insert(Child->Slot, FMath::Clamp(Index, 0, Slots.Num()));
-}
 
 void UDamageMeterEntryBreakdown::ShowBreakdown()
 {	
@@ -26,7 +19,7 @@ void UDamageMeterEntryBreakdown::ShowBreakdown()
 	{
 		It.Value->UpdateBreakdownEntry(CurrentMax, TotalDamage);
 		if (EntryList->GetChildIndex(It.Value) != i)
-			ShiftChild(EntryList, i, It.Value);
+			EntryList->ShiftChildFixed(i, It.Value);
 		++i;
 	}
 }

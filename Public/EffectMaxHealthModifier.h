@@ -33,8 +33,13 @@ inline void UEffectMaxHealthModifier::Initialize_Implementation(UStatusBase* Par
 	AC_Character* Pawn = Status->TargetActor;
 	if (Pawn)
 	{
-		FCombatAttribute Health = HealableOnly ? Pawn->Health->MaxHealableHealth : Pawn->Health->MaxHealth;
-		Health.AddEffect(GetUniqueID(), Modifier, Amount);
+		if (HealableOnly)
+			Pawn->Health->MaxHealableHealth.AddEffect(GetUniqueID(), Modifier, Amount);
+		else
+		{
+			Pawn->Health->MaxHealth.AddEffect(GetUniqueID(), Modifier, Amount);
+			Pawn->Health->MaxHealableHealth.AddEffect(GetUniqueID(), Modifier, Amount);
+		}
 	}
 }
 

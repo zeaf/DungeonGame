@@ -188,6 +188,15 @@ void UHealthComponent::MulticastRestoreHealth_Implementation(float IncomingHeali
 	UpdateHealth.Broadcast();
 }
 
+
+void UHealthComponent::MulticastSetHealth_Implementation(float NewHealth)
+{
+	MaxHealth.SetHealth(NewHealth);
+	CurrentHealth = NewHealth;
+	MaxHealableHealth.SetHealth(NewHealth);
+	UpdateHealth.Broadcast();
+}
+
 void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit)
 {
 	if (Pawn->Dead)

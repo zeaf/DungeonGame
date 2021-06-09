@@ -105,10 +105,13 @@ public:
 		FHealingEventDelegate OnHealingReceived;
 	
 	UFUNCTION(NetMulticast, Reliable)
-		void MulticastRestoreHealth(float IncomingHealing);
-
+	void MulticastRestoreHealth(float IncomingHealing);
 	virtual void MulticastRestoreHealth_Implementation(float IncomingHealing);
 
+	UFUNCTION(BlueprintCallable, NetMulticast, Reliable)
+	void MulticastSetHealth(float NewHealth);
+	virtual void MulticastSetHealth_Implementation(float NewHealth);
+	
 	UFUNCTION(BlueprintCallable)
 		void OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit);
 

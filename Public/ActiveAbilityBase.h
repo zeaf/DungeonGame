@@ -43,8 +43,11 @@ protected:
 	FTimerHandle GlobalCooldownTimer;
 	
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, BlueprintGetter=GetCastableWhileMoving, Category = Ability)
 		bool CanCastWhileMoving;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		bool GetCastableWhileMoving() { return CanCastWhileMoving; }
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Ability)
 		bool CanCastWhileCasting;

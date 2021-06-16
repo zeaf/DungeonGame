@@ -23,11 +23,11 @@ void UThreatComponent::AddThreat(AC_Character* DamageDealer, const float DamageD
 	ThreatMap.ValueSort([](float A, float B) {
 		return A > B; });
 	
-	int count = 0;
-	for (auto& It : ThreatMap)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("%d - %s %f"), count++, *(It.Key->GetName()), It.Value));
-	}
+	//int count = 0;
+	//for (auto& It : ThreatMap)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("%d - %s %f"), count++, *(It.Key->GetName()), It.Value));
+	//}
 }
 
 void UThreatComponent::RemoveFromThreatMap(AC_Character* Character)

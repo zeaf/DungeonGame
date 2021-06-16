@@ -24,6 +24,8 @@ void UEffectDamageOverTime::Initialize_Implementation(UStatusBase* ParentStatus)
 
 void UEffectDamageOverTime::OnTick_Implementation()
 {
+	if (!IsValid(Status->TargetActor)) return;
+	
 	Super::OnTick_Implementation();
 	Event.Amount = DamagePerTick * Status->CurrentStacks;
 	float D, A, Unmitigated, NoModifier, NoIncreases;

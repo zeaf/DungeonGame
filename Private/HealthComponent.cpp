@@ -49,6 +49,14 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
+void UHealthComponent::GetHealth(float& Current, float& Max, float& MaxHealable, float& HealthPercentage)
+{
+	Current = CurrentHealth;
+	Max = MaxHealth.CurrentValue;
+	MaxHealable = MaxHealableHealth.CurrentValue;
+	HealthPercentage = CurrentHealth / Max;
+}
+
 float UHealthComponent::GetDamageFactorForType(AC_Character* DamageDealer, EGameDamageType Type)
 {
 	return DamageDealer ?
@@ -164,7 +172,7 @@ void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & Ou
 void UHealthComponent::MulticastReduceHealth_Implementation(float IncomingDamage)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - IncomingDamage, MinHealth, MaxHealth.GetFinalValue());
-	UpdateHealth.Broadcast();
+	UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth / MaxHealth.CurrentValue);
 }
 
 bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
@@ -185,7 +193,7 @@ bool UHealthComponent::DamageCharacter_Implementation(float IncomingDamage)
 void UHealthComponent::MulticastRestoreHealth_Implementation(float IncomingHealing)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth + IncomingHealing, 0.f, MaxHealableHealth.GetFinalValue());
-	UpdateHealth.Broadcast();
+	UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth / MaxHealth.CurrentValue);
 }
 
 
@@ -194,7 +202,7 @@ void UHealthComponent::MulticastSetHealth_Implementation(float NewHealth)
 	MaxHealth.SetHealth(NewHealth);
 	CurrentHealth = NewHealth;
 	MaxHealableHealth.SetHealth(NewHealth);
-	UpdateHealth.Broadcast();
+	UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth / MaxHealth.CurrentValue);
 }
 
 void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit)

@@ -6,6 +6,7 @@
 #include "ActiveAbilityBase.h"
 #include "C_Character.h"
 #include "DungeonCharacterPlayerController.h"
+#include "Animation/AnimInstance.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
@@ -40,7 +41,7 @@ void UAbilityCastingComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UAbilityCastingComponent::InitializeAbilities()
 {
-	for (auto Ability : ActiveAbilities)
+	for (auto Ability : ActiveAbilitiesNew)
 	{
 		if (Ability)
 		{

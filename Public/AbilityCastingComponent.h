@@ -71,7 +71,7 @@ public:
 	FTimerHandle GlobalCooldownTimer;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Active Abilities", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
-	TArray<TSubclassOf<class UActiveAbilityBase>> ActiveAbilities;
+	TArray<TSubclassOf<class UActiveAbilityBase>> ActiveAbilitiesNew;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, SimpleDisplay, Category = "Abilities", Meta = (DisplayName = "Passive Ability", ExposeFunctionCategories = "Abilities", AllowPrivateAccess = "true"))
 	TSubclassOf<UAbilityBase> PassiveAbilityReference;

@@ -32,7 +32,9 @@ void UUnitFrameBase::TargetUpdate(AC_Character* NewTarget)
 	Target->AbilityCastingComponent->OnCastStart.AddDynamic(this, &UUnitFrameBase::OnCastStart);
 	Target->AbilityCastingComponent->OnCastEnd.AddDynamic(this, &UUnitFrameBase::OnCastEnd);
 
-	UpdateHealthEvent();
+	float C, M, MH, Pct;
+	Target->Health->GetHealth(C, M, MH, Pct);
+	UpdateHealthEvent(C, M, Pct);
 
 	if (Target->AbilityCastingComponent->IsCasting)
 		StartLateCastBar(Target->AbilityCastingComponent->CurrentlyCastingAbility, Target->AbilityCastingComponent->CurrentAbilityCastStart, Target->AbilityCastingComponent->CurrentCastTime);
@@ -40,12 +42,12 @@ void UUnitFrameBase::TargetUpdate(AC_Character* NewTarget)
 		OnCastEnd();
 }
 
-void UUnitFrameBase::UpdateHealthEvent()
+void UUnitFrameBase::UpdateHealthEvent(float CurrentHealth, float MaxHealth, float HealthPercentage)
 {
 	UpdateWidgetHealthValues(
-		UKismetTextLibrary::Conv_FloatToText(GetHPPct() * 100., HalfToEven, false, true, 1, 3, 1, 1), 
-		GetCurrentHPText(), 
-		GetHPPct());
+		UKismetTextLibrary::Conv_FloatToText(HealthPercentage * 100., HalfToEven, false, true, 1, 3, 1, 1), 
+		GetCurrentHPText(CurrentHealth), 
+		HealthPercentage);
 }
 
 void UUnitFrameBase::UpdateWidgetHealthValues_Implementation(const FText& HPPercent, const FText& HP, float HPBarPercent)
@@ -55,12 +57,7 @@ void UUnitFrameBase::UpdateWidgetHealthValues_Implementation(const FText& HPPerc
 	CurrentHP->SetText(HP);
 }
 
-FText UUnitFrameBase::GetCurrentHPText()
+FText UUnitFrameBase::GetCurrentHPText(float CurrentHealth)
 {
-	return UKismetTextLibrary::Conv_FloatToText(Target->Health->CurrentHealth, HalfToEven, false, true, 1, 10, 0, 0);
-}
-
-float UUnitFrameBase::GetHPPct()
-{
-	return Target->Health->CurrentHealth / Target->Health->MaxHealth.CurrentValue;
+	return UKismetTextLibrary::Conv_FloatToText(CurrentHealth, HalfToEven, false, true, 1, 10, 0, 0);
 }

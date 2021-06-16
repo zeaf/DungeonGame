@@ -37,7 +37,7 @@ public:
 		void TargetUpdate(AC_Character* NewTarget);
 
 	UFUNCTION()
-		void UpdateHealthEvent();
+		void UpdateHealthEvent(float CurrentHealth, float MaxHealth, float HealthPercentage);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void UpdateWidgetHealthValues(const FText& HPPercent, const FText& HP, float HPBarPercent);
@@ -55,6 +55,5 @@ public:
 	void StartLateCastBar(UActiveAbilityBase* Ability, FDateTime CastStart, float CastTime);
 	virtual void StartLateCastBar_Implementation(UActiveAbilityBase* Ability, FDateTime CastStart, float CastTime) {}
 
-	FText GetCurrentHPText();
-	float GetHPPct();
+	FText GetCurrentHPText(float CurrentHealth);
 };

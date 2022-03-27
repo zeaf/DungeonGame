@@ -14,25 +14,11 @@
 // Sets default values for this component's properties
 UAbilityBase::UAbilityBase()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 	Caster = Cast<AC_Character>(GetOwner());
-	// ...
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 }
-
-
-// Called when the game starts
-void UAbilityBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	this->SetComponentTickEnabled(false);
-	// ...
-	
-}
-
 
 UAbilityBase* UAbilityBase::LookForAbility(const TSubclassOf<UAbilityBase> AbilityClass)
 {
@@ -49,34 +35,27 @@ UAbilityBase* UAbilityBase::GetPassive()
 	return Caster->AbilityCastingComponent->PassiveAbility;
 }
 
-// Called every frame
-void UAbilityBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, const float Radius, const bool IgnoreSelf, const bool Friendly,
-	const bool Enemy, const bool DrawDebug)
+TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, const float Radius,
+                                                       int32 TargetsAllowed, const bool DrawDebug) const
 {
 	if (DrawDebug)
 		DrawDebugSphere(GetWorld(), Center, Radius, 12, FColor::Emerald, false, 3.f, 0, 2);
 
 	TArray<AActor*> IgnoredActors;
-	if (IgnoreSelf) IgnoredActors.Add(Caster);
+	if (!(TargetsAllowed & (uint8)ETargetingMask::TargetSelf))
+	{
+		IgnoredActors.Add(Caster);
+	}
 
 	TArray<AActor*> OverlapResult;
-	/*UKismetSystemLibrary::SphereOverlapActors(GetWorld(), Center, Radius, ObjectsToTrace,
-	                                          AC_Character::StaticClass(), IgnoredActors, OverlapResult);*/
-
 
 	TArray<UPrimitiveComponent*> OverlapComponents;
-	bool bOverlapped = UKismetSystemLibrary::SphereOverlapComponents(GetWorld(), Center, Radius, ObjectsToTrace, NULL, IgnoredActors, OverlapComponents);
+	const bool bOverlapped = UKismetSystemLibrary::SphereOverlapComponents(GetWorld(), Center, Radius, ObjectsToTrace, NULL, IgnoredActors, OverlapComponents);
 
+	// For some reason components without Generate Overlap Events are still overlapped in C++, so we have to remove those
 	TArray<UPrimitiveComponent*> OverlapComponentsFixed;
 
-	for (auto Comp : OverlapComponents)
+	for (UPrimitiveComponent* Comp : OverlapComponents)
 	{
 		if (Comp->GetGenerateOverlapEvents())
 			OverlapComponentsFixed.Add(Comp);
@@ -87,19 +66,19 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 		UKismetSystemLibrary::GetActorListFromComponentList(OverlapComponentsFixed, AC_Character::StaticClass(), OverlapResult);
 	}
 
-
+	// Only consider targets that fit our targeting criteria
 	TArray<AC_Character*> Targets;
 
 	for (AActor* Target : OverlapResult)
 	{
 		AC_Character* AsChar = Cast<AC_Character>(Target);
-		bool IsEnemy = Caster->CheckHostility(AsChar);
+		const bool IsEnemy = Caster->CheckHostility(AsChar);
 		
 		if (AsChar->Dead) continue;
 		
-		if (IsEnemy && Enemy) 
+		if (IsEnemy && (TargetsAllowed & (uint8)ETargetingMask::TargetEnemy))
 			Targets.Add(AsChar);
-		else if (!IsEnemy && Friendly) 
+		else if (!IsEnemy && (TargetsAllowed & (uint8)ETargetingMask::TargetFriendly))
 			Targets.Add(AsChar);
 	}
 
@@ -118,8 +97,6 @@ void UAbilityBase::DealDamage_Implementation(AC_Character* Target, FCharacterDam
 	DamageWithoutIncreases = 0;
 	if (!Target) return;
 	if (Target->Dead) return;
-	//float DamageDealt, DamageAbsorbed;
-	//bool IsCrit, IsKillingBlow;
 	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
 	OnDealtDamage.Broadcast(Target, Event, DamageDealt + DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
 }
@@ -134,8 +111,8 @@ UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex, bo
 	return Status;
 }
 
-void UAbilityBase::LookForStatus(AC_Character* Target, bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, 
-	UStatusBase*& FoundStatus, int& Stacks,	bool OwnOnly)
+void UAbilityBase::LookForStatus(AC_Character* Target, const bool IsDebuff, TSubclassOf<UStatusBase> StatusToLookFor, 
+	UStatusBase*& FoundStatus, int& Stacks,	const bool OwnOnly)
 {
 	if (!StatusToLookFor) return;
 	if (!Target) return;
@@ -164,7 +141,7 @@ AC_Character* UAbilityBase::GetMainTarget(TArray<AC_Character*> Targets)
 	float MinDistance = 1000000;
 	for (AC_Character* Char : Targets)
 	{
-		float TempDist = FVector::Dist(Caster->GetActorLocation(), Char->GetActorLocation());
+		const float TempDist = FVector::Dist(Caster->GetActorLocation(), Char->GetActorLocation());
 	
 		if (TempDist < MinDistance)
 		{
@@ -175,8 +152,9 @@ AC_Character* UAbilityBase::GetMainTarget(TArray<AC_Character*> Targets)
 	return CurrentTarget;
 }
 
-void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool TargetFriendly, bool TargetEnemy, bool IgnoreSelf, float Range,
-                             float ConeAngle, bool DrawDebug, TArray<AC_Character*>& CharactersHit, ECollisionChannel TraceChannel)
+void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, TArray<AC_Character*>& CharactersHit, int32 TargetsAllowed,
+                             const float Range, const float ConeAngle, const bool DrawDebug, ECollisionChannel
+                             TraceChannel)
 {
 	if (ForwardVector == FVector(0, 0, 0))
 		ForwardVector = Caster->GetActorForwardVector();
@@ -186,8 +164,6 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool Tar
 		float s = sin(FMath::DegreesToRadians(ConeAngle));
 		float c = cos(FMath::DegreesToRadians(ConeAngle));
 
-		
-		
 		float x = ForwardVector.X * c - ForwardVector.Y * s;
 		float y = ForwardVector.X * s + ForwardVector.Y * c;
 
@@ -208,10 +184,12 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, bool Tar
 	
 	TArray<FHitResult> Overlaps;
 
-	auto OverlapParams = FCollisionQueryParams(FName("cone"), true, IgnoreSelf ? GetOwner() : nullptr);
+	auto OverlapParams = FCollisionQueryParams(FName("cone"), 
+		true, 
+		!(TargetsAllowed & (uint8)ETargetingMask::TargetSelf)  ? GetOwner() : nullptr);
 	
-GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, ForwardVector.ToOrientationRotator().Quaternion(), 
-	TraceChannel,	FCollisionShape::MakeSphere(Range), OverlapParams, FCollisionResponseParams());
+	GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, ForwardVector.ToOrientationRotator().Quaternion(), 
+	TraceChannel, FCollisionShape::MakeSphere(Range), OverlapParams, FCollisionResponseParams());
 
 	TMap<AC_Character*, bool> ActorsHit;
 	TMap<AActor*, bool> IgnoredActors;
@@ -234,7 +212,8 @@ GetWorld()->SweepMultiByChannel(Overlaps, ConeOrigin, ConeOrigin, ForwardVector.
 			{
 				bool Affiliation = Caster->CheckHostility(ActorAsChar);
 
-				if ((TargetFriendly && !Affiliation) || (TargetEnemy && Affiliation))
+				if ((TargetsAllowed & (uint8)ETargetingMask::TargetFriendly && !Affiliation) || 
+					(TargetsAllowed & (uint8)ETargetingMask::TargetEnemy && Affiliation))
 				{
 					float DotProduct = (Hit.ImpactPoint - ConeOrigin).CosineAngle2D(ForwardVector);
 					if (DotProduct > FMath::Cos(FMath::DegreesToRadians(ConeAngle)))

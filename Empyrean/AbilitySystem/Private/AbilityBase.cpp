@@ -36,7 +36,7 @@ UAbilityBase* UAbilityBase::GetPassive()
 }
 
 TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, const float Radius,
-                                                       int32 TargetsAllowed, const bool DrawDebug) const
+                                                       int32 TargetsAllowed, const bool DrawDebug)
 {
 	if (DrawDebug)
 		DrawDebugSphere(GetWorld(), Center, Radius, 12, FColor::Emerald, false, 3.f, 0, 2);

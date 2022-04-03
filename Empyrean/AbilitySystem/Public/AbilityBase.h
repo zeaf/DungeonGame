@@ -129,7 +129,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta = (AdvancedDisplay = "DrawDebug"))
 	TArray<AC_Character*> GetTargetsInRadius(const FVector Center, const float Radius, 
-		UPARAM(meta = (Bitmask, BitmaskEnum = "ETargetingMask")) int32 TargetsAllowed = 2, const bool DrawDebug = false) const;
+		UPARAM(meta = (Bitmask, BitmaskEnum = "ETargetingMask")) int32 TargetsAllowed = 2, const bool DrawDebug = false);
 
 
 #pragma region Combat

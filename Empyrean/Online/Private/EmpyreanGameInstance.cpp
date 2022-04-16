@@ -32,7 +32,7 @@ void UEmpyreanGameInstance::GetIPFromSession(const FBlueprintSessionResult& Sess
 
 	if (Session)
 	{
-		FNamedOnlineSession* NamedOnlineSession = Session->GetNamedSession(GameSessionName);
+		FNamedOnlineSession* NamedOnlineSession = Session->GetNamedSession(NAME_GameSession);
 		if (NamedOnlineSession)
 		{
 			if (IsDedicatedServerInstance()) URL.Append(TEXT("steam."));

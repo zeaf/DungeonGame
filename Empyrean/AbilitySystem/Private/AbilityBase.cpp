@@ -197,8 +197,7 @@ void UAbilityBase::ConeTrace(FVector ConeOrigin, FVector ForwardVector, TArray<A
 	for (auto &Hit : Overlaps)
 	{
 		if (DrawDebug)
-			GetWorld()->PersistentLineBatcher->DrawLine(Hit.ImpactPoint, 
-			Hit.ImpactPoint, FColor::Red, 1, 5, 1);
+			DrawDebugPoint(GetWorld(),Hit.ImpactPoint, 5, FColor::Red, false, 5);
 		
 		if (IgnoredActors.Find(Hit.GetActor()))
 			continue;

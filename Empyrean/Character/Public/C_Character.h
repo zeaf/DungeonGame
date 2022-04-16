@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "CharacterDamageEvent.h"
+#include "CombatEvents.h"
 #include "CombatAttribute.h"
 #include "StatusInterface.h"
 #include "GameFramework/Character.h"

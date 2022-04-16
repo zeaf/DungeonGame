@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 
-#include "CharacterDamageEvent.h"
+#include "CombatEvents.h"
 #include "EffectPeriodic.h"
 #include "EffectDamageOverTime.generated.h"
 

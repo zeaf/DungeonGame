@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "C_Character.h"
 #include "Components/ActorComponent.h"
-#include "CharacterDamageEvent.h"
+#include "CombatEvents.h"
 #include "HealthComponent.generated.h"
 
 class UEffectAbsorbDamage;

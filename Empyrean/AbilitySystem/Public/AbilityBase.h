@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CharacterDamageEvent.h"
+#include "CombatEvents.h"
 #include "C_Character.h"
 #include "Components/ActorComponent.h"
 #include "AbilityBase.generated.h"

@@ -25,7 +25,7 @@ public:
 	UHealthComponent* HealthComp;
 
 	UFUNCTION(BlueprintCallable)
-		void AddThreat(AC_Character* DamageDealer, const float DamageDealt);
+		void AddThreat(AC_Character* DamageDealer, const FDamageOutcome Outcome);
 
 	UFUNCTION(BlueprintCallable)
 		void RemoveFromThreatMap(AC_Character* Character);

@@ -22,10 +22,9 @@ enum class ETargetingMask : uint8
 };
 ENUM_CLASS_FLAGS(ETargetingMask);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_EightParams(FOnDealtDamage, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalDamage, 
-	bool, IsCrit, bool, IsKillingBlow, float, UnmitigatedDamage, float, DamageWithoutModifiers, float, DamageWithNoIncreases);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnDealtDamage, AC_Character*, Target, FCharacterDamageEvent, Event, FDamageOutcome, Outcome);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealedUnit, AC_Character*, Target, FCharacterDamageEvent, Event, float, TotalHealing, bool, IsCrit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnHealedUnit, AC_Character*, Target, FCharacterDamageEvent, Event, FHealingOutcome, Outcome);
 
 UCLASS(Blueprintable, EditInlineNew, DefaultToInstanced, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class EMPYREAN_API UAbilityBase : public UActorComponent
@@ -142,13 +141,11 @@ protected:
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, BlueprintAuthorityOnly)
-	void DealDamage(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
-			IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
-	virtual void DealDamage_Implementation(AC_Character* Target, FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool&
-		IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
+	UPARAM(DisplayName = Outcome) FDamageOutcome DealDamage(AC_Character* Target, FCharacterDamageEvent Event);
+	virtual FDamageOutcome DealDamage_Implementation(AC_Character* Target, FCharacterDamageEvent Event);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
-	void HealUnit(AC_Character* Target, FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
+	UPARAM(DisplayName = Outcome) FHealingOutcome HealUnit(AC_Character* Target, FCharacterDamageEvent Event);
 
 #pragma endregion
 

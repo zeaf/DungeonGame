@@ -85,20 +85,16 @@ TArray<AC_Character*> UAbilityBase::GetTargetsInRadius(const FVector Center, con
 	return Targets;
 }
 
-void UAbilityBase::DealDamage_Implementation(AC_Character* Target, FCharacterDamageEvent Event, 
-	float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
+FDamageOutcome UAbilityBase::DealDamage_Implementation(AC_Character* Target, FCharacterDamageEvent Event)
 {
-	DamageDealt = 0;
-	DamageAbsorbed = 0;
-	IsCrit = false;
-	IsKillingBlow = false;
-	UnmitigatedDamage = false;
-	DamageWithNoModifiers = 0;
-	DamageWithoutIncreases = 0;
-	if (!Target) return;
-	if (Target->Dead) return;
-	Target->OnDamageReceived(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
-	OnDealtDamage.Broadcast(Target, Event, DamageDealt + DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
+	FDamageOutcome Outcome = FDamageOutcome();
+
+	if (!IsValid(Target) || Target->Dead) return Outcome;
+
+	Outcome = Target->OnDamageReceived(Event);
+	OnDealtDamage.Broadcast(Target, Event, Outcome);
+
+	return Outcome;
 }
 
 UStatusBase* UAbilityBase::ApplyStatus(AC_Character* Target, int StatusIndex, bool& Refreshed, bool OverrideDuration, float Duration)
@@ -129,10 +125,16 @@ void UAbilityBase::LookForStatus(AC_Character* Target, const bool IsDebuff, TSub
 	}
 }
 
-void UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit)
+FHealingOutcome UAbilityBase::HealUnit(AC_Character* Target, FCharacterDamageEvent Event)
 {
-	Target->OnHealingReceived(Event, Healing, Overhealing, IsCrit);
-	OnHealedUnit.Broadcast(Target, Event, Healing, IsCrit);
+	FHealingOutcome Outcome = FHealingOutcome();
+
+	if (!IsValid(Target) || Target->Dead) return Outcome;
+
+	Outcome = Target->OnHealingReceived(Event);
+	OnHealedUnit.Broadcast(Target, Event, Outcome);
+
+	return Outcome;
 }
 
 AC_Character* UAbilityBase::GetMainTarget(TArray<AC_Character*> Targets)

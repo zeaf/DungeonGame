@@ -46,14 +46,12 @@ public:
 	FDeathDelegate OnCharacterDeath;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-	void OnHealingReceived(FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
-	virtual void OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit);
+	UPARAM(DisplayName = Outcome) FHealingOutcome OnHealingReceived(FCharacterDamageEvent Event);
+	virtual FHealingOutcome OnHealingReceived_Implementation(FCharacterDamageEvent Event);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Health")
-	void OnDamageReceived(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, 
-		bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
-	virtual void OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, 
-		bool& IsCrit, bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
+	UPARAM(DisplayName = Outcome) FDamageOutcome OnDamageReceived(FCharacterDamageEvent Event);
+	virtual FDamageOutcome OnDamageReceived_Implementation(FCharacterDamageEvent Event);
 
 #pragma region CombatAttributes
 

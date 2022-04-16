@@ -108,12 +108,12 @@ void UHealthComponent::CheckForAbsorbs(const float IncomingDamage, float& Absorb
 	NotAbsorbedDamage = Damage;
 }
 
-void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken,
-                            float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, 
-							float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
+FDamageOutcome UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent)
 {
+	FDamageOutcome Outcome = FDamageOutcome();
+
 	if (Pawn->Dead)
-		return;
+		return Outcome;
 
 	float TotalMultiplier = 1.f;
 
@@ -122,43 +122,35 @@ void UHealthComponent::OnHit(FCharacterDamageEvent DamageEvent, float& FinalDama
 	// Amount increase based on damage type, and variance
 	// Critical hit calculation
 	const float CritMultiplier = GetCritMultiplier(DamageEvent.Instigator, DamageEvent.AdditionalCriticalChance,
-		DamageEvent.AdditionalCriticalDamage, IsCrit);
+		DamageEvent.AdditionalCriticalDamage, Outcome.bIsCrititcal);
 
 	const float DamageIncreaseMultiplier = GetDamageFactorForType(DamageEvent.Instigator, DamageEvent.Type);
 
 	const float DamageReductionMultiplier = CalculateDamageReduction(DamageEvent.Type);
 
 	const float DamageAfterVariance = DamageEvent.Amount * Variance;
+		
+	Outcome.DamageWithNoModifiers = DamageAfterVariance * CritMultiplier;
 
+	Outcome.DamageWithoutIncreases = Outcome.DamageWithNoModifiers * DamageReductionMultiplier;
 
-	//UE_LOG(LogTemp, Warning, TEXT("After variance %f"), DamageAfterVariance);
-	
-	DamageWithNoModifiers = DamageAfterVariance * CritMultiplier;
+	Outcome.UnmitigatedDamage = Outcome.DamageWithNoModifiers * DamageIncreaseMultiplier;
 
-	//UE_LOG(LogTemp, Warning, TEXT("No mod %f"), DamageWithNoModifiers);
-
-	DamageWithoutIncreases = DamageWithNoModifiers * DamageReductionMultiplier;
-
-	//UE_LOG(LogTemp, Warning, TEXT("No increases %f"), DamageWithoutIncreases);
-
-	UnmitigatedDamage = DamageWithNoModifiers * DamageIncreaseMultiplier;
-
-	//UE_LOG(LogTemp, Warning, TEXT("UnmitigatedDamage %f"), UnmitigatedDamage);
-	
 	TotalMultiplier = Variance * CritMultiplier * DamageIncreaseMultiplier * DamageReductionMultiplier;
 
-	FinalDamageTaken = FMath::CeilToFloat(DamageEvent.Amount * TotalMultiplier);
-	
-	
-	CheckForAbsorbs(FinalDamageTaken, DamageAbsorbed, FinalDamageTaken);
+	Outcome.DamageTaken = FMath::CeilToFloat(DamageEvent.Amount * TotalMultiplier);
+
+	CheckForAbsorbs(Outcome.DamageTaken, Outcome.DamageAbsorbed, Outcome.DamageTaken);
 	
 	// Damage the target based on the calculated damage value
-	if (FinalDamageTaken > 0)
+	if (Outcome.DamageTaken > 0)
 	{
-		IsKillingBlow = DamageCharacter(FinalDamageTaken);
+		Outcome.bIsKillingBlow = DamageCharacter(Outcome.DamageTaken);
 
-		OnDamageReceived.Broadcast(DamageEvent.Instigator, FinalDamageTaken);
+		OnDamageReceived.Broadcast(DamageEvent.Instigator, Outcome);
 	}
+
+	return Outcome;
 }
 
 
@@ -205,10 +197,12 @@ void UHealthComponent::MulticastSetHealth_Implementation(float NewHealth)
 	UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth / MaxHealth.CurrentValue);
 }
 
-void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit)
+FHealingOutcome UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent)
 {
+	FHealingOutcome Outcome = FHealingOutcome();
+
 	if (Pawn->Dead)
-		return;
+		return Outcome;
 
 	const float Variance = HealingEvent.ApplyVariance ? FMath::FRandRange(VARIANCE_LOW, VARIANCE_HIGH) : 1.0f;
 
@@ -217,16 +211,18 @@ void UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEvent, float&
 	TotalMultiplier *= GetHealingMultiplier(HealingEvent.Instigator) * Variance;
 
 	TotalMultiplier *= GetCritMultiplier(HealingEvent.Instigator, HealingEvent.AdditionalCriticalChance,
-	HealingEvent.AdditionalCriticalDamage, IsCrit);
+	HealingEvent.AdditionalCriticalDamage, Outcome.bIsCrititcal);
 
-	FinalHealingTaken = FMath::CeilToFloat(HealingEvent.Amount * TotalMultiplier);
+	Outcome.HealingTaken = FMath::CeilToFloat(HealingEvent.Amount * TotalMultiplier);
 	
-	if (FinalHealingTaken > 0)
+	if (Outcome.HealingTaken > 0)
 	{
-		Overhealing = FinalHealingTaken - Pawn->Health->MaxHealableHealth.CurrentValue + Pawn->Health->CurrentHealth;
-		MulticastRestoreHealth(FinalHealingTaken);
-		OnHealingReceived.Broadcast(HealingEvent.Instigator, FinalHealingTaken);
+		Outcome.Overhealing = Outcome.HealingTaken - Pawn->Health->MaxHealableHealth.CurrentValue + Pawn->Health->CurrentHealth;
+		MulticastRestoreHealth(Outcome.HealingTaken);
+		OnHealingReceived.Broadcast(HealingEvent.Instigator, Outcome);
 	}
+
+	return Outcome;
 }
 
 float UHealthComponent::GetHealingMultiplier(AC_Character* Healer)

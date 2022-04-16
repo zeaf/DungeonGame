@@ -9,9 +9,9 @@
 #include "HealthComponent.generated.h"
 
 class UEffectAbsorbDamage;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageEventDelegate, AC_Character*, DamageDealer, float, IncomingDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDamageEventDelegate, AC_Character*, DamageDealer, FDamageOutcome, Outcome);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealingEventDelegate, AC_Character*, Healer, float, IncomingHealing);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealingEventDelegate, AC_Character*, Healer, FHealingOutcome, Outcome);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMaxHealthUpdate, float, MaxHealth);
 
@@ -36,7 +36,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
-		FUpdateHealthDelegate UpdateHealth;
+	FUpdateHealthDelegate UpdateHealth;
 
 	UFUNCTION()
 	void OnRepCurrentHealth() const { UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth/MaxHealth.CurrentValue);}
@@ -50,20 +50,18 @@ public:
 	AC_Character* Pawn;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Health")
-		float MinHealth;
+	float MinHealth;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Health")
-		FCombatAttribute MaxHealableHealth;
+	FCombatAttribute MaxHealableHealth;
 	
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepMaxHealth, EditAnywhere, Category = "Health")
-		FCombatAttribute MaxHealth;
+	FCombatAttribute MaxHealth;
 
 	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRepCurrentHealth, EditAnywhere, Category = "Health")
-		float CurrentHealth;
-	
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
-		TArray<UEffectAbsorbDamage*> Absorbs;
+	float CurrentHealth;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Absorbs")
+	TArray<UEffectAbsorbDamage*> Absorbs;
 
 	UFUNCTION(BlueprintCallable)
 	float GetCritMultiplier(AC_Character* DamageDealer, const float IncreasedCriticalChance,
@@ -72,11 +70,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance);
 
-	
-
 	UFUNCTION(BlueprintCallable)
-	void OnHit(FCharacterDamageEvent DamageEvent, float& FinalDamageTaken, float& DamageAbsorbed, bool& IsCrit, 
-		bool& IsKillingBlow, float& UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases);
+	FDamageOutcome OnHit(FCharacterDamageEvent DamageEvent);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -85,17 +80,17 @@ public:
 		FDamageEventDelegate OnDamageReceived;
 
 	UFUNCTION(NetMulticast, Reliable)
-		void MulticastReduceHealth(float IncomingDamage);
+	void MulticastReduceHealth(float IncomingDamage);
 
 	virtual void MulticastReduceHealth_Implementation(float IncomingDamage);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-		bool DamageCharacter(float IncomingDamage);
+	bool DamageCharacter(float IncomingDamage);
 
 	virtual bool DamageCharacter_Implementation(float IncomingDamage);
 
 	UFUNCTION(BlueprintCallable)
-		float GetDamageFactorForType(AC_Character* DamageDealer, EGameDamageType Type);
+	float GetDamageFactorForType(AC_Character* DamageDealer, EGameDamageType Type);
 	
 	UFUNCTION(BlueprintCallable)
 	float CalculateDamageReduction(EGameDamageType Type);
@@ -105,7 +100,7 @@ public:
 #pragma endregion
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category = "Health")
-		FHealingEventDelegate OnHealingReceived;
+	FHealingEventDelegate OnHealingReceived;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastRestoreHealth(float IncomingHealing);
@@ -116,7 +111,7 @@ public:
 	virtual void MulticastSetHealth_Implementation(float NewHealth);
 	
 	UFUNCTION(BlueprintCallable)
-		void OnHealReceived(FCharacterDamageEvent HealingEvent, float& FinalHealingTaken, float& Overhealing, bool& IsCrit);
+	FHealingOutcome OnHealReceived(FCharacterDamageEvent HealingEvent);
 
 	float GetHealingMultiplier(AC_Character* Healer);
 	

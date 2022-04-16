@@ -91,14 +91,13 @@ void AC_Character::OnDeath_Implementation()
 	OnCharacterDeath.Broadcast(this);
 }
 
-void AC_Character::OnHealingReceived_Implementation(FCharacterDamageEvent Event, float& Healing, float& Overhealing, bool& IsCrit)
+FHealingOutcome AC_Character::OnHealingReceived_Implementation(FCharacterDamageEvent Event)
 {
-	Health->OnHealReceived(Event, Healing, Overhealing, IsCrit);
+	return Health->OnHealReceived(Event);
 }
 
-void AC_Character::OnDamageReceived_Implementation(FCharacterDamageEvent Event, float& DamageDealt, float& DamageAbsorbed, bool& IsCrit, bool& IsKillingBlow, float&
-                                                   UnmitigatedDamage, float& DamageWithNoModifiers, float& DamageWithoutIncreases)
+FDamageOutcome AC_Character::OnDamageReceived_Implementation(FCharacterDamageEvent Event)
 {
-	Health->OnHit(Event, DamageDealt, DamageAbsorbed, IsCrit, IsKillingBlow, UnmitigatedDamage, DamageWithNoModifiers, DamageWithoutIncreases);
+	return Health->OnHit(Event);
 }
 

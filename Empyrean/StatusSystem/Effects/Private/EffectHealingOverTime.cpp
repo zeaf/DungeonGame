@@ -25,7 +25,6 @@ void UEffectHealingOverTime::Initialize_Implementation(UStatusBase* ParentStatus
 void UEffectHealingOverTime::OnTick_Implementation()
 {
 	Super::OnTick_Implementation();
-	float H, O;
-	bool C;
-	Event.Ability->HealUnit(Status->TargetActor, Event, H, O, C);
+
+	Event.Ability->HealUnit(Status->TargetActor, Event);
 }

@@ -10,24 +10,18 @@ UThreatComponent::UThreatComponent()
 }
 
 
-void UThreatComponent::AddThreat(AC_Character* DamageDealer, const float DamageDealt)
+void UThreatComponent::AddThreat(AC_Character* DamageDealer, const FDamageOutcome Outcome)
 {
 	if (ThreatMap.Find(DamageDealer))
-		ThreatMap[DamageDealer] += DamageDealt * DamageDealer->ThreatMultiplier;
+		ThreatMap[DamageDealer] += Outcome.DamageTaken * DamageDealer->ThreatMultiplier;
 	else
 	{
-		ThreatMap.Emplace(DamageDealer, DamageDealt * DamageDealer->ThreatMultiplier);
+		ThreatMap.Emplace(DamageDealer, Outcome.DamageTaken * DamageDealer->ThreatMultiplier);
 		DamageDealer->OnCharacterDeath.AddDynamic(this, &UThreatComponent::RemoveFromThreatMap);
 	}
 	
 	ThreatMap.ValueSort([](float A, float B) {
 		return A > B; });
-	
-	//int count = 0;
-	//for (auto& It : ThreatMap)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("%d - %s %f"), count++, *(It.Key->GetName()), It.Value));
-	//}
 }
 
 void UThreatComponent::RemoveFromThreatMap(AC_Character* Character)

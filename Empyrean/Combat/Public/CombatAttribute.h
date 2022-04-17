@@ -3,22 +3,24 @@
 #include "CombatAttribute.Generated.h"
 
 UENUM(BlueprintType)
-enum class CombatAttributeName : uint8
+enum class ECombatAttributeName : uint8
 {
-	None				UMETA(DisplayName = "None"),
+	None,
 	CriticalHitChance	UMETA(DisplayName = "Critical Hit Chance"),
 	CriticalHitDamage	UMETA(DisplayName = "Critical Hit Damage"),
 	CooldownRate		UMETA(DisplayName = "Cooldown Rate"),
 	MovementSpeed		UMETA(DisplayName = "Movement Speed"),
 	Haste				UMETA(DisplayName = "Haste"),
 	HealingDone			UMETA(DisplayName = "Healing Done"),
-	HealingTaken		UMETA(DisplayName = "Healing Taken")
+	HealingTaken		UMETA(DisplayName = "Healing Taken"),
+	DO_NOT_DELETE		UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(ECombatAttributeName, ECombatAttributeName::DO_NOT_DELETE)
 
 UENUM(BlueprintType, meta = (ScriptName = "CDamageEvent"))
 enum class EGameDamageType : uint8
 {
-	All				UMETA(DisplayName = "All"),
+	All					UMETA(DisplayName = "All"),
 	Physical			UMETA(Displayname = "Physical"),
 	Fire				UMETA(Displayname = "Fire"),
 	Frost				UMETA(Displayname = "Frost"),
@@ -27,8 +29,10 @@ enum class EGameDamageType : uint8
 	Lightning			UMETA(Displayname = "Lightning"),
 	Holy				UMETA(Displayname = "Holy"),
 	Essence				UMETA(DisplayName = "Essence"),
-	Nature				UMETA(DisplayName = "Nature")
+	Nature				UMETA(DisplayName = "Nature"),
+	DO_NOT_DELETE		UMETA(Hidden)
 };
+ENUM_RANGE_BY_COUNT(EGameDamageType, EGameDamageType::DO_NOT_DELETE)
 
 
 UENUM(BlueprintType)
@@ -53,24 +57,23 @@ protected:
 		float BaseValue = 1.f;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attribute")
 		float CurrentValue = BaseValue;
 
 	// Do not call this for gameplay reasons
-	void SetHealth(float NewHealth)
+	void SetValue(const float NewValue)
 	{
-		BaseValue = NewHealth;
-		CurrentValue = NewHealth;
+		BaseValue = NewValue;
+		CurrentValue = GetFinalValue();
 	}
 	
-	FCombatAttribute() { CurrentValue = BaseValue; };
+	FCombatAttribute() { GetFinalValue(); };
 	FCombatAttribute(const float Base) { BaseValue = Base; CurrentValue = Base; };
 
 	FAttributeValueChanged OnValueChange;
 	
 	void AddEffect(uint32 EffectID, StatModifier Modifier, float value)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ADD EFFECT"));
 		switch (Modifier)
 		{
 		case StatModifier::Additive:
@@ -113,7 +116,29 @@ public:
 		float NewValue = BaseValue * MultiplicativeProduct + AdditiveSum;
 
 		OnValueChange.Broadcast(NewValue);
-		
+
+		CurrentValue = NewValue;
 		return NewValue;
 	}
 };
+
+namespace CombatAttribute
+{
+	/**
+	 * Creates a map with all the values of Enum E as keys, and FCombatAttribute as values
+	 * @tparam E The enum used for the keys
+	 * @return The created map
+	 */
+	template <typename E>
+	static TMap<E, FCombatAttribute> CreateCombatAttributeMap()
+	{
+		TMap<E, FCombatAttribute> Temp;
+		for (E Type : TEnumRange<E>())
+		{
+			FCombatAttribute Attribute;
+			Temp.Add(Type, Attribute);
+			Attribute.GetFinalValue();
+		}
+		return Temp;
+	}
+}

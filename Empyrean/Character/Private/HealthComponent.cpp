@@ -68,14 +68,14 @@ float UHealthComponent::GetCritMultiplier(AC_Character* DamageDealer,
 	const float IncreasedCriticalChance, const float IncreasedCriticalDamage, bool& IsCrit)
 {
 	IsCrit = CheckCriticalHit(DamageDealer, IncreasedCriticalChance);
-	const float Amount = IsCrit ? DamageDealer->CombatAttributes[CombatAttributeName::CriticalHitDamage].GetFinalValue() + IncreasedCriticalDamage
+	const float Amount = IsCrit ? DamageDealer->CombatAttributes[ECombatAttributeName::CriticalHitDamage].GetFinalValue() + IncreasedCriticalDamage
 		: 1;
 	return Amount;
 }
 
 bool UHealthComponent::CheckCriticalHit(AC_Character* DamageDealer, const float IncreasedCriticalChance)
 {
-	return FMath::FRandRange(0, 100) <= (DamageDealer->CombatAttributes[CombatAttributeName::CriticalHitChance].GetFinalValue() + IncreasedCriticalChance);
+	return FMath::FRandRange(0, 100) <= (DamageDealer->CombatAttributes[ECombatAttributeName::CriticalHitChance].GetFinalValue() + IncreasedCriticalChance);
 }
 
 float UHealthComponent::CalculateDamageReduction(EGameDamageType Type)
@@ -191,9 +191,9 @@ void UHealthComponent::MulticastRestoreHealth_Implementation(float IncomingHeali
 
 void UHealthComponent::MulticastSetHealth_Implementation(float NewHealth)
 {
-	MaxHealth.SetHealth(NewHealth);
+	MaxHealth.SetValue(NewHealth);
 	CurrentHealth = NewHealth;
-	MaxHealableHealth.SetHealth(NewHealth);
+	MaxHealableHealth.SetValue(NewHealth);
 	UpdateHealth.Broadcast(CurrentHealth, MaxHealth.CurrentValue, CurrentHealth / MaxHealth.CurrentValue);
 }
 
@@ -227,5 +227,5 @@ FHealingOutcome UHealthComponent::OnHealReceived(FCharacterDamageEvent HealingEv
 
 float UHealthComponent::GetHealingMultiplier(AC_Character* Healer)
 {
-	return Healer->CombatAttributes[CombatAttributeName::HealingDone].GetFinalValue() * Pawn->CombatAttributes[CombatAttributeName::HealingTaken].GetFinalValue();
+	return Healer->CombatAttributes[ECombatAttributeName::HealingDone].GetFinalValue() * Pawn->CombatAttributes[ECombatAttributeName::HealingTaken].GetFinalValue();
 }

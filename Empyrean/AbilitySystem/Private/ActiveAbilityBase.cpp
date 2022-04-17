@@ -145,7 +145,7 @@ bool UActiveAbilityBase::CheckCastableWhileMoving()
 
 float UActiveAbilityBase::GetCDAfterCdr(const float CD)
 {
-	return AffectedByCDR ? Caster->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * CD : CD;
+	return AffectedByCDR ? Caster->GetCombatAttributeValue(ECombatAttributeName::CooldownRate) * CD : CD;
 }
 
 void UActiveAbilityBase::StartGCD_Implementation(const float Time)

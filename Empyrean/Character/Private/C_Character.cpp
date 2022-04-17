@@ -25,8 +25,22 @@ AC_Character::AC_Character()
 	
 	AbilityCastingComponent = CreateDefaultSubobject<UAbilityCastingComponent>("Ability Component");
 
-	//SoftTargeting = CreateDefaultSubobject<USoftTargetingComponent>("SoftTargeting");
-	
+	DamageResistance = CombatAttribute::CreateCombatAttributeMap<EGameDamageType>();
+	DamageFactors = CombatAttribute::CreateCombatAttributeMap<EGameDamageType>();
+	CombatAttributes = CombatAttribute::CreateCombatAttributeMap<ECombatAttributeName>();
+}
+
+void AC_Character::Serialize(FArchive& Ar)
+{
+	Super::Serialize(Ar);
+
+	for (auto& It : DamageResistance)
+		It.Value.GetFinalValue();
+	for (auto& It : DamageFactors)
+		It.Value.GetFinalValue();
+	for (auto& It : CombatAttributes)
+		It.Value.GetFinalValue();
+
 }
 
 // Called when the game starts or when spawned
@@ -60,7 +74,7 @@ bool AC_Character::CheckHostility(AActor* ActorToCheck)
 	return false;
 }
 
-float AC_Character::GetCombatAttributeValue(CombatAttributeName Attribute)
+float AC_Character::GetCombatAttributeValue(ECombatAttributeName Attribute)
 {
 	return CombatAttributes[Attribute].CurrentValue;
 }

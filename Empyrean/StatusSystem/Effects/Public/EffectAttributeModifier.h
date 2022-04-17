@@ -13,7 +13,7 @@ class EMPYREAN_API UEffectAttributeModifier : public UEffectBase
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
-		CombatAttributeName CombatAttributeToModify = CombatAttributeName::None;
+		ECombatAttributeName CombatAttributeToModify = ECombatAttributeName::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Modifier")
 		StatModifier Modifier = StatModifier::Multiplicative;

@@ -116,7 +116,7 @@ void UAbilityCastingComponent::ServerAttemptToCast_Implementation(UActiveAbility
 		{
 			AbilityCastResult Result;
 			Ability->ServerOnBeginCast(Result);
-			TriggerGCD(Character->GetCombatAttributeValue(CombatAttributeName::CooldownRate) * Ability->GCD, Ability);
+			TriggerGCD(Character->GetCombatAttributeValue(ECombatAttributeName::CooldownRate) * Ability->GCD, Ability);
 
 			const float CastTime = GetCastTimeAfterHaste(Ability->CastTime);
 
@@ -199,7 +199,7 @@ void UAbilityCastingComponent::GCDEnd()
 
 float UAbilityCastingComponent::GetCastTimeAfterHaste(const float CastTime)
 {
-	return FMath::Max<float>((1 - Character->GetCombatAttributeValue(CombatAttributeName::Haste) / 100.) * CastTime, CastTime/2);
+	return FMath::Max<float>((1 - Character->GetCombatAttributeValue(ECombatAttributeName::Haste) / 100.) * CastTime, CastTime/2);
 }
 
 bool UAbilityCastingComponent::CheckAbilityCastConditions(const int AbilityNumber, UActiveAbilityBase*& Ability)

@@ -28,6 +28,8 @@ public:
 	// Sets default values for this character's properties
 	AC_Character();
 
+	virtual void Serialize(FArchive& Ar) override;
+
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -56,48 +58,13 @@ public:
 #pragma region CombatAttributes
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<CombatAttributeName, FCombatAttribute> CombatAttributes = {
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitChance, FCombatAttribute(15.f)),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CriticalHitDamage, FCombatAttribute(2.f)),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::Haste, FCombatAttribute(0.f)),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::CooldownRate, FCombatAttribute()),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::MovementSpeed, FCombatAttribute()),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingDone, FCombatAttribute()),
-		TPairInitializer<const CombatAttributeName&, const FCombatAttribute&>(CombatAttributeName::HealingTaken, FCombatAttribute()) };
+		TMap<ECombatAttributeName, FCombatAttribute> CombatAttributes;
 
-#pragma endregion
-	
-#pragma region DamageResistances
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<EGameDamageType, FCombatAttribute> DamageResistance = {
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Physical, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Fire, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Frost, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Astral, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Void, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Nature, FCombatAttribute()) };
+		TMap<EGameDamageType, FCombatAttribute> DamageResistance;
 
-#pragma endregion
-
-#pragma region DamageFactors
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<EGameDamageType, FCombatAttribute> DamageFactors = {
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::All, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Physical, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Fire, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Frost, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Astral, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Void, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Essence, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Lightning, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Holy, FCombatAttribute()),
-		TPairInitializer<const EGameDamageType&, const FCombatAttribute&>(EGameDamageType::Nature, FCombatAttribute()) };
+		TMap<EGameDamageType, FCombatAttribute> DamageFactors;
 
 #pragma endregion
 
@@ -122,7 +89,7 @@ public:
 	UPARAM(DisplayName="IsEnemy") bool CheckHostility(AActor* ActorToCheck);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetCombatAttributeValue(CombatAttributeName Attribute);
+	float GetCombatAttributeValue(ECombatAttributeName Attribute);
 
 	virtual UStatusBase* AddStatus_Implementation(UStatusBase* Status, AC_Character* Caster, UAbilityBase* Ability, bool& Refreshed, bool OverrideDuration = false, float Duration = 0.f) override;
 

@@ -54,21 +54,15 @@ void UStatusBase::BeginPlay()
 	
 }
 
-
-// Called every frame
-void UStatusBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UStatusBase::RemoveStack()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UStatusBase::RemoveStack_Implementation()
-{
-	if (--CurrentStacks < 1)
-		Expired(true);
-
+	OnStackRemoved();
 	OnStacksUpdated.Broadcast(TargetActor, this, CurrentStacks);
+
+	if (--CurrentStacks < 1)
+	{
+		Expired(true);
+	}
 }
 
 void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, AC_Character* Caster, UAbilityBase* ParentAbility)
@@ -83,11 +77,12 @@ void UStatusBase::MulticastAfterInitialize_Implementation(AC_Character* Target, 
 	InitializeEffects();
 }
 
-void UStatusBase::AddStack_Implementation()
+void UStatusBase::AddStack()
 {
 	if (MaxStacks > 1 && CurrentStacks < MaxStacks)
 	{
 		++CurrentStacks;
+		OnStackAdded();
 		OnStacksUpdated.Broadcast(TargetActor, this, CurrentStacks);
 	}
 }

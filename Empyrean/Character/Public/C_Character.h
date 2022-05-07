@@ -31,11 +31,11 @@ public:
 	virtual void Serialize(FArchive& Ar) override;
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UHealthComponent* Health;
+	UHealthComponent* Health;
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UStatusComponent* StatusComponent;
+	UStatusComponent* StatusComponent;
 	UPROPERTY(Category = Character, EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-		UAbilityCastingComponent* AbilityCastingComponent;
+	UAbilityCastingComponent* AbilityCastingComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Health")
 	bool Dead = false;
@@ -56,15 +56,19 @@ public:
 	virtual FDamageOutcome OnDamageReceived_Implementation(FCharacterDamageEvent Event);
 
 #pragma region CombatAttributes
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
+	TMap<ECombatAttributeName, FCombatAttribute> CombatAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<ECombatAttributeName, FCombatAttribute> CombatAttributes;
+	TMap<EGameDamageType, FCombatAttribute> DamageResistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<EGameDamageType, FCombatAttribute> DamageResistance;
+	TMap<EGameDamageType, FCombatAttribute> DamageFactors;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, NoClear, Category = "Attributes")
-		TMap<EGameDamageType, FCombatAttribute> DamageFactors;
+protected:
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastUpdateMovementSpeed(const float NewSpeed);
 
 #pragma endregion
 
@@ -78,9 +82,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintPure)
 	ADungeonCharacterPlayerController* GetPlayerController() { return DungeonPlayerController; }

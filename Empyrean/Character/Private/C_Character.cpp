@@ -7,9 +7,7 @@
 #include "DungeonCharacterPlayerController.h"
 #include "HealthComponent.h"
 #include "StatusComponent.h"
-#include "SoftTargetingComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PawnMovementComponent.h"
 
 // Sets default values
 AC_Character::AC_Character()
@@ -43,33 +41,31 @@ void AC_Character::Serialize(FArchive& Ar)
 
 }
 
+void AC_Character::MulticastUpdateMovementSpeed_Implementation(const float NewSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+}
+
 // Called when the game starts or when spawned
 void AC_Character::BeginPlay()
 {
 	Super::BeginPlay();
 	Dead = false;
 	DungeonPlayerController = Cast<ADungeonCharacterPlayerController>(GetController());
-	
+
+	if (HasAuthority())
+		CombatAttributes[ECombatAttributeName::MovementSpeed].OnValueChange.AddUniqueDynamic(this, &AC_Character::MulticastUpdateMovementSpeed);
 }
 
 // Called every frame
 void AC_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void AC_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 bool AC_Character::CheckHostility(AActor* ActorToCheck)
 {
-	auto ActorAsChar = Cast<AC_Character>(ActorToCheck);
-	if (ActorAsChar)
+	if (const auto ActorAsChar = Cast<AC_Character>(ActorToCheck))
 		return this->Team != ActorAsChar->Team;
 	return false;
 }

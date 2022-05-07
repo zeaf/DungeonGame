@@ -107,11 +107,11 @@ protected:
 	virtual void BPGenerateResource_Implementation(const float Resource) { Caster->AddResource(Resource); }
 
 public:
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, BlueprintAuthorityOnly)
 	void MulticastGenerateResource(const float Resource);
 	void MulticastGenerateResource_Implementation(const float Resource) { BPGenerateResource(Resource); }
 
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, BlueprintAuthorityOnly)
 	void MulticastRemoveResource();
 	void MulticastRemoveResource_Implementation() { BPRemoveResource(0); }
 
